@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="39" viewBox="0 0 100 39">
+    <defs>
+        <filter id="a" width="105%" height="113.2%" x="-2.5%" y="-6.6%" filterUnits="objectBoundingBox">
+            <feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feColorMatrix in="shadowOffsetOuter1" result="shadowMatrixOuter1" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0"/>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd" filter="url(#a)">
+        <path fill="#F9F9FA" d="M0 0h100v32a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V0z"/>
+        <rect width="28" height="16" x="4" y="4" fill="#E9E9E9" rx="2"/>
+        <rect width="28" height="16" x="36" y="4" fill="#E9E9E9" rx="2"/>
+        <rect width="28" height="16" x="68" y="4" fill="#E9E9E9" rx="2"/>
+        <g fill="#A1A09C" transform="translate(40 27)">
+            <rect width="12" height="2" x="-.14" y="2.442" rx="1" transform="rotate(25 5.86 3.442)"/>
+            <rect width="12" height="2" x="8.86" y="2.442" rx="1" transform="rotate(-25 14.86 3.442)"/>
+        </g>
+    </g>
+</svg>

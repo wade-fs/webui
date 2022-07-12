@@ -1,0 +1,19 @@
+<svg id="rds_fail_access" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #595758;
+      }
+    </style>
+  </defs>
+  <path id="Path_87" data-name="Path 87" class="cls-1" d="M0,0H24V24H0Z"/>
+  <g id="Group_1092" data-name="Group 1092" transform="translate(-1164 -768)">
+    <path id="Path_560" data-name="Path 560" class="cls-2" d="M-.583,88.719h-16a3,3,0,0,0-3,3v10a3,3,0,0,0,3,3h16a3,3,0,0,0,3-3v-10A3,3,0,0,0-.583,88.719Zm1,13a1,1,0,0,1-1,1h-16a1,1,0,0,1-1-1v-10a1,1,0,0,1,1-1h16a1,1,0,0,1,1,1Z" transform="translate(1184.583 682.281)"/>
+    <path id="Path_561" data-name="Path 561" class="cls-2" d="M1.417,105.719h-20a1,1,0,0,0-1,1,1,1,0,0,0,1,1h20a1,1,0,1,0,0-2Z" transform="translate(1184.583 682.281)"/>
+    <path id="Path_562" data-name="Path 562" class="cls-2" d="M-4.083,96.875a1.961,1.961,0,0,0-.309.031c.012-.125.038-.246.038-.375a3.968,3.968,0,0,0-3.969-3.968,3.965,3.965,0,0,0-3.864,3.089,2.673,2.673,0,0,0-.271-.027,2.625,2.625,0,0,0-2.625,2.625,2.625,2.625,0,0,0,2.625,2.625h8.375a2,2,0,0,0,2-2A2,2,0,0,0-4.083,96.875Z" transform="translate(1184.583 682.281)"/>
+  </g>
+</svg>

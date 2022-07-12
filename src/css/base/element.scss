@@ -1,0 +1,146 @@
+body {
+  font-family: system-ui;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+button,
+input,
+select,
+textarea,
+label,
+td,
+span {
+  color: var(--text-color);
+}
+
+h3 {
+  > p {
+    margin: 0;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  max-width: 100%;
+  &[data-hidden="true"] {
+    visibility: hidden;
+  }
+}
+
+select {
+  display: flex;
+  height: 32px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary-gray);
+  border: none;
+  border-color: var(--primary-gray);
+  border-bottom: 1px solid var(--primary-gray);
+  background-color: transparent;
+  background-size: 12px;
+}
+
+input {
+  display: flex;
+  height: 32px;
+  background-color: transparent;
+  padding-left: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-color: var(--primary-gray);
+  border-bottom: 1px solid var(--primary-gray);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+input[type="number"]::-webkit-inner-spin-button {
+  padding-bottom: 20px;
+  cursor: pointer;
+}
+
+textarea {
+  display: flex;
+  width: 42%;
+  height: 52px;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid var(--primary-gray);
+  resize: none;
+}
+
+input,
+select,
+textarea,
+button {
+  outline: none;
+  &:focus {
+    border-bottom: 1px solid var(--primary-color);
+  }
+}
+
+button {
+  border: none;
+  background: transparent;
+  &:hover {
+    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
+option[disabled] {
+  background-color: var(--border-color);
+}
+
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--placeholder-color);
+  opacity: 1; /* Firefox */
+}
+
+span {
+  font-size: 14px;
+}
+
+ul {
+  li {
+    color: var(--text-color);
+  }
+}
+
+li {
+  list-style-type: none;
+}
+
+p[data-view="false"] {
+  visibility: hidden;
+}
+
+main {
+  display: flex;
+  width: 90%;
+}
+
+a {
+  font-size: 14px;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}

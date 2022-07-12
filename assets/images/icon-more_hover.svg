@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_more" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-2{fill:#fff}
+        </style>
+    </defs>
+    <path id="Path_575" fill="none" d="M0 0h24v24H0z"/>
+    <g id="Group_1656" transform="translate(0 1)">
+        <rect id="Rectangle_347" width="3" height="3" class="cls-2" rx="1.5" transform="rotate(90 -.5 9.5)"/>
+        <rect id="Rectangle_348" width="3" height="3" class="cls-2" rx="1.5" transform="rotate(90 2 12)"/>
+        <rect id="Rectangle_349" width="3" height="3" class="cls-2" rx="1.5" transform="rotate(90 4.5 14.5)"/>
+    </g>
+</svg>

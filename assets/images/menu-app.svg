@@ -1,0 +1,18 @@
+<svg id="menu_app" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g id="Group_4349" data-name="Group 4349">
+    <g id="Group_4347" data-name="Group 4347" transform="translate(5.978 15.102)">
+      <path id="Path_1167" data-name="Path 1167" class="cls-1" d="M32.552,18.9H7.448a1.448,1.448,0,0,1,0-2.9h25.1a1.448,1.448,0,0,1,0,2.9Z" transform="translate(-6 -16)"/>
+    </g>
+    <g id="Group_4348" data-name="Group 4348" transform="translate(5.978 22.001)">
+      <path id="Path_1168" data-name="Path 1168" class="cls-1" d="M32.552,24.865H7.448a1.448,1.448,0,0,1,0-2.9h25.1a1.448,1.448,0,0,1,0,2.9Z" transform="translate(-6 -21.968)"/>
+    </g>
+    <path id="Path_1170" data-name="Path 1170" class="cls-1" d="M37.583,1.175A5.957,5.957,0,0,0,34.258,0H5.786A6.024,6.024,0,0,0,.022,5.99V34a6.019,6.019,0,0,0,6,6h28a6.019,6.019,0,0,0,6-6V5.99A6,6,0,0,0,37.583,1.175ZM17.279,3a2,2,0,1,1-2,2A2,2,0,0,1,17.279,3Zm-6,0a2,2,0,1,1-2,2A2,2,0,0,1,11.279,3Zm-6,0a2,2,0,1,1-2,2A2,2,0,0,1,5.279,3ZM37.022,34a3,3,0,0,1-3,3h-28a3,3,0,0,1-3-3V10h34Z" transform="translate(-0.022)"/>
+  </g>
+</svg>

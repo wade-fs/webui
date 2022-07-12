@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="display-sort-column" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-3{fill:#595758}
+        </style>
+    </defs>
+    <g id="Group_4336" transform="translate(-343 -316) translate(343 316)">
+        <g id="Group_4334">
+            <rect id="Rectangle_525" width="6" height="6" fill="#80bc00" rx="2" transform="translate(9 1)"/>
+            <rect id="Rectangle_526" width="6" height="6" class="cls-3" rx="2" transform="translate(9 9)"/>
+            <rect id="Rectangle_527" width="6" height="6" class="cls-3" rx="2" transform="translate(9 17)"/>
+        </g>
+    </g>
+</svg>

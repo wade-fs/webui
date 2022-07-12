@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_server_certificate" width="60" height="60" viewBox="0 0 60 60">
+    <defs>
+        <style>
+            .cls-3{fill:#fff}.cls-6{stroke:none}
+        </style>
+    </defs>
+    <g id="Rectangle_489" fill="#fff" stroke="#b4b4b4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px">
+        <rect width="60" height="50.754" class="cls-6" rx="5.351"/>
+        <rect width="58" height="48.754" x="1" y="1" fill="none" rx="4.351"/>
+    </g>
+    <path id="Path_1021" fill="#b4b4b4" d="M60 4.251A4.013 4.013 0 0 0 55.987.238H4.013A4.013 4.013 0 0 0 0 4.251v8.387h60z" transform="translate(0 -.238)"/>
+    <g id="Group_2411" transform="translate(7.396 4.217)">
+        <circle id="Ellipse_174" cx="1.984" cy="1.984" r="1.984" class="cls-3"/>
+        <circle id="Ellipse_175" cx="1.984" cy="1.984" r="1.984" class="cls-3" transform="translate(6.449)"/>
+        <circle id="Ellipse_176" cx="1.984" cy="1.984" r="1.984" class="cls-3" transform="translate(12.899)"/>
+    </g>
+    <g id="Path_1022" fill="#80bc00" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M30.527 58.926c-3.742-1.49-6.898-3.538-9.384-6.09-2.047-2.102-3.651-4.552-4.769-7.284-1.916-4.686-1.736-8.633-1.734-8.673v-.025l.001-.028V24.212l15.886-5.12 15.887 5.12V36.854l.002.027c.001.038.181 3.985-1.736 8.67-1.117 2.733-2.722 5.183-4.768 7.285-2.486 2.552-5.642 4.6-9.385 6.09z" class="cls-6"/>
+        <path d="M30.527 20.143l-14.886 4.798v11.885c0 .04 0 .068-.003.107-.005.125-.14 3.885 1.695 8.32 1.075 2.598 2.61 4.928 4.566 6.925 2.299 2.348 5.198 4.253 8.628 5.669 3.43-1.416 6.33-3.32 8.629-5.669 1.955-1.997 3.491-4.327 4.566-6.924 1.835-4.437 1.7-8.196 1.695-8.321-.003-.04-.003-.067-.003-.107V24.941l-14.887-4.798m0-2.101l16.887 5.442v13.342s.9 16.327-16.887 23.174c-17.786-6.847-16.886-23.174-16.886-23.174V23.484l16.886-5.442z"/>
+    </g>
+    <path id="Path_1023" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px" d="M30.527 56.572c-14.455-5.971-13.89-19.36-13.882-19.5V25.887l13.879-4.473 13.88 4.473v11.185c.033.557.496 13.571-13.877 19.5z"/>
+    <path id="Path_1024" d="M27.709 41.438l-4.671-4.724-1.557 1.574 6.228 6.3 13.347-13.5-1.556-1.573z" class="cls-3" transform="translate(0 -.082)"/>
+</svg>

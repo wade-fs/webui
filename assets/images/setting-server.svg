@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_AD_Setting" width="60" height="60" viewBox="0 0 60 60">
+    <defs>
+        <style>
+            .cls-1{fill:#fff}.cls-1,.cls-2{stroke:#b4b4b4;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}.cls-2,.cls-4{fill:none}.cls-3{stroke:none}
+        </style>
+    </defs>
+    <g id="Ellipse_186" class="cls-1" transform="translate(23)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <g id="Ellipse_187" class="cls-1" transform="translate(11.73 22.722)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <g id="Ellipse_188" class="cls-1" transform="translate(34.507 22.722)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <g id="Ellipse_189" class="cls-1" transform="translate(0 45.968)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <g id="Ellipse_190" class="cls-1" transform="translate(46 46.01)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <g id="Ellipse_191" class="cls-1" transform="translate(23.118 45.926)">
+        <ellipse cx="7" cy="6.995" class="cls-3" rx="7" ry="6.995"/>
+        <ellipse cx="7" cy="6.995" class="cls-4" rx="6" ry="5.995"/>
+    </g>
+    <path id="Path_1065" d="M20.272 23.359L30 13.638l9.728 9.722" class="cls-2" transform="translate(0 -.021)"/>
+    <path id="Path_1066" d="M9 46.605l9.728-9.722 9.728 9.722" class="cls-2" transform="translate(0 -.021)"/>
+    <path id="Path_1067" d="M31.778 46.605l9.728-9.722 9.728 9.722" class="cls-2" transform="translate(0 -.021)"/>
+</svg>

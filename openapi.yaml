@@ -1,0 +1,2556 @@
+openapi: 3.0.0
+info:
+  description: Q8 manager api for both web ui and Q8 client
+  version: 0.0.28
+  title: Q8 Manager API
+tags:
+  - name: Terminal
+    description: "Terminal Core API's"
+  - name: Terminal/Others
+    description: "Additional API's for Terminal"
+  - name: TerminalServer
+    description: "TerminalServer Core API's"
+  - name: TerminalServer/Others
+    description: "Additional API's for Terminal Server"
+  - name: Application
+    description: "Application Core API's"
+  - name: Auth
+  - name: License
+  - name: Upload
+  - name: Settings
+  - name: Settings/PxeServer
+  - name: Others
+  - name: Review
+paths:
+  '/other/transaction':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    post:
+      tags:
+        - Others
+      operationId: newTransaction
+      summary: start a new transaction
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/other/transaction/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+    post:
+      tags:
+        - Others
+      operationId: commitTransaction
+      summary: commit a transaction
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'      
+  '/object/terminal':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Terminal
+      operationId: createTerminal
+      summary: 'Add a new terminal(group)'
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/Properties'
+    get:
+      tags:
+        - Terminal
+      operationId: listTerminals
+      summary: Get a list of all existing terminals(groups)
+      description: ''
+      responses:
+        '200':
+          description: list of existing terminals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminalList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/terminal/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    put:
+      parameters:
+        - name: applyAll
+          description: 'apply for all terminals/groups(nested children) under this group'
+          in: query
+          required: false
+          schema:
+            type: boolean
+      tags:
+        - Terminal
+      operationId: updateTerminal
+      summary: Update an existing terminal(group)
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/Properties'
+    delete:
+      tags:
+        - Terminal
+      operationId: deleteTerminal
+      summary: Delete a terminal
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Terminal
+      operationId: getTerminal
+      summary: Get all properties for that terminal
+      description: ''
+      responses:
+        '200':
+          description: all properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Properties'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/shadow/{id}/{screenIdx}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - in: path
+        name: screenIdx
+        description: Screen Idx(starting from 1)
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Terminal/Others
+      summary: Request shadow connection string for terminal
+      description: ''
+      responses:
+        '200':
+          description: list of existing objects
+          content:
+            application/json:
+              schema:
+                type: string
+                description: connection string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/ws/terminal/status':
+    get:
+      tags:
+        - Terminal/Others
+      summary: websocket for terminal status events
+      description: ''
+      responses:
+        '200':
+          description: status events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: 'boot'
+                  payload:
+                    type: string
+                    example: '20%'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/schedulesetting/{id}':
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    delete:
+      tags:
+        - Others
+      operationId: deleteSchedule
+      summary: delete a schedule
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Others
+      operationId: getSchedule
+      summary: get schedule detail
+      responses:
+        '200':
+          description: schedule detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/schedule'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+          
+    put:
+      tags:
+        - Others
+      operationId: updateSchedule
+      summary: update a schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schedule'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/schedulesetting':
+    parameters:
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Others
+      operationId: createSchedule
+      summary: create a schedule
+      requestBody:
+        content:
+          plain/text:
+            schema:
+              $ref: '#/components/schemas/schedule'
+      responses:
+        '200':
+          description: schedule id will be returned
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getSchedules
+      summary: get schedule list
+      responses:
+        '200':
+          description: list of schedule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/schedule'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/other/adusers':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - name: offset
+        in: query
+        schema:
+          type: number
+      - name: max
+        in: query
+        schema:
+          type: number
+      - name: location
+        in: query
+        schema:
+          type: string
+    get:
+      tags:
+        - Others
+      operationId: getADUsers
+      summary: get ad users
+      responses:
+        '200':
+          description: list of ad users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/aduser'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/other/adserver/{bind_user}/{bind_pwd}/{dc}/{srv}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: bind_user
+        in: path
+        schema:
+          type: string
+        description: 'user that can manage AD server'
+        required: true
+      - name: bind_pwd
+        in: path
+        schema:
+          type: string
+        description: 'password fort eh user that can manage AD server'
+        required: true
+      - name: dc
+        in: path
+        schema:
+          type: string
+        description: 'domain component'
+        required: true
+      - name: srv
+        in: path
+        schema:
+          type: string
+        description: 'AD server ip address'
+        required: true
+    put:
+      tags:
+        - Others
+      operationId: activeDirectorySetting
+      summary: active directory setting
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/operate/{id}/{action}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+      - name: action
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/terminalOperateAction'
+    post:
+      tags:
+        - Terminal/Others
+      operationId: operateTermianl
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/hardwareinfo/{manufacturer}/{model}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: manufacturer
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 'Arista'
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 'E01'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getColorDepth
+      responses:
+        '200':
+          description: ColorDepth returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Videoports:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+                        example: '1024*768,24,60'
+                    
+        '500':
+          $ref: '#/components/responses/ErrorResponse'        
+  '/terminal/others/{manufacturer}/{model}/{packagetype}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: manufacturer
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 'Arista'
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 'E01'
+      - name: packagetype
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - Module
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getModules
+      summary: get modules
+      responses:
+        '200':
+          description: list of modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/package'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/moduleList':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getModuleList
+      summary: get module list
+      responses:
+        '200':
+          description: list of independent modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/package'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/supportdevices':
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getManufacturerModels
+      responses:
+        '200':
+          description: list of Manufacturers Models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/manufacturers':
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getManufacturers
+      summary: get manufacturer list
+      responses:
+        '200':
+          description: list of manufacturer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/{manufacturer}/models':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: manufacturer
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 'Arista'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getModels
+      summary: get model list
+      responses:
+        '200':
+          description: list of models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/auth/user/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getTerminalUserCredential
+      summary: get terminal user credential
+      responses:
+        '200':
+          description: list of settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usercredential'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - Terminal/Others
+      operationId: updateTerminalUserCredential
+      summary: update terminal user credential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usercredential'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/modulesetting':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Terminal/Others
+      operationId: createModuleSetting
+      summary: create a module setting
+      requestBody:
+        $ref: '#/components/requestBodies/MSProperties'
+      responses:
+        '200':  
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/modulesetting/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getModule
+      summary: get a terminal module setting
+      responses:
+        '200':  
+          $ref: '#/components/responses/MSListResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags:
+        - Terminal/Others
+      operationId: deleteModuleSetting
+      summary: delete a module setting
+      responses:
+        '200':  
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/module/possiblesettings/{moduleId}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: moduleId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getPossibleModuleSettings
+      summary: get possible module settings
+      responses:
+        '200':
+          description: list of settings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/possibleterminalsettings'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/module/settings/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Terminal/Others
+      operationId: getModuleSettings
+      summary: get module settings by modulesetting id
+      responses:
+        '200':
+          description: list of settings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/terminalsettings'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - Terminal/Others
+      operationId: updateModuleSettings
+      summary: update module settings by modulesetting id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/terminalsettings'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/terminalserver':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - TerminalServer
+      operationId: createTerminalServer
+      summary: 'Add a new terminal server(Group)'
+      description: ''
+      responses:
+        '200':
+          description: object id returned
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/TSProperties'
+    get:
+      tags:
+        - TerminalServer
+      operationId: listTerminalServers
+      summary: Get a list of all existing terminal servers(group)
+      description: ''
+      responses:
+        '200':
+          description: list of existing terminal servers(group)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminalServerList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/terminalserver/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    put:
+      parameters:
+        - name: applyAll
+          description: 'apply for all terminals server/groups(nested children) under this group'
+          in: query
+          required: false
+          schema:
+            type: boolean
+      tags:
+        - TerminalServer
+      operationId: updateTerminalServer
+      summary: Update an existing terminal server(group)
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/TSProperties'
+    delete:
+      tags:
+        - TerminalServer
+      operationId: deleteTerminalServer
+      summary: Delete an Terminal Server(Group)
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - TerminalServer
+      operationId: getTerminalServer
+      summary: Get all properties for the terminal server(group)
+      description: ''
+      responses:
+        '200':
+          description: properties returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TSProperties'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminalserver/auth/user/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+    get:
+      tags:
+        - TerminalServer/Others
+      operationId: getTerminalServerUserCredential
+      summary: get terminal server user credential
+      responses:
+        '200':
+          description: list of settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usercredential'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - TerminalServer/Others
+      operationId: updateTerminalServerUserCredential
+      summary: update terminal server user credential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usercredential'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/application':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Application
+      operationId: createApplication
+      summary: 'Add a new application'
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/AProperties'
+    get:
+      tags:
+        - Application
+      operationId: listApplications
+      summary: Get a list of all applications
+      description: ''
+      responses:
+        '200':
+          description: list of existing applications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/object/application/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    put:
+      tags:
+        - Application
+      operationId: updateApplication
+      summary: Update an existing application
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/AProperties'
+    delete:
+      tags:
+        - Application
+      operationId: deleteApplication
+      summary: Delete an application
+      description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Application
+      operationId: getApplication
+      summary: Get all properties for the application
+      description: ''
+      responses:
+        '200':
+          description: properties returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AProperties'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/login':
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Token header(t) will be set
+          headers:
+            t:
+              description: ''
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/password':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    put:
+      tags:
+        - Auth
+      summary: Update password(when you know the current one)
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - Auth
+      summary: Reset another user’s password
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/user':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    post:
+      tags:
+        - Auth
+      summary: Create a new user
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/info':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    get:
+      tags:
+        - Auth
+      summary: Get current user's information
+      description: ''
+      responses:
+        '200':
+          description: User's information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - Auth
+      summary: Update current user's information
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseUserInfo'
+      responses:
+        '200':
+          description: User's information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/user/list':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    get:
+      tags:
+        - Auth
+      summary: List all the users(visiable to current user)
+      description: ''
+      responses:
+        '200':
+          description: User's information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserInfo'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/auth/user/verify':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    post:
+      tags:
+        - Auth
+      operationId: verifyUser
+      summary: verify user name and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usercredential'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/license/request/{licenseId}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - name: licenseId
+        in: path
+        description: A License ID is generated at Arista and email to the customer
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - License
+      summary: Request for a License Request buffer
+      description: >-
+        Customer can copy/paste a License Request buffer in an email to Arista.
+        Arista then sends back a License File to be imported.
+      responses:
+        '200':
+          description: License Request buffer
+          content:
+            application/text:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/license':
+    parameters:
+      - $ref: '#/components/parameters/token'
+    post:
+      tags:
+        - License
+      summary: Import a license file
+      description: ''
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: File to upload
+                  type: string
+                  format: binary
+              required:
+                - file
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - License
+      summary: Get installed licenses
+      description: ''
+      responses:
+        '200':
+          description: User's information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LicenseInfo'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/upload/{type}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/patchtype'
+    post:
+      tags:
+        - Upload
+      summary: Uploads a file.
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                upfile:
+                  description: The file to upload.
+                  type: string
+                  format: binary
+  '/settings/installedpackage/{manufacturer}/{model}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - name: manufacturer
+        in: path
+        schema:
+          type: string
+        description: 'manufacturer'
+        required: true
+      - name: model
+        in: path
+        schema:
+          type: string
+        description: 'model'
+        required: true
+    get:
+      tags:
+        - Settings
+      description: ''
+      responses:
+        '200':
+          description: installed package list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ReferencesCount:
+                      type: number
+                    Locked:
+                      type: boolean
+                    Id:
+                      type: string
+                    Name:
+                      type: string
+                      example: "8"
+                    Version:
+                      type: string
+                      example: "8.1.17"
+                    Type:
+                      type: string
+                      enum:
+                        - Firmware
+                        - Package
+                        - Chainloader
+                        - TerminalCap
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/installedpackage/{id}/{lock}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+      - name: lock
+        in: path
+        required: true
+        schema:
+          type: boolean
+    put:
+      tags:
+        - Settings
+      description: 'lock/unlock package'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/installedpackage/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    delete:
+      tags:
+        - Settings
+      description: 'delete a package'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Settings
+      description: 'backup a package'
+      responses:
+        '200':
+          description: file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - Settings
+      description: 'copy a package'
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'new name'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - Settings
+      description: 'rename a package'
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'new name'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/pxe/networkinterfaceinfomation':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Settings/PxeServer
+      description: ''
+      responses:
+        '200':
+          description: network interface information list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Id:
+                      type: string
+                    Name:
+                      type: string
+                    Ip:
+                      type: string
+                    MacAddress:
+                      type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  
+  '/settings/pxe/networkinterfaceinfomation/{id}':        
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Settings/PxeServer
+      responses:
+        '200':
+          description: ip range list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkInterfaceInformation'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+    put:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkInterfaceInformation'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/pxe/iprange':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpRange'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Settings/PxeServer
+      description: ''
+      responses:
+        '200':
+          description: ip range list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IpRangeList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/pxe/iprange/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    put:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpRange'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+    delete:
+      tags:
+        - Settings/PxeServer
+      responses:
+        '200':
+          description: delete ip range
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: SUCCESS
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/pxe/ipexclusion/{iprangeId}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - in: path
+        name: iprangeId
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpExclusion'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Settings/PxeServer
+      description: ''
+      responses:
+        '200':
+          description: ip reservation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IpExclusionList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/pxe/ipexclusion/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    put:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpExclusion'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+    delete:
+      tags:
+        - Settings/PxeServer
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/pxe/ipreservation/{iprangeId}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - in: path
+        name: iprangeId
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpReservation'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - Settings/PxeServer
+      description: ''
+      responses:
+        '200':
+          description: ip reservation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IpReservationList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/pxe/ipreservation/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    put:
+      tags:
+        - Settings/PxeServer
+      requestBody:
+        $ref: '#/components/requestBodies/IpReservation'
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+    delete:
+      tags:
+        - Settings/PxeServer
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/dhcplease/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    delete:
+      tags:
+        - Settings
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'  
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/dhcplease':
+    parameters:
+        - $ref: '#/components/parameters/token'
+    get:
+      tags:
+        - Settings
+      description: ''
+      responses:
+        '200':
+          description: dhcp lease list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Id:
+                      type: string
+                    MacAddress:
+                      type: string
+                    RangeId:
+                      type: string
+                    Ip:
+                      type: string
+                    TerminalId:
+                      type: string
+                    Expiration:
+                      type: string
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/dnsconfig/{id}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - $ref: '#/components/parameters/id'
+    put:
+      tags:
+        - Settings
+      summary: update dns config
+      requestBody:
+        $ref: '#/components/requestBodies/DnsConfig'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      tags:
+        - Settings
+      summary: delete dns config
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'  
+  '/settings/dnsconfig':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    post:
+      tags:
+        - Settings
+      summary: new dns config
+      requestBody:
+        $ref: '#/components/requestBodies/DnsConfig'
+      responses:
+        '200':
+          $ref: '#/components/responses/IdResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      parameters:
+        - name: detect
+          in: query
+          schema:
+            type: boolean
+      tags:
+        - Settings
+      summary: get dns config list
+      responses:
+        '200':
+          description: dns config list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DnsConfigList'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/{manufacturer}/{model}':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+      - name: manufacturer
+        in: path
+        schema:
+          type: string
+        description: 'manufacturer'
+        required: true
+      - name: model
+        in: path
+        schema:
+          type: string
+        description: 'model'
+        required: true
+    put:
+      tags:
+        - Settings
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefaultPackageSettings'
+    get:
+      tags:
+        - Settings
+      summary: Get package default settings
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultPackageSettings'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/settings/global':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    put:
+      tags:
+        - Settings
+      responses:
+        '200':
+          $ref: '#/components/responses/NoResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateSettings'
+    get:
+      tags:
+        - Settings
+      summary: Get global settings
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/settings'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminal/others/hotkey/keyboard/default':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Terminal/Others
+      summary: Get default hotkey mapping
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/hotkeymapping'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/terminals/others/hotkey/mouse/default':
+    parameters:
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/transactionId'
+    get:
+      tags:
+        - Terminal/Others
+      summary: Get default hotkey mapping
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mousemapping'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  '/other/product/info':
+    get:
+      tags:
+        - Others
+      summary: get product info
+      description: get product info
+      responses:
+        '200':
+          description: Product info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Boarded:
+                    type: boolean
+                    example: false
+                  CompanyName:
+                    type: string
+                    example: 'Arista'
+                  ProductName:
+                    type: string
+                    example: 'Q8 Vista'
+                  Version:
+                    type: string
+                    example: '1.0.2'
+                  ReleaseDate:
+                    type: string
+                    example: '1559450896'
+                  Host:
+                    type: string
+                    example: 'WINDOWS-P12345'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+servers:
+  - url: 'http://localhost:8085/api'
+  
+components:
+  parameters:
+    token:
+      name: t
+      in: header
+      description: Authorization Token
+      required: true
+      schema:
+        type: string
+    transactionId:
+      name: tid
+      in: header
+      description: Transaction Id
+      required: false
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    patchtype:
+      name: type
+      in: path
+      required: true
+      description: Object type
+      schema:
+        type: string
+        enum:
+          - driver
+          - database
+          - keys
+  responses:
+    NoResponse:
+      description: Nothing returned
+    ErrorResponse:
+      description: System error or error message
+    IdResponse:
+      description: id will be returned
+      content:
+        plain/text:
+          schema:
+            type: string 
+            example: 1234
+    MSListResponse:
+      description: id will be returned
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MSList'
+  requestBodies:
+    DnsConfig:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DnsConfig'
+      description: DNS Config
+    IpRange:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IpRange'
+      description: Ip Range
+    IpExclusion:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IpExclusion'
+      description: Ip exclusion
+    IpReservation:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IpReservation'
+      description: Ip reservation
+    AProperties:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AProperties'
+      description: Config application object that needs to be added to the DB
+      required: true
+    MSProperties:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MSProperties'
+      description: ''
+      required: true
+    TSProperties:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TSProperties'
+      description: Config terminal server(group) that needs to be added to the DB
+      required: true
+    Properties:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Properties'
+      description: Config object that needs to be added to the DB
+      required: true
+    UpdateSettings:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/settings'
+  schemas:
+    DefaultPackageSettings:
+      type: object
+      properties:
+        AllowChainLoader:
+          type: boolean
+        DefaultPackageId:
+          type: string
+    NetworkInterfaceInformation:
+      type: object
+      properties:
+        PXEServerMode:
+          type: string
+          enum:
+            - DHCPServerWithBootOption
+            - DHCP
+            - ExternalDHCPServer
+    MSList:
+      type: array
+      items:
+        type: object
+        allOf:
+          - $ref: '#/components/schemas/Id'
+          - $ref: '#/components/schemas/MSProperties'
+    MSProperties:
+      allOf:
+        - $ref: '#/components/schemas/ModuleId'
+        - $ref: '#/components/schemas/TerminalId'
+    IpReservationList:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/IpReservation'
+    IpExclusionList:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/IpExclusion'
+    IpRangeList:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/IpRange'
+    ApplicationList:
+      type: array
+      items:
+        type: object
+        allOf:
+          - $ref: '#/components/schemas/Id'
+          - $ref: '#/components/schemas/Name'
+          - $ref: '#/components/schemas/Favorite'
+          - $ref: '#/components/schemas/ConfigLock'
+          - $ref: '#/components/schemas/ModifiedTS'
+    TerminalServerList:
+      type: array
+      items:
+        type: object
+        allOf:
+          - $ref: '#/components/schemas/Id'
+          - $ref: '#/components/schemas/ParentId'
+          - $ref: '#/components/schemas/Name'
+          - $ref: '#/components/schemas/Favorite'
+          - $ref: '#/components/schemas/ConfigLock'
+          - $ref: '#/components/schemas/IsGroup'
+          - $ref: '#/components/schemas/ModifiedTS'
+    TerminalList:
+      type: array
+      items:
+        type: object
+        allOf:
+          - $ref: '#/components/schemas/Id'
+          - $ref: '#/components/schemas/ParentId'
+          - $ref: '#/components/schemas/Name'
+          - $ref: '#/components/schemas/Favorite'
+          - $ref: '#/components/schemas/ConfigLock'
+          - $ref: '#/components/schemas/IsGroup'
+          - $ref: '#/components/schemas/ModifiedTS'
+        properties:
+          ConfigPending:
+            type: boolean
+          DeviceControl:
+            type: boolean
+          Status:
+            $ref: '#/components/schemas/terminalStatus'
+          IsDefault:
+            type: string
+    DnsConfigList:
+      type: array
+      items:
+        type: object
+        allOf:
+          - $ref: '#/components/schemas/Id'
+          - $ref: '#/components/schemas/DnsConfig'
+    DnsConfig:
+      type: object
+      properties:
+        IP:
+          type: string
+        Domain:
+          type: string
+        SearchDomain:
+          type: string
+    IpRange:
+      type: object
+      properties:
+        NetworkInterfaceInformationId:
+          type: string
+        Enabled:
+          type: string
+        Router:
+          type: string
+        SubnetMask:
+          type: string
+        AdvancedOption:
+          type: string
+        beginIp:
+          type: string
+        endIp:
+          type: string
+    IpExclusion:
+      type: object
+      properties:
+        RangeId:
+          type: string
+        BeginIp:
+          type: string
+        EndIp:
+          type: string
+    IpReservation:
+      type: object
+      properties:
+        MacAddress:
+          type: string
+        RangeId:
+          type: string
+        Ip:
+          type: string
+        TerminalId:
+          type: string
+    settings:
+      type: object
+      properties:
+        AllowPackageAtTerminal:
+          type: string
+        ShadowPort:
+          type: string
+        EnablePXEServer:
+          type: string
+        EnableDNSConfig:
+          type: string
+    hotkeymapping:
+      type: object
+      properties:
+        MainMenuHotkeyCode:
+          type: string
+        GroupHotkeyNext:
+          type: string
+          example: 'CTRL+RIGHT'
+    mousemapping:
+      type: object
+      properties:
+        CalibrateTouchScreen:
+          type: string
+        Tile:
+          type: string
+        Swap:
+          type: string
+        FullScreen:
+          type: string
+        DisplayNext:
+          type: string
+        DisplayPrev:
+          type: string
+        LogOnRelevanceUser:
+          type: string
+        MainMenu:
+          type: string
+        ScrollUp:
+          type: string
+        ScrollDown:
+          type: string
+        Virtualkeyboard:
+          type: string
+        DisableButton:
+          type: string
+        DisplayClient:
+          type: string
+        LeftMouseButton:
+          type: string
+        RightMouseButton:
+          type: string
+        
+    usercredential:
+      type: object
+      properties:
+        Type:
+          type: string
+          enum:
+            - Windows
+            - AD
+            - IPCamera
+        URL:
+          type: string
+        Ip:
+          type: string
+        Domain:
+          type: string
+        Username:
+          type: string
+        Password:
+          type: string
+    possibleterminalsettings:
+      type: object
+      properties:
+        Key:
+          type: string
+          example: "HOLD DOWN TIME(MSEC)"
+        Type:
+          type: string
+          enum:
+            - Dropdown
+            - Input
+            - Switch
+        Value:
+          type: string
+          example: "DISABLE,ENABLE"
+    terminalsettings:
+      type: object
+      properties:
+        Key:
+          type: string
+          example: "HOLD DOWN TIME(MSEC)"
+        Value:
+          type: string
+          example: "500"
+    model:
+      type: object
+      description: AD user object
+      properties:
+        Manufacturer:
+          type: string
+        Model:
+          type: string
+        Versions:
+          type: array
+          items:
+            type: string
+    package:
+      type: object
+      description: AD user object
+      properties:
+        Id:
+          description: package id
+          type: number
+          example: 1
+        name:
+          type: string
+        Version:
+          type: string
+        Type:
+          type: string
+    aduser:
+      type: object
+      description: AD user object
+      properties:
+        Name:
+          type: string
+          example: 'aoeu'
+        Email:
+          type: string
+          example: 'aoeu@arista.com'
+        Dn:
+          type: string
+          example: '/dev/aeu'
+    schedule:
+      type: object
+      description: Schedule object
+      properties:
+        Type:
+          type: string
+          enum:
+            - Once
+            - Every Day
+            - Every Week
+            - Every Month
+            - Every Year
+            - Time Interval
+        Days:
+          type: number
+          example: '0,1,5'
+        StartTime:
+          type: number
+          example: '201904140000'
+        EndTime:
+          type: number
+          example: '201906010000'
+        Action:
+          $ref: '#/components/schemas/terminalOperateAction'
+        FrequencyInMinute:
+          type: number
+          example: 120
+          description: 'repeat every 2 hours'
+    terminalOperateAction:
+      type: string
+      enum:
+        - reboot
+        - poweroff
+        - enable
+        - disable
+      example: reboot
+    terminalStatus:
+      type: string
+      enum:
+        - 'OFF'
+        - ACTIVE
+        - BOOTING
+        - ERROR
+      example: ACTIVE
+    BaseUserInfo:
+      type: object
+      description: User's profile
+      properties:
+        FirstName:
+          type: string
+          example: 'q8'
+        LastName:
+          type: string
+          example: 'Vista'
+    LicenseInfo:
+      type: object
+      description: License Detail
+      properties:
+        MaxTerminals:
+          type: number
+        LicenseId:
+          type: string
+        Terminals:
+          type: number
+        Purchased:
+          type: string
+        Expiration:
+          type: string
+        q8version:
+          type: string
+    NewUser:
+      allOf:
+        - $ref: '#/components/schemas/UserInfo'
+        - type: object
+          description: User's profile
+          properties:
+            password:
+              type: string
+              example: 'cleartext'
+            
+    UserInfo:
+      allOf:
+        - $ref: '#/components/schemas/BaseUserInfo'
+        - type: object
+          description: User's profile
+          properties:
+            Username:
+              type: string
+              example: 'admin'
+            Role:
+              type: string
+              enum:
+                - SUPER-ADMIN
+                - ADMIN
+              example: SUPER-ADMIN
+    ResetPasswordRequest:
+      type: object
+      required:
+        - Username
+        - NewPwd
+      properties:
+        Username:
+          type: string
+          description: unique username
+        NewPwd:
+          type: string
+          description: Password
+    UpdatePasswordRequest:
+      type: object
+      required:
+        - Password
+        - NewPwd
+      properties:
+        Password:
+          type: string
+          description: Password
+        NewPwd:
+          type: string
+          description: Password
+    LoginRequest:
+      type: object
+      required:
+        - Username
+        - Password
+      properties:
+        Username:
+          type: string
+          description: Unique username
+        Password:
+          type: string
+          description: Password
+    ModuleId:
+      type: object
+      properties:
+        ModuleId:
+          type: string
+    TerminalId:
+      type: object
+      properties:
+        TerminalId:
+          type: string
+    ConfigLock:
+      type: object
+      properties:
+        ConfigLock:
+          type: boolean
+    IsGroup:
+      type: object
+      properties:
+        IsGroup:
+          type: boolean
+    ModifiedTS:
+      type: object
+      properties:
+        ModifiedTS: #Time Stamp
+          type: integer
+    Favorite:
+      type: object
+      properties:
+        Favorite:
+          type: boolean
+    Name:
+      type: object
+      properties:
+        Name:
+          type: string
+    ParentId:
+      type: object
+      properties:
+        ParentId:
+          type: string
+    Id:
+      type: object
+      properties:
+        Id:
+          type: string
+    AProperties:
+      type: object
+      description: properties of an application
+      properties:
+        Name:
+          type: string
+          description: Display name
+        ParentId:
+          type: string
+      additionalProperties:
+        type: string
+      example:
+        Name: 'text'
+        RdsServerIds: 'text'
+        ShadowTerminals: 'text'
+        GroupType: 'RDP'
+        LoadBalanced: '0'
+        MultiSession: '0'
+        LinkedApp: '0'
+        LinkedAppName: 'text'
+        LinkedAppDirectory: 'txt'
+        LinkedAppCommandOptions: 'text'
+        EnforcePrimary: '0'
+        InstantFailover: '0'
+        MaintainSession: '1'
+        StartSession: '1'
+        ConnType: 'text DEFAULT RDP'
+        ICABrowser: 'text'
+        CitrixPubAppName: 'text'
+        ICAEncryption: 'text DEFAULT Basic'
+        AllowAutoLogin: '1'
+        CPUWeight: '1.0'
+        MemoryWeight: '1.0'
+        SessionWeight: '1.0'
+        MinQueueTime: '0'
+        MaxQueueTime: '120'
+        StickinessEnabled: '1'
+        DisconnectInBackground: '0'
+        IsMoveable: '1'
+        ShadowInteractive: '1'
+        AllowTile: '1'
+        TargetWidth: '1024'
+        TargetHeight: '768'
+        UseOverlays: '0'
+        UseVirtualScreenOverlays: '0'
+        StartVirtualMachines: '0'
+        SuspendVirtualMachines: '0'
+        ShadowScreen: '0'
+        AllowLocalAccess: '1'
+        AllowRemoteAccess: '1'
+        UseScreenSize: '1'
+        SessionWidth: 'integer'
+        SessionHeight: 'integer'
+        UseScreenColorDepth: '1'
+        SessionColorDepth: '16'
+        Scale: '1'
+        MaintainAspectRatio: '0'
+        ScaleDownOnly: '0'
+        UseRDGateway: '0'
+        IgnoreRDGatewayIfLocal: '0'
+    TSProperties:
+      type: object
+      description: properties of an terminal server(group)
+      properties:
+        Name:
+          type: string
+          description: Display name
+        ParentId:
+          type: string
+      additionalProperties:
+        type: string
+      example:
+        NeedToRestart: true
+        Name: '-Alex-BoxPC-138-G00'
+        ParentId: id
+        SupportedConnectionType: 'RDP'
+        AllowAnywhereAccess: 'NO'
+        HostName: 'text'
+        Type: 'text DEFAULT PhysicalServer'
+        VirtualHost: '1'
+        VirtualObjectId: 'text'
+        VirtualObjectType: 'text'
+        IPAddress: 'text'
+        Username: 'text'
+        Password: 'text'
+        Domain: 'text'
+        Metaframe: '0'
+        DeviceServices: '0'
+        RDP: '1'
+        LoadBalanced: '0'
+        MultiSession: '0'
+        ServerUpdate: '8'
+        ProcessUpdate: '5'
+        SessionUpdate: '8'
+        CPUMin: '0.0'
+        CPUMax: '100.0'
+        MemMin: '0.0'
+        MemMax: '100.0'
+        SessionMin: '0'
+        SessionMax: '50'
+        Disabled: '0'
+        CloudId: 'text'
+        Priority: '0'
+        RDPGatewayURL: 'text'
+        RDPGatewayUsername: 'text'
+        RDPGatewayPassword: 'text'
+        UpTime: "25days 9h"
+        Schedules: '1,3' #schedule ids
+        
+    Properties:
+      type: object
+      description: properties of an object
+      properties:
+        Name:
+          type: string
+          description: Display name
+        ParentId:
+          type: string
+      additionalProperties:
+        type: string
+      example:
+        NeedToRestart: true,
+        Name: '-Alex-BoxPC-138-G00'
+        ParentId: id
+        AllowAnywhereAccess: 'NO'
+        AllowClientClose: 'YES'
+        AllowClientSizing: 'YES'
+        AllowExit: 'YES'
+        AllowGroupMovement: 'NO'
+        AllowInteractiveShadow: 'YES'
+        AllowManualLocationSelection: 'NO'
+        AllowRestart: 'NO'
+        AllowShadow: 'YES'
+        AllowSleep: 'YES'
+        AnywhereAccessInactivityTimeout: 60
+        AutoHideSelector: 'YES'
+        BootPriority: 0
+        BootPriorityMaxWait: 0
+        ConfirmLocationEntry: 'NO'
+        ConnectionType: RDP
+        CustomModeline: null
+        DefaultLocation: 0
+        Description: null
+        Disabled: 'NO'
+        DisableKeys: null
+        DisableNLASupport: 'NO'
+        Domain: null
+        EnableGroupHotWindows: 'NO'
+        EnableTiling: 'NO'
+        EnforceBootPriority: 'NO'
+        EnforceFencingForManualLocationSelection: 'NO'
+        EnforcePrimary: 'NO'
+        EnforcePrimaryRetries: 6
+        ExperienceSetting: 'NO'
+        FirmwarePackage: 8 #package name
+        ForceAdminMode: 'NO'
+        FullScreenHotkeyCode: 41
+        FullScreenHotkeyEnabled: 'NO'
+        FullScreenHotkeyState: 4
+        GroupHotkeyNext: 105
+        GroupHotkeyPrev: 99
+        GroupHotkeysEnabled: 'YES'
+        GroupHotkeyState: 4
+        ICAAlternateAddress: 'NO'
+        ICABrowser: null
+        ICAEncryption: Basic
+        IFHotkeyCode: 75
+        IFHotkeyEnabled: DISABLED
+        IFHotkeyState: 4
+        InitialProgramName: null
+        InitialProgramOptions: null
+        InitialProgramWorkingDir: null
+        LocationMainScreen: 1
+        MAC: 7085C213B8D1
+        MainMenuHotkeyCode: 58
+        MainMenuHotkeyEnabled: 'YES'
+        MainMenuHotkeyState: 4
+        MainMonitor: 1
+        MaintainMonitorConnection: 'YES'
+        Model: BoxPC138G
+        Monitor1_Video: 1920x1080 60Hz 64K Colors
+        Monitor1_XPosition: 0
+        Monitor1_YPosition: 0
+        MonitorInterval: 5
+        MouseButtonMapping: 'NONE;NONE;NONE;DisplayNext;NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE'
+        NetworkPCIID: '8086:1502'
+        NumberOfMonitors: 1
+        NumberOfScreens: 3
+        Password: 00096e151a055a6e537832
+        Permissions: null
+        PingRetry: 3
+        PingTimeout: 1
+        PlayLocationSound: 'YES'
+        PlayUserSound: 'YES'
+        PublishedAppName: null
+        RDPApplyKeyCombinations: infullscreen
+        RDPEncryption: null
+        RebootDependentTerminals: 'NO'
+        RedirectCOMPorts: 'NO'
+        RedirectDrives: 'NO'
+        RedirectPrinters: 'NO'
+        RedirectSmartCards: 'NO'
+        RedirectSound: 'NO'
+        RelevanceIdUpdateInterval: 3000
+        Replaceable: 'YES'
+        Schedules: '1,3' #schedule ids
+        Screen1_AllowGroupMovement: 'NO'
+        Screen1_AutoHideSelector: 'YES'
+        Screen1_EmptyScreenBehavior: SWAP
+        Screen1_EnableGroupHotWindows: 'NO'
+        Screen1_EnableTiling: 'NO'
+        Screen1_Height: 1080
+        Screen1_MainMonitor: 1
+        Screen1_MicrosoftExtendedScreen: 'NO'
+        Screen1_MicrosoftMainMonitor: 1
+        Screen1_MouseButtonMapping: NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE;NONE
+        Screen1_OverrideMouseButtonMapping: 'NO'
+        Screen1_SelectorSize: 14
+        Screen1_Applications: '5,2' #application ids
+        Screen1_ShowSelector: 'YES'
+        Screen1_ShowSwapInMenu: 'YES'
+        Screen1_SwapDestination: 0
+        Screen1_TileInactiveTime: 60
+        Screen1_TileInteractive: 'NO'
+        Screen1_TileOnGroupSelectorActivation: 'NO'
+        Screen1_TileOnRightClick: 'NO'
+        Screen1_TileOnStartup: 'NO'
+        Screen1_TileShowGrid: 'YES'
+        Screen1_TileWithMainMenu: 'NO'
+        Screen1_Use_Keyboard: 'YES'
+        Screen1_Use_Mouse: 'YES'
+        Screen1_Width: 1920
+        Screen1_XPosition: 0
+        Screen1_YPosition: 0
+        SecondaryMAC: 7085C213B8D0
+        SelectorSize: 14
+        ShowMainMenu: 'YES'
+        ShowScanDataButton: 'YES'
+        ShowScanRelevanceIdButton: 'YES'
+        ShowSelector: 'YES'
+        ShowStatusMessages: 'YES'
+        ShowTermSecureButton: 'YES'
+        ShowToolBar: 'YES'
+        ShowVirtualKeyboard: 'NO'
+        ShowZoomMap: 'YES'
+        SmartSizing: 'NO'
+        SpecifyThinservers: 'NO'
+        SwapHotkeyCode: 39
+        SwapHotkeyEnabled: 'NO'
+        SwapHotkeyState: 4
+        TerminalEffects: 4294967295
+        TerminalServer: null
+        TerminalServerConnectionTimeout: 10
+        TerminalServerGroup: 5
+        TermSecureMainScreen: 1
+        ThinServers: 1
+        TileHotkeyCode: 28
+        TileHotkeyEnabled: 'YES'
+        TileHotkeyState: 4
+        TileInactiveTime: 60
+        TileInteractive: 'NO'
+        TileOnGroupSelectorActivation: 'NO'
+        TileOnRightClick: 'NO'
+        TileOnStartup: 'NO'
+        TileShowGrid: 'YES'
+        TileWithMainMenu: 'NO'
+        Type: Terminal
+        UseBluetooth: 'NO'
+        UseBSSID: 'NO'
+        UseContextKey: 'NO'
+        UseForceTransferToRestoreDefaultLocation: 'NO'
+        UseGPS: 'NO'
+        UseLocation: 'NO'
+        UseMetaframe: 'NO'
+        UseMultipleWindows: 'NO'
+        UseMultisession: 'YES'
+        UseMultistation: 'NO'
+        UsePublishedApp: 'NO'
+        UseQRCodes: 'YES'
+        Username: arista1
+        UseServerGroups: 'YES'
+        VideoMode: 1920x1080 60Hz 64K Colors
+        VideoPCIID: '8086:0166'
+        VideoPortMapping: 1;2;3;4;5
+        LockOwner: userid
+        DeviceControl: "YES"
+        Favorite: "NO"
+        ModifiedTS: 1234567
+        IsDefault: "YES"
+        Manufacture: "Arista"
+        VideoController: "string"
+        TouchScreenType: "string"
+        ShadowMode: "string"
+        InstalledModules: "1,3"
+        IpAddress: "123.131.241.234"
+        IpAddressMethod: "STATIC" #DHCP
+        NetworkRouter: ""
+        BootQ8Server: "210.20.212.1"
+        SubnetMask: "255.255.0.0"
+        PrimaryQ8Server: "210.20.212.1"
+        SecondaryQ8Server: "210.20.212.1"
+        CpuVendor: "Intel"
+        CpuName: "Core7"
+        CpuClockSpeed: "2400"
+        CpuCacheSize: ""
+        CpuMips: "524"
+        CpuLoadPercentage: "35"
+        TotalMemory: "2048" #MB
+        FreeMemory: "10241" #MB
+        HardwareBootRomVersion: "7.4"
+        BootLoaderVersion: "2.4"
+        UpTime: "25 days, 7h, 45 mins"
+        ConfigPending: false
+        

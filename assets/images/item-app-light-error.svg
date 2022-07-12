@@ -1,0 +1,25 @@
+<svg id="Component_105_66" data-name="Component 105 – 66" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #b4b4b4;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        fill: #dc3545;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <path id="Subtraction_25" data-name="Subtraction 25" class="cls-1" d="M1338.88,5883.379H1332a2,2,0,0,1-2-2v-13.4a2,2,0,0,1,2-2h16.66a2,2,0,0,1,2,2v7.88a7.007,7.007,0,0,0-2-1.849v-2.471H1332v9.94h6.161a6.953,6.953,0,0,0,.718,1.9Zm-.99-15.9a1.281,1.281,0,1,0,1.186.8A1.279,1.279,0,0,0,1337.89,5867.478Zm-4.15,0a1.281,1.281,0,1,0,1.279,1.281A1.282,1.282,0,0,0,1333.74,5867.478Zm4.33,11.5h-4.032v-2h4.635a6.957,6.957,0,0,0-.6,2Zm1.183-3h-5.216v-2h7.354a7.083,7.083,0,0,0-2.138,2Z" transform="translate(-1328 -5862.978)"/>
+  <path id="Path_292" data-name="Path 292" class="cls-2" d="M0,0H24V24H0Z"/>
+  <path id="Path_653" data-name="Path 653" class="cls-3" d="M6,0A6,6,0,1,1,0,6,6,6,0,0,1,6,0Z" transform="translate(11 11)"/>
+  <path id="Path_1329" data-name="Path 1329" class="cls-4" d="M11,5.6,10.4,5,8,7.4,5.6,5,5,5.6,7.4,8,5,10.4l.6.6L8,8.6,10.4,11l.6-.6L8.6,8Z" transform="translate(9 9)"/>
+</svg>

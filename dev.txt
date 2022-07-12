@@ -1,0 +1,65 @@
+Setup
+	install nodejs 11
+	npm install
+	npm install -g webpack-cli
+
+	to change api(and ws) endpoint
+		--env.api=/api --env.ws=/api
+        use command:
+        	npm run dev --  --env.api=http://<ip-address>:8085/api --env.ws=ws://<ip-address>:8085/api
+
+	start local server: npm run dev
+	start local server with code optimization, minimizer, hashname: npm run dev -- --env.production=true
+
+	build assets: npm run build
+	build assets without  code optimization, minimizer, hashname: npm run build -- --env.production=false
+
+	If something wrong check version.txt with "npm ls --depth=0"
+
+Dev Guide lines
+	common actions(logics) are put in middleware
+	When new dependency is introduced always use * as version and export current version info into the version.txt 
+Others
+	check if the port is used lsof -ti:8081
+
+	npm i html-webpack-plugin@next
+
+	Generate js api client
+		npm install @openapitools/openapi-generator-cli -g
+		openapi-generator generate -i openapi-0.0.6.yaml -g javascript -o ./client --skip-validate-spec -c config.json
+		
+Mockserver
+	node index.js 8085 --harmony
+
+---------------------------------------------------------------
+www -> real server which include webui build
+		./q8server/www/assets (not include .db file)
+		./q8server/www/index.html
+
+---------- New npm cmd on Windows ----------
+Build (product mode)
+	npm run build
+Run Server
+	Mock server
+		npm run mock-server
+	Real server
+		npm run server
+Debug
+	Mock Server
+		npm run dev
+	Real Server
+		npm run dev2
+
+Debug with server
+	Mock Server
+		npm run dev2
+		npm run mock-server
+	Server
+		npm run dev
+		npm run server
+
+*** After Debug, if need to release, need use ***
+	npm run build -> Make webui with product mode
+
+
+

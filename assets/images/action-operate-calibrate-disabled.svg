@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="Component_171_293" width="42" height="42" viewBox="0 0 42 42">
+    <defs>
+        <style>
+            .cls-4{fill:none;stroke:#595758;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}
+        </style>
+    </defs>
+    <path id="round" fill="#ddd" d="M21 0A21 21 0 1 1 0 21 21 21 0 0 1 21 0z"/>
+    <g id="Group_2203" opacity="0.2">
+        <g id="Group_2202" transform="translate(9.056 9.087)">
+            <path id="Path_898" fill="#595758" d="M14.139 13.172l-1.565-1.565 1.056-1.057a.55.55 0 0 0-.389-.94H9.57a.55.55 0 0 0-.55.551v3.67a.55.55 0 0 0 .34.509.532.532 0 0 0 .21.042.555.555 0 0 0 .39-.161l1.056-1.057 1.565 1.565a1.1 1.1 0 1 0 1.558-1.557z"/>
+            <path id="Path_899" d="M2.9 5.829v12.342a1.958 1.958 0 0 1 1.96 1.958.2.2 0 0 1 0 .024h14.171v-.024a1.958 1.958 0 0 1 1.958-1.958V5.829a1.958 1.958 0 0 1-1.958-1.958H4.86A1.958 1.958 0 0 1 2.9 5.829z" class="cls-4"/>
+            <circle id="Ellipse_101" cx="1.958" cy="1.958" r="1.958" fill="#595758" stroke="#595758" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px" transform="translate(.944 1.913)"/>
+            <circle id="Ellipse_102" cx="1.958" cy="1.958" r="1.958" class="cls-4" transform="translate(19.029 1.913)"/>
+            <circle id="Ellipse_103" cx="1.958" cy="1.958" r="1.958" class="cls-4" transform="translate(.944 18.171)"/>
+            <circle id="Ellipse_104" cx="1.958" cy="1.958" r="1.958" class="cls-4" transform="translate(19.029 18.171)"/>
+        </g>
+    </g>
+</svg>

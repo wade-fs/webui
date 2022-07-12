@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 62 62">
+    <defs>
+        <style>
+            .cls-1{fill:#fff}.cls-1,.cls-2{stroke:#b4b4b4;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}.cls-2,.cls-6{fill:none}.cls-5{stroke:none}
+        </style>
+    </defs>
+    <g id="icon_termcap" transform="translate(1 1)">
+        <g id="Group_2412">
+            <g id="Rectangle_490" class="cls-1" transform="translate(9.019 9.019)">
+                <rect width="41.963" height="41.963" class="cls-5" rx="10"/>
+                <rect width="39.963" height="39.963" x="1" y="1" class="cls-6" rx="9"/>
+            </g>
+            <g id="Rectangle_491" class="cls-1" transform="rotate(90 15.46 30)">
+                <rect width="30.92" height="30.92" class="cls-5" rx="5"/>
+                <rect width="28.92" height="28.92" x="1" y="1" class="cls-6" rx="4"/>
+            </g>
+        </g>
+        <g id="Group_2415">
+            <g id="Group_2413">
+                <path id="Line_116" d="M0 10.061L0 0" class="cls-2" transform="translate(18.268)"/>
+                <path id="Line_117" d="M0 5.906L0 0" class="cls-2" transform="translate(24.134 4.156)"/>
+                <path id="Line_118" d="M0 10.061L0 0" class="cls-2" transform="translate(30)"/>
+                <path id="Line_119" d="M0 10.061L0 0" class="cls-2" transform="translate(41.732)"/>
+                <path id="Line_120" d="M0 5.906L0 0" class="cls-2" transform="translate(35.866 4.156)"/>
+            </g>
+            <g id="Group_2414">
+                <path id="Line_121" d="M0 0L0 10.061" class="cls-2" transform="translate(18.268 49.939)"/>
+                <path id="Line_122" d="M0 0L0 5.906" class="cls-2" transform="translate(24.134 49.939)"/>
+                <path id="Line_123" d="M0 0L0 10.061" class="cls-2" transform="translate(30 49.939)"/>
+                <path id="Line_124" d="M0 0L0 10.061" class="cls-2" transform="translate(41.732 49.939)"/>
+                <path id="Line_125" d="M0 0L0 5.906" class="cls-2" transform="translate(35.866 49.939)"/>
+            </g>
+        </g>
+        <g id="Group_2418">
+            <g id="Group_2416">
+                <path id="Line_126" d="M10.061 0L0 0" class="cls-2" transform="translate(0 18.268)"/>
+                <path id="Line_127" d="M5.906 0L0 0" class="cls-2" transform="translate(4.156 24.134)"/>
+                <path id="Line_128" d="M10.061 0L0 0" class="cls-2" transform="translate(0 30)"/>
+                <path id="Line_129" d="M10.061 0L0 0" class="cls-2" transform="translate(0 41.732)"/>
+                <path id="Line_130" d="M5.906 0L0 0" class="cls-2" transform="translate(4.156 35.866)"/>
+            </g>
+            <g id="Group_2417">
+                <path id="Line_131" d="M0 0L10.061 0" class="cls-2" transform="translate(49.939 18.268)"/>
+                <path id="Line_132" d="M0 0L5.906 0" class="cls-2" transform="translate(49.939 24.134)"/>
+                <path id="Line_133" d="M0 0L10.061 0" class="cls-2" transform="translate(49.939 30)"/>
+                <path id="Line_134" d="M0 0L10.061 0" class="cls-2" transform="translate(49.939 41.732)"/>
+                <path id="Line_135" d="M0 0L5.906 0" class="cls-2" transform="translate(49.939 35.866)"/>
+            </g>
+        </g>
+        <path id="Rectangle_492" fill="#80bc00" stroke="#80bc00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px" d="M0 0H5.46V5.46H0z" transform="translate(21.404 21.404)"/>
+        <path id="Line_136" d="M0 0L5.46 0" class="cls-2" transform="translate(33.136 21.404)"/>
+        <path id="Line_137" d="M0 0L5.46 0" class="cls-2" transform="translate(33.136 26.864)"/>
+        <path id="Line_138" d="M0 0L5.46 0" class="cls-2" transform="translate(21.404 33.136)"/>
+        <path id="Line_139" d="M0 0L5.46 0" class="cls-2" transform="translate(21.404 38.596)"/>
+        <path id="Path_1025" d="M39.325 32.289V38.6h-6.189" class="cls-2"/>
+        <circle id="Ellipse_177" cx="1.377" cy="1.377" r="1.377" fill="#b4b4b4" transform="translate(32.64 31.759)"/>
+    </g>
+</svg>

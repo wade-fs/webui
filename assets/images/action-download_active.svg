@@ -1,0 +1,26 @@
+<svg id="download_active" xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #80bc00;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <path id="round" class="cls-1" d="M21,0A21,21,0,1,1,0,21,21,21,0,0,1,21,0Z" transform="translate(0 42) rotate(-90)"/>
+  <g id="icon_download" transform="translate(9 9)">
+    <g id="Group_2244" data-name="Group 2244">
+      <rect id="Rectangle_444" data-name="Rectangle 444" class="cls-2" width="24" height="24"/>
+    </g>
+    <g id="Group_2245" data-name="Group 2245">
+      <path id="Path_904" data-name="Path 904" class="cls-3" d="M5,20H19V18H5ZM19,9H15V3H9V9H5l7,7Z"/>
+    </g>
+  </g>
+</svg>

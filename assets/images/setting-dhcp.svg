@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_DHCP" width="60" height="60" viewBox="0 0 60 60">
+    <defs>
+        <style>
+            .cls-1,.cls-7{fill:none}.cls-1{stroke:#b4b4b4}.cls-1,.cls-3{stroke-linecap:round}.cls-1{stroke-linejoin:round;stroke-width:2px}.cls-3{fill:#fff}.cls-6,.cls-8{stroke:none}.cls-8{fill:#b4b4b4}
+        </style>
+    </defs>
+    <g id="Ellipse_142" fill="#fff" stroke="#b4b4b4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px" transform="translate(2.862)">
+        <ellipse cx="4.719" cy="4.715" class="cls-6" rx="4.719" ry="4.715"/>
+        <ellipse cx="4.719" cy="4.715" class="cls-7" rx="3.719" ry="3.715"/>
+    </g>
+    <g id="Path_977" class="cls-3">
+        <path d="M4.719 8.43C2.669 8.43 1 6.762 1 4.714 1 2.666 2.668 1 4.719 1c2.05 0 3.718 1.666 3.718 3.715 0 2.048-1.668 3.714-3.718 3.714z" class="cls-6" transform="translate(0 50.571)"/>
+        <path d="M4.719 2C3.219 2 2 3.218 2 4.715c0 1.497 1.22 2.714 2.719 2.714 1.499 0 2.718-1.217 2.718-2.714C7.438 3.218 6.218 2 4.72 2m0-2c2.606 0 4.718 2.11 4.718 4.715 0 2.604-2.112 4.714-4.718 4.714S0 7.32 0 4.715C0 2.11 2.113 0 4.719 0z" class="cls-8" transform="translate(0 50.571)"/>
+    </g>
+    <g id="Path_978" class="cls-3">
+        <path d="M4.719 8.43C2.669 8.43 1 6.762 1 4.714 1 2.666 2.668 1 4.719 1c2.05 0 3.718 1.666 3.718 3.715 0 2.048-1.668 3.714-3.718 3.714z" class="cls-6" transform="translate(25.281 50.571)"/>
+        <path d="M4.719 2C3.219 2 2 3.218 2 4.715c0 1.497 1.22 2.714 2.719 2.714 1.499 0 2.718-1.217 2.718-2.714C7.438 3.218 6.218 2 4.72 2m0-2c2.606 0 4.718 2.11 4.718 4.715 0 2.604-2.112 4.714-4.718 4.714S0 7.32 0 4.715C0 2.11 2.113 0 4.719 0z" class="cls-8" transform="translate(25.281 50.571)"/>
+    </g>
+    <g id="Path_979" class="cls-3">
+        <path d="M4.719 8.43C2.669 8.43 1 6.762 1 4.714 1 2.666 2.668 1 4.719 1c2.05 0 3.718 1.666 3.718 3.715 0 2.048-1.668 3.714-3.718 3.714z" class="cls-6" transform="translate(50.563 50.571)"/>
+        <path d="M4.719 2C3.219 2 2 3.218 2 4.715c0 1.497 1.22 2.714 2.719 2.714 1.499 0 2.718-1.217 2.718-2.714C7.438 3.218 6.218 2 4.72 2m0-2c2.606 0 4.718 2.11 4.718 4.715 0 2.604-2.112 4.714-4.718 4.714S0 7.32 0 4.715C0 2.11 2.113 0 4.719 0z" class="cls-8" transform="translate(50.563 50.571)"/>
+    </g>
+    <path id="Path_972" d="M7.581 8.468v14.019h7.281" class="cls-1" transform="translate(0 .035)"/>
+    <path id="Path_973" d="M55.281 13.225v13.092h-8.9" class="cls-1" transform="translate(0 .035)"/>
+    <path id="Path_974" d="M9.438 55.7h7.742V43.854" class="cls-1" transform="translate(0 .035)"/>
+    <path id="Path_975" d="M50.543 55.7H42.8V44.37" class="cls-1" transform="translate(0 .035)"/>
+    <path id="Line_100" d="M0 6.141L0 0" class="cls-1" transform="translate(30 44.43)"/>
+    <path id="Path_976" fill="#80bc00" d="M54.131 34.1a10.268 10.268 0 0 0-9.823-10.249 11.61 11.61 0 0 0-21.5-5.216 9.518 9.518 0 0 0-11.727 10.654 7.772 7.772 0 0 0-5.212 7.332c0 4.092 2.069 7.589 6.095 7.744 1.178.046 4.718 0 4.718 0h25.162s2.713-.016 2.979-.026c5.447-.19 9.308-4.739 9.308-10.239z" transform="translate(0 .035)"/>
+    <g id="Ellipse_146" fill="#80bc00" stroke="#80bc00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px" transform="translate(50.563 3.83)">
+        <ellipse cx="4.719" cy="4.715" class="cls-6" rx="4.719" ry="4.715"/>
+        <ellipse cx="4.719" cy="4.715" class="cls-7" rx="3.719" ry="3.715"/>
+    </g>
+</svg>

@@ -1,0 +1,213 @@
+input[type="checkbox"] {
+  display: inline-block;
+  position: relative;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  top: 4px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  margin-right: 10px;
+  color: #fff;
+  background: #fff;
+  border: 1px solid var(--primary-gray);
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 1;
+  &:checked {
+    background: var(--text-color);
+    border: 1px solid var(--text-color);
+    &::before {
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      content: "✔";
+      font-size: 18px;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+input[type="checkbox"].main-page-list-checkbox {
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  margin-left: 8px;
+}
+
+input[type="radio"] {
+  display: inline-block;
+  position: relative;
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin: 0;
+  margin-top: -5px;
+  margin-right: 5px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 2px solid var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+  &:checked {
+    outline: none;
+    &::before {
+      content: "";
+      display: block;
+      height: 12px;
+      width: 12px;
+      background-color: var(--text-color);
+      border-radius: 50%;
+      outline: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.input-wrapper {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+}
+
+.display-main-monitor {
+  input[type="radio"] {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: url(../../../assets/images/icon-star-gray.svg) no-repeat center
+      center;
+    background-size: 24px 24px;
+    user-select: none;
+    border: none;
+    &:checked {
+      width: 30px;
+      height: 30px;
+      background: url(../../../assets/images/icon-star-green.svg) no-repeat
+        center center;
+      background-size: 30px 30px;
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.input-and-btn {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 240px;
+  height: fit-content;
+  line-height: 32px;
+  font-size: 12px;
+  color: var(--text-color);
+  box-sizing: border-box;
+  p {
+    margin: 0;
+  }
+  button {
+    position: absolute;
+    right: 0px;
+    padding: 0px 12px;
+    margin: -6px 0px 0px 0px;
+    font-size: 12px;
+  }
+}
+
+.subject {
+  width: 100%;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-color);
+  padding-bottom: 16px;
+  margin-right: 24px;
+  .m-right {
+    margin-right: 16px;
+  }
+}
+
+.msg {
+  display: block;
+  width: fit-content;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: normal;
+  color: var(--primary-color);
+  + .err {
+    color: var(--primary-error);
+  }
+}
+
+.err {
+  color: var(--primary-error);
+}
+
+.text-b-lg {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.select-title {
+  text-decoration: underline;
+  text-underline-offset: 1px;
+}
+
+.maximum-30-charactor {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  padding-left: 29px;
+}
+
+.align-left {
+  text-align: left;
+  label {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    font-weight: 500;
+  }
+}
+
+.align-left-multi-line {
+  padding-top: 12px;
+  font-size: 14px;
+  color: var(--text-color);
+  label {
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 500;
+    line-height: 1;
+    .maximum {
+      padding-left: 38px;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--primary-gray);
+      font-style: italic;
+    }
+    p {
+      margin: 0;
+      display: inline-block;
+    }
+  }
+  span {
+    font-size: 12px;
+  }
+}

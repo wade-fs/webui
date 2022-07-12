@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_license" width="60" height="60" viewBox="0 0 60 60">
+    <defs>
+        <style>
+            .cls-2{stroke:#b4b4b4;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}.cls-2,.cls-7{fill:none}.cls-6{stroke:none}
+        </style>
+    </defs>
+    <g id="Rectangle_482" fill="#fff" stroke="#b4b4b4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px">
+        <path d="M0 0H54.138V49.24H0z" class="cls-6"/>
+        <path d="M1 1H53.138V48.24H1z" class="cls-7"/>
+    </g>
+    <path id="Line_111" d="M0 0L24.833 0" class="cls-2" transform="translate(7.383 7.333)"/>
+    <path id="Line_112" d="M0 0L15.333 0" class="cls-2" transform="translate(7.383 13.738)"/>
+    <path id="Line_113" d="M0 0L11.167 0" class="cls-2" transform="translate(7.383 20.143)"/>
+    <path id="Line_114" d="M0 0L11.167 0" class="cls-2" transform="translate(7.383 26.548)"/>
+    <path id="Line_115" d="M0 0L16.333 0" class="cls-2" transform="translate(7.383 41.35)"/>
+    <g id="Path_984" fill="#80bc00" stroke-miterlimit="10">
+        <path d="M54.301 57.763l-6.494-5.277-.63-.512-.631.512-6.495 5.277V39.345h14.25v18.418z" class="cls-6" transform="translate(0 .136)"/>
+        <path fill="#fff" d="M53.301 55.662V40.345h-12.25v15.317l4.864-3.952 1.261-1.024 1.262 1.024 4.863 3.952m2 4.202l-8.125-6.601-8.125 6.601V38.345h16.25v21.52z" transform="translate(0 .136)"/>
+    </g>
+    <g id="Ellipse_149" fill="#80bc00" stroke="#fff" stroke-miterlimit="10" stroke-width="2px" transform="translate(34.353 20.278)">
+        <ellipse cx="12.824" cy="12.969" class="cls-6" rx="12.824" ry="12.969"/>
+        <ellipse cx="12.824" cy="12.969" class="cls-7" rx="11.824" ry="11.969"/>
+    </g>
+    <path id="Path_985" fill="#fff" d="M44.645 36.231l-3.322-3.36-1.108 1.12 4.43 4.481 9.493-9.6-1.108-1.12z" transform="translate(0 .136)"/>
+</svg>

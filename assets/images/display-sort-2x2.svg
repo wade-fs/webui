@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="display-sort-2x2" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-3{fill:#595758}
+        </style>
+    </defs>
+    <g id="Group_4333" transform="translate(.5 .5)">
+        <rect id="Rectangle_521" width="6" height="6" fill="#80bc00" rx="2" transform="rotate(-90 7.5 3)"/>
+        <rect id="Rectangle_522" width="6" height="6" class="cls-3" rx="2" transform="rotate(-90 12 -1.5)"/>
+        <rect id="Rectangle_523" width="6" height="6" class="cls-3" rx="2" transform="rotate(-90 12 7.5)"/>
+        <rect id="Rectangle_524" width="6" height="6" class="cls-3" rx="2" transform="rotate(-90 16.5 3)"/>
+    </g>
+</svg>

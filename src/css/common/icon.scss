@@ -1,0 +1,1485 @@
+@mixin default-icon-hover {
+  display: block;
+  position: absolute;
+  width: min-content;
+  height: 14px;
+  line-height: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  left: -10px;
+  bottom: -40px;
+  background-color: var(--primary-gray);
+  color: white;
+  text-shadow: none;
+  white-space: nowrap;
+  z-index: 99;
+}
+@mixin main-page-action-hover {
+  @include default-icon-hover;
+  top: 66px;
+  left: -20px;
+}
+@mixin menu-icon {
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  top: 0px;
+  right: 0px;
+}
+@mixin header-icon {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+@mixin icon-sm {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+@mixin icon-md {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+@mixin icon-lg {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+@mixin info-icon {
+  @include icon-sm;
+  margin-right: 8px;
+}
+@mixin app-arrow-item {
+  @include icon-md;
+  margin: 12px 0px;
+  top: 0px;
+  right: 0px;
+}
+@mixin main-actions-icon {
+  display: inline-block;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+}
+@mixin main-actions-icon-sm {
+  @include main-actions-icon;
+  width: 42px;
+  height: 42px;
+  margin-right: 16px;
+}
+@mixin list-actions-icon {
+  @include main-actions-icon;
+  width: 42px;
+  height: 42px;
+}
+@mixin operate-icons {
+  @include list-actions-icon;
+  position: relative;
+  margin-right: 24px;
+}
+@mixin item-actions-sm {
+  @include icon-sm;
+  display: inline-flex;
+  position: relative;
+  cursor: pointer;
+}
+@mixin main-list-item {
+  @include icon-sm;
+}
+@mixin main-list-item-sm {
+  @include main-list-item;
+  width: 12px;
+  height: 12px;
+  border-radius: 10px;
+  margin-left: 12px;
+}
+@mixin setting-main-icon {
+  width: 80px;
+  height: 80px;
+  margin-right: 25px;
+  margin-left: 10px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+@mixin inline-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+@mixin arrow-icon {
+  @include icon-sm;
+  display: inline-flex;
+  background-image: url(../../../assets/images/arrow-up.svg);
+}
+
+@mixin dhcp-arrow-icon {
+  width: 42px;
+  height: 42px;
+  background-repeat: no-repeat;
+}
+
+@mixin quick-switch-img {
+  position: fixed;
+  width: 100px;
+  height: 38px;
+  left: 46%;
+  z-index: 99;
+  background-size: cover;
+  cursor: pointer;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.device-icon,
+.device-icon-hidden,
+.user-icon,
+.help-icon {
+  @include header-icon;
+}
+
+.menu-terminal,
+.menu-terminal-active,
+.menu-app-server,
+.menu-app-server-active,
+.menu-app,
+.menu-app-active,
+.menu-log,
+.menu-log-active,
+.menu-setting,
+.menu-setting-active {
+  @include menu-icon;
+}
+
+.action-edit,
+.list-action-add-disable,
+.list-action-copy,
+.list-action-delete,
+.list-action-delete-disabled,
+.list-action-setting,
+.list-action-favorite,
+.list-action-favorite-active,
+.list-action-download,
+.list-action-operates {
+  @include list-actions-icon;
+}
+
+.editor-add,
+.editor-copy,
+.editor-delete,
+.editor-delete-disabled,
+.editor-favorite,
+.editor-favorite-active,
+.editor-operate-actions,
+.editor-operate-calibrate,
+.editor-operate-reboot,
+.editor-operate-restart,
+.editor-operate-restart-alert,
+.editor-operate-disable,
+.editor-operate-enable,
+.editor-operate-power-on,
+.editor-operate-power-off,
+.editor-operate-calibrate-disabled,
+.editor-operate-reboot-disabled,
+.editor-operate-restart-disabled,
+.editor-operate-disable-disabled,
+.editor-operate-power-disabled,
+.editor-operate-close {
+  @include icon-md;
+  width: 42px;
+  height: 42px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.close:hover::after,
+.modal-return-icon:hover::after,
+.device-icon-hidden:hover::after,
+.device-icon:hover::after,
+.help-icon:hover::after,
+.user-icon:hover::after,
+.list-lock-icon:hover::after,
+.list-download-icon:hover::after,
+.list-copy-icon:hover::after,
+.action-edit-sm:hover::after,
+.action-delete-sm:hover::after,
+.editor-add:hover::after,
+.editor-copy:hover::after,
+.editor-delete:hover::after,
+.editor-delete-disabled:hover::after,
+.editor-favorite:hover::after,
+.editor-favorite-active:hover::after,
+.editor-operate-actions:hover::after,
+.editor-operate-calibrate:hover::after,
+.editor-operate-reboot:hover::after,
+.editor-operate-restart:hover::after,
+.editor-operate-restart-alert:hover::after,
+.editor-operate-disable:hover::after,
+.editor-operate-enable:hover::after,
+.editor-operate-power-on:hover::after,
+.editor-operate-power-off:hover::after,
+.operate-power-on:hover::after,
+.operate-power-off:hover::after,
+.operate-disable:hover::after,
+.operate-enable:hover::after,
+.operate-restart:hover::after,
+.operate-restart-alert:hover::after,
+.operate-reboot:hover::after,
+.operate-calibrate:hover::after,
+.action-edit:hover::after,
+.list-action-favorite:hover::after,
+.list-action-favorite-active:hover::after,
+.list-action-copy:hover::after,
+.list-action-delete:hover::after,
+.list-action-delete-disabled:hover::after,
+.list-action-setting:hover::after,
+.list-action-operates:hover::after,
+.list-action-download:hover::after,
+.operate-close:hover::after {
+  @include default-icon-hover;
+}
+
+.operate-close,
+.operate-power-on,
+.operate-power-off,
+.operate-power-disabled,
+.operate-disable,
+.operate-enable,
+.operate-disable-disabled,
+.operate-restart,
+.operate-restart-alert,
+.operate-restart-disabled,
+.operate-reboot,
+.operate-reboot-disabled,
+.operate-calibrate,
+.operate-calibrate-disabled {
+  @include operate-icons;
+}
+
+.item-terminal,
+.item-terminal-active,
+.item-terminal-active-busy,
+.item-terminal-active-disabled,
+.item-terminal-active-disabled-restart,
+.item-terminal-active-restart,
+.item-terminal-booting,
+.item-terminal-booting-disabled,
+.item-terminal-booting-nolic,
+.item-terminal-error,
+.item-terminal-error-disabled,
+.item-terminal-error-disabled-restart,
+.item-terminal-error-restart,
+.item-terminal-off,
+.item-terminal-off-disabled,
+.item-rds-server,
+.item-rds-server-error,
+.item-rds-server-disabled,
+.item-app,
+.item-app-override,
+.item-app-error,
+.header-terminal-active,
+.header-terminal-active-busy,
+.header-terminal-active-disabled,
+.header-terminal-active-disabled-restart,
+.header-terminal-active-restart,
+.header-terminal-booting,
+.header-terminal-booting-disabled,
+.header-terminal-booting-nolic,
+.header-terminal-error,
+.header-terminal-error-disabled,
+.header-terminal-error-disabled-restart,
+.header-terminal-error-restart,
+.header-terminal-off,
+.header-terminal-off-disabled,
+.header-app,
+.header-app-error,
+.header-rds-server,
+.header-rds-server-error,
+.header-rds-server-disabled,
+.folder-item,
+.favrite-folder-item,
+.add-side,
+.arrow-up,
+.expand-item,
+.collapse-item {
+  @include icon-sm;
+}
+
+.action-edit-sm,
+.action-delete-sm {
+  @include item-actions-sm;
+  &[data-hidden="true"] {
+    visibility: hidden;
+  }
+}
+
+.list-action-favorite:hover::after,
+.list-action-favorite-active:hover::after,
+.list-action-copy:hover::after,
+.list-action-delete:hover::after,
+.list-action-delete-disabled:hover::after,
+.list-action-setting:hover::after,
+.list-action-operates:hover::after,
+.list-action-download:hover::after,
+.operate-close:hover::after {
+  top: 50px;
+  left: -9px;
+}
+
+.operate-power-on:hover::after,
+.operate-power-off:hover::after,
+.operate-disable:hover::after,
+.operate-enable:hover::after,
+.operate-restart:hover::after,
+.operate-restart-alert:hover::after,
+.operate-reboot:hover::after,
+.operate-calibrate:hover::after {
+  top: 50px;
+  left: -16px;
+}
+
+.login-logo {
+  position: relative;
+  width: 660px;
+  height: 100%;
+  top: 46px;
+  background-image: url(../../../assets/images/vista-logo-straight.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.login-user {
+  width: 60px;
+  height: 60px;
+  background-image: url(../../../assets/images/main-login-user.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.main-header-logo {
+  position: absolute;
+  width: 260px;
+  height: 80px;
+  background-image: url(../../../assets/images/vista-logo-horizontal-white.svg);
+  background-repeat: no-repeat;
+  left: 34px;
+  top: 18px;
+}
+
+.main-ws-error {
+  @include info-icon;
+  background-image: url(../../../assets/images/main-ws-error.svg);
+}
+.main-ws-info {
+  @include info-icon;
+  background-image: url(../../../assets/images/main-ws-info.svg);
+}
+
+.infobar-error {
+  @include info-icon;
+  background-image: url(../../../assets/images/infobar-error.svg);
+}
+.infobar-success {
+  @include info-icon;
+  background-image: url(../../../assets/images/infobar-success.svg);
+}
+.infobar-warning {
+  @include info-icon;
+  background-image: url(../../../assets/images/infobar-warning.svg);
+}
+
+.device-icon {
+  width: 56px;
+  height: 56px;
+  background-image: url(../../../assets/images/main-header-device.svg);
+  &:hover::after {
+    content: "Unsetting device";
+    left: -20px;
+  }
+}
+.device-icon-hidden {
+  width: 56px;
+  height: 56px;
+  background-image: url(../../../assets/images/main-header-device_disabled.svg);
+  &:hover::after {
+    content: "Unsetting device";
+    left: -20px;
+  }
+}
+.user-icon {
+  background-image: url(../../../assets/images/main-header-user.svg);
+  &:hover::after {
+    content: "User";
+  }
+}
+.help-icon {
+  background-image: url(../../../assets/images/main-header-help.svg);
+  &:hover::after {
+    content: "Help";
+  }
+}
+
+.menu-terminal {
+  background-image: url(../../../assets/images/menu-terminal.svg);
+}
+.menu-terminal-active {
+  background-image: url(../../../assets/images/menu-terminal-active.svg);
+}
+.menu-app-server {
+  background-image: url(../../../assets/images/menu-app-server.svg);
+}
+.menu-app-server-active {
+  background-image: url(../../../assets/images/menu-app-server-active.svg);
+}
+.menu-app {
+  background-image: url(../../../assets/images/menu-app.svg);
+}
+.menu-app-active {
+  background-image: url(../../../assets/images/menu-app-active.svg);
+}
+.menu-log {
+  background-image: url(../../../assets/images/menu-log.svg);
+}
+.menu-log-active {
+  background-image: url(../../../assets/images/menu-log-active.svg);
+}
+.menu-setting {
+  background-image: url(../../../assets/images/menu-setting.svg);
+}
+.menu-setting-active {
+  background-image: url(../../../assets/images/menu-setting-active.svg);
+}
+
+.close {
+  @include icon-md;
+  float: right;
+  margin-right: 10px;
+  background-image: url(../../../assets/images/action-operate-close_hover.svg);
+  cursor: pointer;
+  &:hover::after {
+    content: "Close";
+  }
+}
+.action-edit {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+  background-image: url(../../../assets/images/action-edit.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-edit_hover.svg);
+  }
+  &:hover::after {
+    content: "Edit";
+    left: -2px;
+    bottom: -34px;
+  }
+}
+.action-edit-sm {
+  background-image: url(../../../assets/images/action-edit-sm.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-edit-sm_hover.svg);
+  }
+  &:hover::after {
+    content: "Edit";
+    bottom: -3px;
+    left: -60px;
+  }
+}
+.action-delete-sm {
+  background-image: url(../../../assets/images/action-delete-sm.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-delete-sm_hover.svg);
+  }
+  &:hover::after {
+    content: "Delete";
+  }
+}
+
+.editor-add {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  margin-right: 3px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url(../../../assets/images/action-add.svg);
+  cursor: pointer;
+  position: relative;
+  &[data-hidden="true"] {
+    visibility: hidden;
+  }
+  &:hover {
+    background-image: url(../../../assets/images/action-add_hover.svg);
+    &:hover:after {
+      content: "Add";
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      position: absolute;
+      width: min-content;
+      white-space: nowrap;
+      padding: 6px 12px;
+      background-color: #595757;
+      color: white;
+      top: 7px;
+      left: -60px;
+      z-index: 99;
+    }
+  }
+}
+
+.editor-copy {
+  background: url(../../../assets/images/action-copy-white.svg);
+  &:hover {
+    background: url(../../../assets/images/action-copy_hover.svg);
+  }
+  &:hover::after {
+    content: "Copy";
+  }
+}
+.editor-favorite {
+  background: url(../../../assets/images/action-favorite-white.svg);
+  &:hover {
+    background: url(../../../assets/images/action-favorite_hover.svg);
+  }
+  &:hover::after {
+    content: "Favorite";
+  }
+}
+.editor-favorite-active {
+  background: url(../../../assets/images/action-favorite-white-active.svg);
+  &:hover {
+    background: url(../../../assets/images/action-favorite_hover.svg);
+  }
+  &:hover::after {
+    content: "Favorite";
+  }
+}
+.editor-delete {
+  background: url(../../../assets/images/action-delete-white.svg);
+  &:hover {
+    background: url(../../../assets/images/action-delete_hover.svg);
+  }
+  &:hover::after {
+    content: "Delete";
+  }
+}
+.editor-delete-disabled {
+  background-image: url(../../../assets/images/action-delete-disabled.svg);
+  cursor: default;
+  &:hover::after {
+    content: "Delete";
+  }
+}
+.editor-operate-actions-alert {
+  position: relative;
+  float: right;
+  width: 10px;
+  height: 10px;
+  background-color: var(--primary-error);
+  border-radius: 5px;
+}
+.editor-operate-close {
+  background-image: url(../../../assets/images/action-operate-close.svg);
+  margin-right: 0px;
+  &:hover {
+    background-image: url(../../../assets/images/action-operate-close_hover.svg);
+  }
+}
+.editor-operate-calibrate {
+  background-image: url(../../../assets/images/action-operate-calibrate.svg);
+  &:hover::after {
+    content: "Calibrate";
+  }
+}
+.editor-operate-calibrate-disabled {
+  background-image: url(../../../assets/images/action-operate-calibrate-disabled.svg);
+}
+.editor-operate-reboot {
+  background-image: url(../../../assets/images/action-operate-reboot.svg);
+  &:hover::after {
+    content: "Reboot";
+  }
+}
+.editor-operate-reboot-disabled {
+  background-image: url(../../../assets/images/action-operate-reboot-disabled.svg);
+}
+.editor-operate-restart {
+  background-image: url(../../../assets/images/action-operate-restart.svg);
+  &:hover::after {
+    content: "Restart";
+  }
+}
+.editor-operate-restart-alert {
+  background-image: url(../../../assets/images/action-operate-restart-alert.svg);
+  &:hover::after {
+    content: "Restart";
+  }
+}
+.editor-operate-restart-disabled {
+  background-image: url(../../../assets/images/action-operate-restart-disabled.svg);
+}
+.editor-operate-disable {
+  background-image: url(../../../assets/images/action-operate-disable.svg);
+  &:hover::after {
+    content: "Disable";
+  }
+}
+.editor-operate-disable-disabled {
+  background-image: url(../../../assets/images/action-operate-disable-disabled.svg);
+  &:hover::after {
+    content: "Disable";
+  }
+}
+.editor-operate-enable {
+  background-image: url(../../../assets/images/action-operate-enable.svg);
+  &:hover::after {
+    content: "Enable";
+  }
+}
+.editor-operate-power-on {
+  background-image: url(../../../assets/images/action-operate-power-on.svg);
+  &:hover::after {
+    content: "Power on";
+  }
+}
+.editor-operate-power-off {
+  background-image: url(../../../assets/images/action-operate-power-off.svg);
+  &:hover::after {
+    content: "Power off";
+  }
+}
+.editor-operate-power-disabled {
+  background-image: url(../../../assets/images/action-operate-power-disabled.svg);
+  cursor: default;
+}
+
+.modal-return-icon {
+  position: relative;
+  height: 46px;
+  width: 46px;
+  margin-left: 76px;
+  background: url(../../../assets/images/icon-return.svg);
+  background-size: cover;
+  cursor: pointer;
+  &:hover::after {
+    content: "Return";
+    top: 6px;
+    left: -64px;
+  }
+}
+
+.search-icon {
+  @include icon-sm;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-image: url(../../../assets/images/icon-search.svg);
+  top: 2px;
+}
+
+.add-side {
+  background-image: url(../../../assets/images/add-24px.svg);
+}
+
+.arrow-up {
+  @include arrow-icon;
+  transform: rotate(0deg);
+}
+
+.arrow-down {
+  @include arrow-icon;
+  transform: rotate(180deg);
+}
+
+.arrow-left {
+  @include arrow-icon;
+  transform: rotate(270deg);
+}
+
+.arrow-right {
+  @include arrow-icon;
+  transform: rotate(90deg);
+}
+
+.quick-switch-img-down {
+  @include quick-switch-img;
+  background: url(../../../assets/images/quick-switch-arrow-down.svg);
+}
+.quick-switch-img-up {
+  @include quick-switch-img;
+  background: url(../../../assets/images/quick-switch-arrow-up.svg);
+}
+
+.list-expand {
+  @extend .arrow-up;
+  display: flex;
+  cursor: pointer;
+}
+
+.expand-item {
+  background-image: url(../../../assets/images/group-toggle-expand.svg);
+  margin-right: 7px;
+  top: 9px;
+  left: 0px;
+}
+.collapse-item {
+  background-image: url(../../../assets/images/group-toggle-collapse.svg);
+  margin-right: 7px;
+  top: 9px;
+  right: 0px;
+}
+
+.item-terminal-active {
+  background-image: url(../../../assets/images/item-terminal-active.svg);
+}
+.item-terminal-active-busy {
+  background-image: url(../../../assets/images/item-terminal-active-busy.svg);
+}
+.item-terminal-active-disabled {
+  background-image: url(../../../assets/images/item-terminal-active-disabled.svg);
+}
+.item-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg);
+}
+.item-terminal-active-restart {
+  background-image: url(../../../assets/images/item-terminal-active-restart.svg);
+}
+.item-terminal-booting {
+  background-image: url(../../../assets/images/item-terminal-booting.svg);
+}
+.item-terminal-booting-disabled {
+  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg);
+}
+.item-terminal-booting-nolic {
+  background-image: url(../../../assets/images/item-terminal-booting-nolic.svg);
+}
+.item-terminal-error {
+  background-image: url(../../../assets/images/item-terminal-error.svg);
+}
+.item-terminal-error-disabled {
+  background-image: url(../../../assets/images/item-terminal-error-disabled.svg);
+}
+.item-terminal-error-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg);
+}
+.item-terminal-error-restart {
+  background-image: url(../../../assets/images/item-terminal-error-restart.svg);
+}
+.item-terminal-off {
+  background-image: url(../../../assets/images/item-terminal-off.svg);
+}
+.item-terminal-off-disabled {
+  background-image: url(../../../assets/images/item-terminal-off-disabled.svg);
+}
+
+.item-rds-server {
+  background-image: url(../../../assets/images/item-rds-server.svg);
+}
+.item-rds-server-error {
+  background-image: url(../../../assets/images/item-rds-server-error.svg);
+}
+.item-rds-server-disabled {
+  background-image: url(../../../assets/images/item-rds-server-disabled.svg);
+}
+
+.item-app {
+  background-image: url(../../../assets/images/item-app.svg);
+}
+.item-app-error {
+  background-image: url(../../../assets/images/item-app-error.svg);
+}
+
+.header-terminal-active {
+  background-image: url(../../../assets/images/item-terminal-active.svg);
+}
+.header-terminal-active-busy {
+  background-image: url(../../../assets/images/item-terminal-active-busy.svg);
+}
+.header-terminal-active-disabled {
+  background-image: url(../../../assets/images/item-terminal-active-disabled.svg);
+}
+.header-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg);
+}
+.header-terminal-active-restart {
+  background-image: url(../../../assets/images/item-terminal-active-restart.svg);
+}
+.header-terminal-booting {
+  background-image: url(../../../assets/images/item-terminal-booting.svg);
+}
+.header-terminal-booting-disabled {
+  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg);
+}
+.header-terminal-booting-nolic {
+  background-image: url(../../../assets/images/item-terminal-booting-nolic.svg);
+}
+.header-terminal-error {
+  background-image: url(../../../assets/images/item-terminal-error.svg);
+}
+.header-terminal-error-disabled {
+  background-image: url(../../../assets/images/item-terminal-error-disabled.svg);
+}
+.header-terminal-error-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg);
+}
+.header-terminal-error-restart {
+  background-image: url(../../../assets/images/item-terminal-error-restart.svg);
+}
+.header-terminal-off {
+  background-image: url(../../../assets/images/item-terminal-off.svg);
+}
+.header-terminal-off-disabled {
+  background-image: url(../../../assets/images/item-terminal-off-disabled.svg);
+}
+
+.header-app {
+  background-image: url(../../../assets/images/item-app-light.svg);
+}
+.header-app-error {
+  background-image: url(../../../assets/images/item-app-light-error.svg);
+}
+.header-rds-server {
+  background-image: url(../../../assets/images/item-rds-server-light.svg);
+}
+.header-rds-server-error {
+  background-image: url(../../../assets/images/item-rds-server-light-error.svg);
+}
+.header-rds-server-disabled {
+  background-image: url(../../../assets/images/item-rds-server-light-disabled.svg);
+}
+
+.item-app-override {
+  background-image: url(../../../assets/images/item-app-override.svg);
+  margin-left: 12px;
+}
+.folder-item {
+  background-image: url(../../../assets/images/group.svg);
+  margin-left: 12px;
+}
+.favrite-folder-item {
+  background-image: url(../../../assets/images/group-favorite.svg);
+  margin-left: 12px;
+}
+
+.app-left-item {
+  @include app-arrow-item;
+  background-image: url(../../../assets/images/app-move-left.svg);
+}
+.app-right-item {
+  @include app-arrow-item;
+  background-image: url(../../../assets/images/app-move-right.svg);
+}
+
+.action-add-group:hover::after,
+.action-add-terminal:hover::after,
+.action-add-server:hover::after,
+.action-add-app:hover::after {
+  @include main-page-action-hover;
+}
+
+.action-add-group {
+  @include main-actions-icon-sm;
+  background-image: url(../../../assets/images/add-group.svg);
+  &:hover {
+    background-image: url(../../../assets/images/add-group_hover.svg);
+  }
+  &:hover::after {
+    content: "Add Group";
+  }
+}
+.action-add-terminal {
+  @include main-actions-icon-sm;
+  background-image: url(../../../assets/images/add-terminal.svg);
+  &:hover {
+    background-image: url(../../../assets/images/add-terminal_hover.svg);
+  }
+  &:hover::after {
+    content: "Add Terminal";
+  }
+}
+.action-add-server {
+  @include main-actions-icon-sm;
+  background-image: url(../../../assets/images/add-server.svg);
+  &:hover {
+    background-image: url(../../../assets/images/add-server_hover.svg);
+  }
+  &:hover::after {
+    content: "Add Server";
+  }
+}
+.action-add-app {
+  @include main-actions-icon-sm;
+  background-image: url(../../../assets/images/add-app.svg);
+  &:hover {
+    background-image: url(../../../assets/images/add-app_hover.svg);
+  }
+  &:hover::after {
+    content: "Add App";
+    left: -12px;
+  }
+}
+
+.action-setting {
+  @include main-actions-icon;
+  float: right;
+  width: 24px;
+  height: 24px;
+  margin: 8px;
+  z-index: 99;
+  background-image: url(../../../assets/images/action-setting-sm.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-setting-sm_hover.svg);
+  }
+}
+.list-action-add-disable {
+  margin-bottom: 24px;
+  background-image: url(../../../assets/images/action-add_disable.svg);
+  cursor: default;
+}
+.list-action-copy {
+  background-image: url(../../../assets/images/action-copy.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-copy_hover.svg);
+  }
+  &:hover::after {
+    content: "Copy";
+  }
+}
+.list-action-delete {
+  background-image: url(../../../assets/images/action-delete.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-delete_hover.svg);
+  }
+  &:hover::after {
+    content: "Delete";
+  }
+}
+.list-action-delete-disabled {
+  background-image: url(../../../assets/images/action-delete-disabled.svg);
+  cursor: default;
+}
+.list-action-setting {
+  background-image: url(../../../assets/images/action-setting.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-setting_hover.svg);
+  }
+  &:hover::after {
+    content: "Setting";
+  }
+}
+.list-action-favorite {
+  background-image: url(../../../assets/images/action-favorite.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-favorite_hover.svg);
+  }
+  &:hover::after {
+    content: "Favorite";
+  }
+}
+.list-action-favorite-active {
+  background-image: url(../../../assets/images/action-favorite-active.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-favorite_hover.svg);
+  }
+  &:hover::after {
+    content: "Favorite";
+  }
+}
+.list-action-download {
+  background-image: url(../../../assets/images/action-download.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-download_active.svg);
+  }
+  &:hover::after {
+    content: "Download";
+  }
+}
+.list-action-operates {
+  background-image: url(../../../assets/images/action-operates.svg);
+  &:hover {
+    background-image: url(../../../assets/images/action-operates_hover.svg);
+  }
+  &:hover::after {
+    content: "More";
+  }
+}
+.editor-operate-actions {
+  background: url(../../../assets/images/action-operates-white.svg);
+  float: right;
+  &:hover {
+    background: url(../../../assets/images/action-operates_hover.svg);
+  }
+  &:hover::after {
+    content: "More";
+  }
+}
+.list-action-operates-alert {
+  position: relative;
+  float: right;
+  width: 10px;
+  height: 10px;
+  top: 2px;
+  background-color: var(--primary-error);
+  border-radius: 5px;
+}
+
+.operate-close {
+  background-image: url(../../../assets/images/action-operate-close.svg);
+  margin-right: 0px;
+  &:hover {
+    background-image: url(../../../assets/images/action-operate-close_hover.svg);
+  }
+}
+.operate-power-on {
+  background-image: url(../../../assets/images/action-operate-power-on.svg);
+  &:hover::after {
+    content: "Power on";
+  }
+}
+.operate-power-off {
+  background-image: url(../../../assets/images/action-operate-power-off.svg);
+  &:hover::after {
+    content: "Power off";
+  }
+}
+.operate-power-disabled {
+  background-image: url(../../../assets/images/action-operate-power-disabled.svg);
+  margin-right: 20px;
+  cursor: default;
+}
+.operate-disable {
+  background-image: url(../../../assets/images/action-operate-disable.svg);
+  &:hover::after {
+    content: "Disable";
+  }
+}
+.operate-disable-disabled {
+  background-image: url(../../../assets/images/action-operate-disable-disabled.svg);
+  cursor: default;
+}
+.operate-enable {
+  background-image: url(../../../assets/images/action-operate-enable.svg);
+  &:hover::after {
+    content: "Enable";
+  }
+}
+.operate-restart {
+  background-image: url(../../../assets/images/action-operate-restart.svg);
+  &:hover::after {
+    content: "Restart";
+  }
+}
+.operate-restart-alert {
+  background-image: url(../../../assets/images/action-operate-restart-alert.svg);
+  &:hover::after {
+    content: "Restart";
+  }
+}
+.operate-restart-disabled {
+  background-image: url(../../../assets/images/action-operate-restart-disabled.svg);
+  cursor: default;
+}
+.operate-reboot {
+  background-image: url(../../../assets/images/action-operate-reboot.svg);
+  &:hover::after {
+    content: "Reboot";
+  }
+}
+.operate-reboot-disabled {
+  background-image: url(../../../assets/images/action-operate-reboot-disabled.svg);
+  cursor: default;
+}
+.operate-calibrate {
+  background-image: url(../../../assets/images/action-operate-calibrate.svg);
+  &:hover::after {
+    content: "Calibrate";
+  }
+}
+.operate-calibrate-disabled {
+  background-image: url(../../../assets/images/action-operate-calibrate-disabled.svg);
+  cursor: default;
+}
+
+// main-page list-icon
+.list-terminal,
+.list-terminal-active,
+.list-terminal-active-busy,
+.list-terminal-active-disabled,
+.list-terminal-active-disabled-restart,
+.list-terminal-active-restart,
+.list-terminal-booting,
+.list-terminal-booting-disabled,
+.list-terminal-booting-nolic,
+.list-terminal-error,
+.list-terminal-error-disabled,
+.list-terminal-error-disabled-restart,
+.list-terminal-error-restart,
+.list-terminal-off,
+.list-terminal-off-disabled,
+.list-rds-server,
+.list-rds-server-disabled,
+.list-rds-server-error,
+.list-app,
+.list-app-error {
+  @include main-list-item;
+}
+// main-page terminal
+.list-terminal,
+.list-terminal-off {
+  background-image: url(../../../assets/images/list-terminal-off.svg);
+}
+.list-terminal-off-disabled {
+  background-image: url(../../../assets/images/list-terminal-off-disabled.svg);
+}
+.list-terminal-active {
+  background-image: url(../../../assets/images/list-terminal-active.svg);
+}
+.list-terminal-active-busy {
+  background-image: url(../../../assets/images/list-terminal-active-busy.svg);
+}
+.list-terminal-active-disabled {
+  background-image: url(../../../assets/images/list-terminal-active-disabled.svg);
+}
+.list-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/list-terminal-active-disabled-restart.svg);
+}
+.list-terminal-active-restart {
+  background-image: url(../../../assets/images/list-terminal-active-restart.svg);
+}
+.list-terminal-booting {
+  background-image: url(../../../assets/images/list-terminal-booting.svg);
+}
+.list-terminal-booting-disabled {
+  background-image: url(../../../assets/images/list-terminal-booting-disabled.svg);
+}
+.list-terminal-booting-nolic {
+  background-image: url(../../../assets/images/list-terminal-booting-nolic.svg);
+}
+.list-terminal-error {
+  background-image: url(../../../assets/images/list-terminal-error.svg);
+}
+.list-terminal-error-disabled {
+  background-image: url(../../../assets/images/list-terminal-error-disabled.svg);
+}
+.list-terminal-error-disabled-restart {
+  background-image: url(../../../assets/images/list-terminal-error-disabled-restart.svg);
+}
+
+// main-page rds-server
+.list-rds-server {
+  background-image: url(../../../assets/images/list-rds-server.svg);
+}
+.list-rds-server-disabled {
+  background-image: url(../../../assets/images/list-rds-server-disabled.svg);
+}
+.list-rds-server-error {
+  background-image: url(../../../assets/images/list-rds-server-error.svg);
+}
+// main-page application
+.list-app {
+  background-image: url(../../../assets/images/list-rds-server.svg);
+}
+.list-app-error {
+  background-image: url(../../../assets/images/list-rds-server-error.svg);
+}
+
+.terminal-off-sm,
+.terminal-active-sm,
+.terminal-booting-sm {
+  @include main-list-item-sm;
+}
+.terminal-off-sm {
+  background-color: var(--terminal-off);
+}
+.terminal-active-sm {
+  background-color: var(--primary-color);
+}
+.terminal-booting-sm {
+  background-color: var(--terminal-booting);
+}
+
+// filter icon
+.filter-error,
+.filter-disabled,
+.filter-terminal-active,
+.filter-terminal-off {
+  margin-right: 2px;
+}
+.filter-error {
+  @include icon-sm;
+  background-image: url(../../../assets/images/filter-error.svg);
+}
+.filter-disabled {
+  @include icon-sm;
+  background-image: url(../../../assets/images/filter-disabled.svg);
+}
+.filter-terminal-active {
+  @extend .list-terminal-active;
+}
+.filter-terminal-off {
+  @extend .list-terminal-off;
+}
+
+.icon-search-sm {
+  @include icon-sm;
+  background-image: url(../../../assets/images/icon-search.svg);
+}
+
+.icon-refresh {
+  @include icon-sm;
+  background-image: url(../../../assets/images/icon-refresh.svg);
+}
+
+// setting icon
+.setting-license,
+.setting-system,
+.setting-drivers,
+.setting-package,
+.setting-admin,
+.setting-dhcp,
+.setting-server,
+.setting-database,
+.setting-termcap,
+.setting-certificate {
+  @include setting-main-icon;
+}
+.setting-license {
+  background-image: url(../../../assets/images/setting-license.svg);
+}
+.setting-system {
+  background-image: url(../../../assets/images/setting-system.svg);
+}
+.setting-drivers {
+  background-image: url(../../../assets/images/setting-drivers.svg);
+}
+.setting-package {
+  background-image: url(../../../assets/images/setting-package.svg);
+}
+.setting-admin {
+  background-image: url(../../../assets/images/setting-admin.svg);
+}
+.setting-dhcp {
+  background-image: url(../../../assets/images/setting-dhcp.svg);
+}
+.setting-server {
+  background-image: url(../../../assets/images/setting-server.svg);
+}
+.setting-database {
+  background-image: url(../../../assets/images/setting-database.svg);
+}
+.setting-termcap {
+  background-image: url(../../../assets/images/setting-termcap.svg);
+}
+.setting-certificate {
+  background-image: url(../../../assets/images/setting-certificate.svg);
+}
+
+// Setting actions icon
+.setting-edit-icon {
+  @extend .action-edit;
+  position: relative;
+  top: 0px;
+  right: 0px;
+}
+.setting-delete-icon {
+  @extend .list-action-delete;
+  position: relative;
+  top: 0px;
+  right: 16px;
+}
+
+// Setting upload icon
+.icon-document,
+.result-success,
+.result-fail {
+  @include inline-icon;
+}
+.icon-document {
+  width: 20px;
+  height: 22px;
+  background-image: url(../../../assets/images/icon-document.svg);
+}
+.result-success {
+  background-image: url(../../../assets/images/icon-result-success.svg);
+}
+.result-fail {
+  background-image: url(../../../assets/images/icon-result-fail.svg);
+}
+
+// Setting dhcp arrow icon
+.dhcp-arrow-white-icon,
+.dhcp-arrow-green-icon,
+.dhcp-arrow-gray-icon {
+  @include dhcp-arrow-icon;
+}
+.dhcp-arrow-white-icon {
+  background-image: url("../../../assets/images/arrow-lg-white.svg");
+  cursor: pointer;
+}
+.dhcp-arrow-green-icon {
+  margin: 25px;
+  background-image: url("../../../assets/images/arrow-lg-green.svg");
+  cursor: pointer;
+}
+.dhcp-arrow-gray-icon {
+  background-image: url("../../../assets/images/arrow-lg-gray.svg");
+  cursor: pointer;
+}
+
+.icon-smile {
+  @include icon-md;
+  background-image: url("../../../assets/images/icon-smile.svg");
+}
+.icon-upload-file {
+  @include header-icon;
+  background-image: url("../../../assets/images/icon-upload-file.svg");
+}
+
+.setting-database-lg {
+  width: 40%;
+  height: 60%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("../../../assets/images/setting-database-lg.svg");
+}
+
+.setting-actions-btn {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: fit-content;
+  right: 0px;
+  bottom: 16px;
+  padding: 12px 16px;
+  background-color: var(--border-color);
+  border: solid 1px var(--border-color);
+  border-radius: 30px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  z-index: 100;
+  &:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+}
+
+.install-btn {
+  @extend .setting-actions-btn;
+  bottom: 20px;
+  right: 20px;
+  z-index: 0;
+  &:hover {
+    .install-icon {
+      background-image: url("../../../assets/images/icon-upload_hover.svg");
+    }
+  }
+}
+.install-icon {
+  @include icon-sm;
+  background-image: url("../../../assets/images/icon-upload.svg");
+}
+
+.export-btn {
+  @extend .setting-actions-btn;
+  bottom: 20px;
+  left: 20px;
+  &:hover {
+    .export-icon {
+      background-image: url("../../../assets/images/icon-download_hover.svg");
+    }
+  }
+}
+.export-icon {
+  @include icon-sm;
+  background-image: url("../../../assets/images/icon-download.svg");
+}
+
+.more-btn {
+  @extend .setting-actions-btn;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  &:hover {
+    .more-dot {
+      background-image: url("../../../assets/images/icon-more_hover.svg");
+    }
+  }
+}
+.more-dot {
+  @include icon-sm;
+  background-image: url("../../../assets/images/icon-more.svg");
+}
+
+.icon-notification {
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-image: url("../../../assets/images/icon-notification.svg");
+}
+
+.icon-license-valid {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url("../../../assets/images/icon-license-valid.svg");
+  position: relative;
+}
+
+.icon-no-data {
+  @include icon-lg;
+  background-image: url("../../../assets/images/icon-no-data.svg");
+}
+
+// shadow
+.icon-connect {
+  width: "32px";
+  height: "32px";
+  background-image: 'url("assets/images/play.png")';
+  background-size: "contain";
+  cursor: "pointer";
+}
+
+.icon-screen-resize {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: 6px;
+  bottom: 6px;
+  background-image: url("../../../assets/images/screen-resize-nor.svg");
+  background-size: cover;
+  cursor: pointer;
+}

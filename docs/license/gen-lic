@@ -1,0 +1,68 @@
+#!/bin/bash
+CUSTOMER=test10
+EXPIRATION=2803883330255
+ITEMS=10
+LICENSE_ID=4E57A06A-A5EE-4953-83E1-3E764B8BE866
+LICENSE_TYPE=perpetual
+VERSION=1.0
+
+USAGE(){
+	cat <<HELP
+Usage: $0 [-v VERSION] [-l LICENSE_ID] [-e EXPIRATION] [-i ITEMS]
+HELP
+}
+
+while getopts "c:e:i:l:t:v:" argv; do
+	case "$argv" in
+	c) CUSTOMER=$OPTARG;;
+	e) EXPIRATION=$OPTARG;;
+	i) ITEMS=$OPTARG;;
+	l) LICENSE_ID=$OPTARG;;
+	t) LICENSE_TYPE=$OPTARG;;
+	v) VERSION=$OPTARG;;
+	*) USAGE; exit 1;;
+	esac
+done
+
+TOPDIR=$(dirname $(realpath $0))
+GOPATH=${TOPDIR}
+CERTS=arista-test.private
+PKG=licenseUtils
+EXE=
+[ "${GOOS}" = "windows" ] && EXE=.exe
+BIN=./${PKG}${EXE}
+
+[ ! -f "${CERTS}" ] && echo "Not found ${CERTS}" && exit 1
+
+cd ${TOPDIR}
+[ ! -x ${BIN} ] && GOPATH=${TOPDIR} go get ${PKG} && mv bin/${PKG}${EXE} ${BIN}
+INSTALL_ID=$(${BIN} -gen_install ${LICENSE_ID} | cut -d' ' -f 2)
+
+# ${VAR} 就是 keytest 裡面要用的資料
+VAR=$(cat << EOM
+{
+    "product": "Q8 Vista",
+    "version": "${VERSION}",
+    "licenseId": "${LICENSE_ID}",
+    "customerId": "${CUSTOMER}",
+    "installationId": "${INSTALL_ID}",
+    "licenseType": "${LICENSE_TYPE}",
+    "expiration": ${EXPIRATION},
+    "items": [{
+        "name": "clients",
+        "value": "${ITEMS}"
+    },{
+        "name": "redundant",
+        "value": "true"
+    }]
+}
+EOM
+)
+
+FILE=$(date +%Y%m%d%H%M%S).tt
+echo "${VAR}" > ${FILE}
+cat ${FILE}
+echo "${BIN} -encode ${CERTS} -i ${FILE} -o Q8License.lic"
+${BIN} -encode ${CERTS} -i ${FILE} -o Q8License.lic > /dev/null
+rm -f ${FILE}
+[ -f Q8License.lic ] && echo "Generate Q8License.lic done" || echo "Failed to generate license file"

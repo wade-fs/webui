@@ -1,0 +1,32 @@
+<svg id="terminal_active_restart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #b4b4b4;
+      }
+
+      .cls-3 {
+        fill: #dc3545;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <path id="Path_128" data-name="Path 128" class="cls-1" d="M0,0H24V24H0Z"/>
+  <path id="Path_534" data-name="Path 534" class="cls-2" d="M19,6.5H5a4.012,4.012,0,0,0-4,4v2a4.012,4.012,0,0,0,4,4H19a4.012,4.012,0,0,0,4-4v-2A4.012,4.012,0,0,0,19,6.5ZM8.853,14H4.519V12H8.853Zm0-3H4.519V9H8.853Zm3.674,2.3a1.8,1.8,0,1,1,1.8-1.8A1.8,1.8,0,0,1,12.527,13.3ZM18,13.3a1.8,1.8,0,1,1,1.8-1.8A1.8,1.8,0,0,1,18,13.3Z" transform="translate(0 6.5)"/>
+  <g id="Component_134_9" data-name="Component 134 – 9" transform="translate(5 1)">
+    <path id="Path_598" data-name="Path 598" class="cls-1" d="M7.5,11.175h13v13H7.5Z" transform="translate(-7.5 -11.175)"/>
+  </g>
+  <g id="Group_4821" data-name="Group 4821" transform="translate(-1423 -137)">
+    <g id="Error" transform="translate(1428 138)">
+      <path id="Path_1327" data-name="Path 1327" class="cls-3" d="M6.891,0A6.891,6.891,0,1,1,0,6.891,6.891,6.891,0,0,1,6.891,0Z"/>
+      <path id="Path_1328" data-name="Path 1328" class="cls-4" d="M11.891,5.694,11.2,5,8.445,7.751,5.694,5,5,5.694,7.751,8.445,5,11.2l.694.694L8.445,9.139,11.2,11.891l.694-.694L9.139,8.445Z" transform="translate(-1.555 -1.539)"/>
+    </g>
+  </g>
+</svg>

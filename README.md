@@ -1,0 +1,13 @@
+- 在 windows 上要執行 q8server.exe 才能搭配前端進行測試
+- 最簡單的方式是透過 installer
+	- 透過 installer 的話，目前是採用 service 的方式
+		請到安裝路徑下執行 q8server.exe stop 停止服務
+	- 它會使用 arista-www.fs, 必須將之移除或更名，然後放 www/ 代替
+	- 也可以把安裝目錄下的檔複製到別的 www/ 的路徑下單獨執行
+- 如果不透過 installer, 
+	- 請複製底下資料到 www/ 同一層:
+		- certs/
+		- fp/
+		- arista-tftp.fs
+		- q8server.exe
+	- 之後再執行 q8server.exe

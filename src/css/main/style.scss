@@ -1,0 +1,45 @@
+@import "../base/element.scss";
+@import "../common/size.scss";
+@import "../common/loading.scss";
+@import "../common/container.scss";
+@import "../common/alert.scss";
+@import "../common/menu.scss";
+@import "../common/header.scss";
+@import "../common/button.scss";
+@import "../common/modal.scss";
+@import "../common/form.scss";
+@import "../common/icon.scss";
+@import "../common/pop-up.scss";
+@import "../common/shadow.scss";
+
+@import "../component/agreement.scss";
+@import "../component/login.scss";
+@import "../component/log.scss";
+@import "../component/dhcp.scss";
+@import "../component/display.scss";
+@import "../component/override.scss";
+@import "../component/tree.scss";
+
+@import "../main/main_page.scss";
+@import "../main/setting.scss";
+
+@media all and (min-width: 1920px) {
+  .w-container {
+    width: 1440px;
+  }
+  .modal-dialog {
+    width: 1440px;
+  }
+}
+
+@media all and (min-width: 2560px) {
+  .wrap-960 {
+    width: 1125px;
+  }
+  .w-container {
+    width: 1920px;
+  }
+  .modal-dialog {
+    width: 1920px;
+  }
+}

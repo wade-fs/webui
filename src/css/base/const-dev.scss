@@ -1,0 +1,27 @@
+:root {
+  --primary-error: #dc3545;
+  --primary-color: #000000;
+  --primary-light-gray: #eeeeee;
+  --second-light-gray: #dddddd;
+  --third-light-gray: #b4b4b4;
+  --primary-gray: #595758;
+  --second-gray: #434343;
+  --primary-yellow: #ffec00;
+
+  --header-bg: var(--primary-color);
+  --modal-header-bg: var(--primary-gray);
+  --modal-tab-bg: var(--second-gray);
+  --modal-sub-tab-bg: var(--second-light-gray);
+  --button-selected-bg: var(--primary-light-gray);
+  --input-title-color: var(--third-light-gray);
+  --text-color: var(--primary-gray);
+  --border-color: var(--second-light-gray);
+  --placeholder-color: var(--third-light-gray);
+
+  --terminal-active: #80bc00;
+  --terminal-booting: #ff9e18;
+  --terminal-off: #b4b4b4;
+
+  // const
+  --header-height: 116px;
+}

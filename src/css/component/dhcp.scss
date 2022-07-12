@@ -1,0 +1,75 @@
+.dhcp-table-delete {
+  position: relative;
+  // font-size: 0;
+  // margin-top: 25px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  input {
+    width: 100%;
+  }
+  p {
+    height: 32px;
+    border-radius: 4px;
+    background-color: #fff;
+    /* border: 1px solid #e9e9e9; */
+    padding-left: 8px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  li {
+    display: inline-block;
+    vertical-align: middle;
+    width: 33%;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 700;
+    // line-height: 36px;
+    letter-spacing: 0;
+    word-spacing: 0;
+  }
+  li:last-child {
+    text-align: center;
+  }
+}
+
+.dhcp-input-fields {
+  display: flex;
+  > li {
+    flex-grow: 1;
+  }
+  p {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+}
+
+.dhcp-total-table-list {
+  height: 60px;
+  padding: 9px 32px 9px 20px;
+  border-radius: 10px;
+  justify-content: space-between;
+  display: flex;
+  line-height: 41px;
+  background-color: #b4b4b4;
+  position: relative;
+  margin: 0px 15px 15px;
+  cursor: pointer;
+  li {
+    color: white;
+  }
+  span.list {
+    font-size: 16px;
+    color: white;
+  }
+}
+
+.dhcp-checkbox {
+  // display: inline-block;
+  font-size: 16px;
+  font-weight: 700;
+  // width: 360px;
+  margin: 0 20px;
+}

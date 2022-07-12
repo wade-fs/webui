@@ -1,0 +1,27 @@
+<svg id="table_rds_no_access_disable" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #595758;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <path id="Path_1035" data-name="Path 1035" class="cls-1" d="M10,0A10,10,0,1,1,0,10,10,10,0,0,1,10,0Z" transform="translate(2 2)"/>
+  <g id="Group_1566" data-name="Group 1566">
+    <rect id="Rectangle_44" data-name="Rectangle 44" class="cls-2" width="24" height="24"/>
+  </g>
+  <g id="Group_1580" data-name="Group 1580" transform="translate(3 3)">
+    <path id="Path_598" data-name="Path 598" class="cls-2" d="M7.5,11.175h18v18H7.5Z" transform="translate(-7.5 -11.175)"/>
+    <g id="disable_icon" transform="translate(3.063 3.063)">
+      <path id="Path_599" data-name="Path 599" class="cls-3" d="M15.5,13.175a6,6,0,1,0,6,6A6,6,0,0,0,15.5,13.175Zm-4.8,6a4.8,4.8,0,0,1,4.8-4.8,4.741,4.741,0,0,1,2.94,1.014l-6.726,6.726A4.741,4.741,0,0,1,10.7,19.175Zm4.8,4.8a4.741,4.741,0,0,1-2.94-1.014l6.726-6.726a4.741,4.741,0,0,1,1.014,2.94A4.8,4.8,0,0,1,15.5,23.975Z" transform="translate(-9.5 -13.175)"/>
+    </g>
+  </g>
+</svg>

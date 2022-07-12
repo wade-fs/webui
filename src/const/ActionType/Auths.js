@@ -1,0 +1,14 @@
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
+export const VERIFY_AUTH_USER = "VERIFY_AUTH_USER";
+export const ADD_USER = "ADD_USER";
+export const DELETE_USER = "DELETE_USER";
+export const UPDATE_USER = "UPDATE_USER";
+export const LOAD_USERS = "LOAD_USERS";
+export const GET_USER_INFO = "GET_USER_INFO";
+
+export const WS_NOTIFICATION_SESSION_WILL_EXPIRE =
+  "WS_NOTIFICATION_SESSION_WILL_EXPIRE";
+export const CLEARE_EXPIRE_TIME = "CLEARE_EXPIRE_TIME";
+
+export const PRODUCT_INFO = "PRODUCT_INFO";

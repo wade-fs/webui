@@ -1,0 +1,9 @@
+<svg id="Component_122_2" data-name="Component 122 – 2" xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42">
+  <g id="Group_312" data-name="Group 312">
+    <rect id="round" width="42" height="42" rx="21" fill="#80bc00"/>
+  </g>
+  <g id="keyboard_arrow_left-24px" transform="translate(9 9)">
+    <path id="Path_687" data-name="Path 687" d="M0,0H24V24H0Z" fill="none"/>
+    <path id="Path_688" data-name="Path 688" d="M16.645,18.355,11.3,13l5.343-5.355L15,6,8,13l7,7Z" transform="translate(-1 -1)" fill="#fff"/>
+  </g>
+</svg>

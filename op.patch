@@ -1,0 +1,582 @@
+diff --git a/src/api/Terminal/ApiTerminal.js b/src/api/Terminal/ApiTerminal.js
+index c7a44ff..ffb6231 100644
+--- a/src/api/Terminal/ApiTerminal.js
++++ b/src/api/Terminal/ApiTerminal.js
+@@ -1,29 +1,14 @@
+-import { mockResponse, apiPost, apiGet, apiPut, apiDelete } from "..";
+-import {
+-  getMockTerminalAbout,
+-  getMockTerminal,
+-  getMockTerminalGroup,
+-} from "const/MockData";
+-import { IsMockApi } from "const/Env";
++import { apiPost, apiGet, apiPut, apiDelete } from "..";
+ 
+ import { generateScreenOfAppIds } from "../../utils/Display";
+ 
+-// api get
+-export async function apiGetTerminal(id) {
+-  const url = `api/terminal/${id}`; // new api
+-  if (IsMockApi) return mockResponse(getMockTerminal(id));
+-  return apiGet(url);
+-}
+-
+ export async function apiGetTerminalGroup(id) {
+   const url = `api/terminal/group/${id}`; // new api
+-  if (IsMockApi) return mockResponse(getMockTerminalGroup(id));
+   return apiGet(url);
+ }
+ 
+ export async function apiGetTerminalAbout(id) {
+   const url = `api/terminal/about/${id}`; // new api
+-  if (IsMockApi) return mockResponse(getMockTerminalAbout(id));
+   return apiGet(url);
+ }
+ 
+@@ -74,10 +59,18 @@ export async function apiDeleteTerminalGroup(id) {
+   return apiDelete(url);
+ }
+ 
++// api get
++export async function apiGetTerminal(id) {
++  console.log(`apiGetTerminal(${id})`);
++  const url = `api/terminal/${id}`; // new api
++  return await apiGet(url);
++}
++
+ // api operate
+ export async function apiOperateTerminal(id, action) {
++  console.log(`apiOperateTerminal(${id},${action})`);
+   if (action === "poweroff") action = "power-off";
+   if (action === "poweron") action = "power-on";
+   const url = `api/terminal/operate/${action}/${id}`; // new api
+-  return apiPost(url, null);
++  return await apiPost(url, null);
+ }
+diff --git a/src/components/ObjectCommon/EditorTopbar.js b/src/components/ObjectCommon/EditorTopbar.js
+index 4d3fab8..56dba96 100644
+--- a/src/components/ObjectCommon/EditorTopbar.js
++++ b/src/components/ObjectCommon/EditorTopbar.js
+@@ -71,7 +71,7 @@ export default class EditorTopbar extends React.Component {
+   toggleActionList = () => {
+     this.setState({ showActionList: !this.state.showActionList });
+   };
+-  operateAction = async (operateType) => {
++  operateAction = (operateType) => {
+     if (editType === "terminal") {
+       onCancel();
+     }
+@@ -79,9 +79,7 @@ export default class EditorTopbar extends React.Component {
+       props: { dispatch, editType, status, editingId, onCancel },
+     } = this;
+     if (status === "OFF") return;
+-    await dispatch(operateTerminal(editingId, operateType));
+-	await dispatch(loadTerminalsAndGroups());
+-	await dispatch(getTerminal(editingId, false));
++    dispatch(operateTerminal(editingId, operateType));
+   };
+ 
+   render() {
+diff --git a/src/components/ObjectCommon/ObjectTitles.js b/src/components/ObjectCommon/ObjectTitles.js
+index a6bd1f1..757ba9a 100644
+--- a/src/components/ObjectCommon/ObjectTitles.js
++++ b/src/components/ObjectCommon/ObjectTitles.js
+@@ -2,12 +2,6 @@ import React, { Fragment } from "react";
+ import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+ import { TerminalObject, ServerObject, ApplicationObject } from "const/Consts";
+ 
+-import {
+-  MOCK_TERMINAL_EXPAND,
+-  MOCK_RDS_SERVER_EXPAND,
+-  MOCK_APP_EXPAND,
+-} from "const/MockData";
+-
+ import { toLetter } from "../../utils/String";
+ 
+ import {
+@@ -115,14 +109,12 @@ export default class ObjectTitles extends React.Component {
+     event.nativeEvent.stopImmediatePropagation();
+     select(Id);
+   };
+-  operateAction = async (editingId, operateType) => {
++  operateAction = (editingId, operateType) => {
+     let {
+       props: { dispatch },
+     } = this;
+ 	if (status === "OFF") return;
+-    await dispatch(operateTerminal(editingId, operateType));
+-	await dispatch(loadTerminalsAndGroups());
+-	await dispatch(getTerminal(editingId, false));
++    dispatch(operateTerminal(editingId, operateType));
+   };
+ 
+   delete = () => {
+diff --git a/src/components/Terminals/Editor/About/index.js b/src/components/Terminals/Editor/About/index.js
+index b8e439a..5673b92 100644
+--- a/src/components/Terminals/Editor/About/index.js
++++ b/src/components/Terminals/Editor/About/index.js
+@@ -28,15 +28,17 @@ export default class About extends React.Component {
+       },
+     } = this;
+ 
++	isLoaded = data ? true : false;
++    isLoading = !isLoaded;
++
+     return (
+       <Fragment>
+-        {/*isLoading && <p>Loading...</p>*/}
+-        {!isLoaded && ( /* {!isLoading && !isLoaded && ( */
++        {/* !sLoaded && (
+           <div className="wrap-960 wrap-bg-w modal-content-edit">
+             No data found...
+           </div>
+-        )}
+-        {isLoaded && isGroup && ( /* {!isLoading && isLoaded && isGroup && ( */
++        ) */}
++        {isGroup && (
+           <Fragment>
+             <StatusInfoCard
+               editingId={editingId}
+@@ -46,7 +48,7 @@ export default class About extends React.Component {
+             <HardwareModelCard editingId={editingId} terminals={terminals} />
+           </Fragment>
+         )}
+-        {isLoaded && !isGroup && ( /* {!isLoading && isLoaded && !isGroup && ( */
++        {!isGroup && (
+           <div className="clearfix">
+             <div className="w33percent float_left mb-30">
+               <TerminalInfoCard data={data} editingId={editingId} />
+diff --git a/src/components/Terminals/Editor/Configuration/index.js b/src/components/Terminals/Editor/Configuration/index.js
+index 33efb88..9ba5ad9 100644
+--- a/src/components/Terminals/Editor/Configuration/index.js
++++ b/src/components/Terminals/Editor/Configuration/index.js
+@@ -448,8 +448,11 @@ export default class Configuration extends React.Component {
+       editingId,
+       isGroup,
+     } = data;
+-    const configLoaded =
+-      isLoaded && Object.keys(editingTerminal.data).length > 0 ? true : false;
++    let configLoaded = false;
++
++	if (typeof editingTerminal.data !== "undefined") {
++		configLoaded = Object.keys(editingTerminal.data).length > 0;
++	}
+ 
+     return (
+       <Fragment>
+diff --git a/src/components/Terminals/Editor/QuickSwitch.js b/src/components/Terminals/Editor/QuickSwitch.js
+index 0c0df1b..f22bf52 100644
+--- a/src/components/Terminals/Editor/QuickSwitch.js
++++ b/src/components/Terminals/Editor/QuickSwitch.js
+@@ -15,10 +15,10 @@ export default class QuickSwitch extends React.Component {
+   toggleTiles = () => {
+     this.setState({ showTiles: !this.state.showTiles });
+   };
+-  openEditor = (id, isGroup) => {
++  openEditor = async (id, isGroup) => {
+     let { dispatch } = this.props;
+-    dispatch(openTerminalEditor(id, isGroup));
+-    dispatch(getTerminal(id, isGroup));
++    await dispatch(getTerminal(id, isGroup));
++    await dispatch(openTerminalEditor(id, isGroup));
+   };
+ 
+   render() {
+diff --git a/src/components/Terminals/index.js b/src/components/Terminals/index.js
+index 7ba30bc..97dd113 100644
+--- a/src/components/Terminals/index.js
++++ b/src/components/Terminals/index.js
+@@ -21,32 +21,48 @@ import { getObjectProperty } from "lib/Util";
+ import { LOADED, LOADING } from "const/DataLoaderState";
+ import { TerminalObject } from "const/Consts";
+ 
++// react 由 component, props, state 組成
++//   component 相當於 UI (即 View)
++//   props 是 UI 上的變量，傳給 component
++//   state 相當於 store, 注意，使用 setState() 時是非同步的
+ class Terminals extends React.Component {
++  // 初始化 state 或綁定其他方法時需要
+   constructor(props) {
+-    super(props);
+-    this.state = {
++    super(props);	// 一定要 super(prosp)
++    this.state = {	// 初始化內部 state
+       selectedId: undefined,
+       showAllTree: false,
+       filterDefault: false,
+       filterFavorite: false,
+     };
+   }
+-
+-  componentDidMount() {
++  // 用來初始化 DOM node
++  componentDidMount = async () => {
+     let { dispatch } = this.props;
+-    dispatch(loadTerminalsAndGroups());
+-    dispatch(loadServersAndGroups());
+-    dispatch(loadApplicationsAndGroups());
++    await dispatch(loadTerminalsAndGroups());
++    await dispatch(loadServersAndGroups());
++    await dispatch(loadApplicationsAndGroups());
+   }
+ 
++  // 在 components/Terminals/Editor/QuickSwitch.js 同樣有 openEditor()
++  //   但是沒有 async/await
++  // 在 components/Tree/TreeItem.js 中 settingIcon 一樣在 onClick() 呼叫 openEditor()
++  // 在 components/ObjectCommon/ObjectDashboard.js 中有
++  //   click = (id, isGroup) => { this.props.openEditor(id, isGroup); };
++  // 而在 components/ObjectCommon/ObjectTitles.js 會呼叫 click
+   openEditor = async (id, isGroup) => {
+     let { dispatch } = this.props;
+-    await dispatch(openTerminalEditor(id, isGroup));
+     await dispatch(getTerminal(id, isGroup));
++    await dispatch(openTerminalEditor(id, isGroup));
+   };
++
++  // 感覺是定義在 actions/ServerActions.js
++  // 其中 openTerminalWizard() 定義在 actions/TerminalActions.js
+   openWizard = (isGroup) => {
+     this.props.dispatch(openTerminalWizard(isGroup));
+   };
++
++  // 因為目前 state 有誤，已停用
+   isEditorLoading = () => {
+     let { data } = this.props;
+     return (
+@@ -56,10 +72,21 @@ class Terminals extends React.Component {
+         data.modules.state === LOADING)
+     );
+   };
++  // 因為目前 state 有誤，已停用
++  isNewTerminalSaving = () => {
++    let { data, infobar } = this.props;
++    return (
++      data.wizardOpened &&
++      data.terminals.state === LOADING &&
++      !infobar.showInfoBar
++    );
++  };
++  // 因為目前 state 有誤，已停用
+   isOperating = () => {
+     let { data } = this.props;
+     return data.editorOpened && data.operate.state === LOADING;
+   };
++  // 因為目前 state 有誤，已停用
+   isSavingModule = () => {
+     let { data } = this.props;
+     return (
+@@ -68,14 +95,7 @@ class Terminals extends React.Component {
+         data.newModuleSettingId.state === LOADING)
+     );
+   };
+-  isNewTerminalSaving = () => {
+-    let { data, infobar } = this.props;
+-    return (
+-      data.wizardOpened &&
+-      data.terminals.state === LOADING &&
+-      !infobar.showInfoBar
+-    );
+-  };
++  // 因為目前 state 有誤，已停用
+   isSavingApp = () => {
+     let { data, applications } = this.props;
+     return (
+@@ -83,6 +103,7 @@ class Terminals extends React.Component {
+       applications.editingApplication.state === LOADING
+     );
+   };
++
+   selectGroup = (id) => {
+     let {
+       state: { selectedId, filterDefault },
+@@ -150,11 +171,11 @@ class Terminals extends React.Component {
+     } = this;
+ 
+     const state = getObjectProperty(data, "terminals.state");
++	//console.log("components/Terminals/index.js() " + JSON.stringify(this.state, null, 4));
+     const terminalsById = data.terminals?.data?.reduce((acc, cur) => {
+       acc[cur.Id] = cur;
+       return acc;
+     }, {});
+-
+     return (
+       <Fragment>
+         {/* {(this.isEditorLoading() ||
+diff --git a/src/middleware/TerminalDataLoader.js b/src/middleware/TerminalDataLoader.js
+index ac65835..d1de4e0 100644
+--- a/src/middleware/TerminalDataLoader.js
++++ b/src/middleware/TerminalDataLoader.js
+@@ -20,6 +20,7 @@ import {
+   UPDATE_TERMINAL,
+ } from "const/ActionType";
+ import {
++  getTerminal,
+   loadTerminals,
+   loadTerminalGroups,
+   loadTerminalsAndGroups,
+@@ -318,15 +319,6 @@ export default (store) => (next) => (action) => {
+       }
+       break;
+     }
+-    case GET_TERMINAL: {
+-      let { path, loader, id } = payload;
+-      if (path && loader && id) {
+-        let loadingState = getObjectProperty(state, `${path}.state`);
+-        if (loadingState !== LOADING)
+-          store.dispatch(loadData(state, path, loader(id)));
+-      }
+-      break;
+-    }
+     case UPDATE_TERMINAL: {
+       let {
+         path,
+@@ -702,76 +694,80 @@ export default (store) => (next) => (action) => {
+       }
+       break;
+     }
++    case GET_TERMINAL: {
++      let { path, loader, isGroup, id } = payload;
++      console.log("GET_TERMINAL "+id);
++      if (path && loader && id) {
++        let loadingState = getObjectProperty(state, `${path}.state`);
++        console.log("GET_TERMINAL loadingState = "+loadingState);
++        if (loadingState !== LOADING)
++          store.dispatch((dispatch) => {
++            dispatch({ type: LOAD_REQUEST, payload: { path } });
++            loader(id)
++              .then((value) => {
++                if (value.result === false) {
++                  throw Error(value.data);
++                }
++                const terminal = value.data;
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: path,
++                    data: terminal,
++                  },
++                });
++              })
++              .catch((err) => {
++                const errorMsg = err.message ?? `Get Terminal failed!!`;
++                dispatch(showInfoBar(errorMsg, "error"));
++                dispatch({
++                  type: LOAD_FAILURE,
++                  payload: { path, data: null },
++                });
++              });
++          });
++      }
++      break;
++    }
+     case OPERATE_TERMINAL: {
+-      let {
+-        path,
+-        loader,
+-        upadteLoader,
+-        getLoader,
+-        action,
+-        editingId,
+-      } = payload;
++      let { path, loader, upadteLoader, getLoader, action, editingId, } = payload;
++      console.log("OPERATE_TERMINAL "+editingId+","+action);
+       if (path && loader && upadteLoader && getLoader && action && editingId) {
+         let loadingState = getObjectProperty(state, `${path}.state`);
+-        // TODO: wade, 有 bug, state 第一次之後永遠都是 LOADING: if (loadingState !== LOADING)
+-        // if (loadingState !== LOADING)
++        if (loadingState !== LOADING)
+           store.dispatch((dispatch) => {
+             let updateData = {};
+-            dispatch({
+-              type: LOAD_REQUEST,
+-              payload: { path: path },
+-            });
++            dispatch({ type: LOAD_REQUEST, payload: { path: path }, });
++			// TODO: 看不出有更新東西？
+             if (action === "enable" || action === "disable") {
+               updateData = { Disabled: action === "disable" ? true : false };
++              // 這邊相當於執行 PUT
+               upadteLoader(editingId, updateData).then((value) => {
+                 if (value.result === false) {
+                   throw Error(value.data);
+                 }
+-                loader(editingId, action)
+-                  .then((value) => {
+-                    if (value.result === false) {
+-                      throw Error(value.data);
+-                    }
+-                    if (state.terminals.editorOpened) {
+-                      getLoader(editingId).then((value) => {
+-                        dispatch({
+-                          type: LOAD_SUCCESS,
+-                          payload: { path, data: value.data },
+-                        });
+-                      });
+-                    } else {
+-                      dispatch({
+-                        type: LOAD_SUCCESS,
+-                        payload: { path, data: {} },
+-                      });
+-                    }
+-                  })
+-                  .catch((err) => {
+-                    const errorMsg = err.message ?? `Get module settings fail`;
+-                    dispatch(showInfoBar(errorMsg, "error"));
+-                    dispatch({
+-                      type: LOAD_FAILURE,
+-                      payload: { path, data: errorMsg },
+-                    });
+-                  });
+               });
+-            } else {
+-              loader(editingId, action)
+-                .then((value) => {
+-                  getLoader(editingId);
+-                  if (value.result === false) {
+-                    throw Error(value.data);
+-                  }
+-                })
+-                .catch((err) => {
+-                  const errorMsg = err.message ?? `Get module settings fail`;
+-                  dispatch(showInfoBar(errorMsg, "error"));
+-                  dispatch({
+-                    type: LOAD_FAILURE,
+-                    payload: { path, data: errorMsg },
+-                  });
+-                });
+             }
++            // 相當於執行 op
++            loader(editingId, action)
++              .then((value) => {
++                if (value.result === false) {
++                  throw Error(value.data);
++                }
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: { path, data: value.data },
++                });
++                dispatch(getTerminal(editingId, false));
++              })
++              .catch((err) => {
++                const errorMsg = err.message ?? `Get module settings fail`;
++                dispatch(showInfoBar(errorMsg, "error"));
++                dispatch({
++                  type: LOAD_FAILURE,
++                  payload: { path, data: errorMsg },
++                });
++              });
+           });
+       }
+       break;
+diff --git a/src/reducers/TerminalReducer.js b/src/reducers/TerminalReducer.js
+index d648e0c..8340b0d 100644
+--- a/src/reducers/TerminalReducer.js
++++ b/src/reducers/TerminalReducer.js
+@@ -9,13 +9,16 @@ import {
+   INITIAL_PENDING_TERMINALS,
+   UPDATE_TERMINAL_LIST,
+   UPDATE_TERMINAL_GROUP_LIST,
++  WS_NOTIFICATION,
+   WS_NOTIFICATION_TERMINAL,
+   WS_NOTIFICATION_TERMINAL_LIST,
+   WS_NOTIFICATION_TERMINAL_STATUS,
+   WS_NOTIFICATION_PENDING_TERMINALS,
+   GET_DEFAULT_KEYBOARD_MAPPING,
+   GET_DEFAULT_MOUSE_MAPPING,
++  LOAD_SUCCESS,
+ } from "const/ActionType";
++
+ import { defaultObject, defaultArray, update } from "lib/Util";
+ 
+ export default (
+@@ -61,6 +64,7 @@ export default (
+   let { type, payload } = action;
+   switch (type) {
+     case OPEN_TERMINAL_EDITOR: {
++      console.log("Terminal reducer type "+type+" " + JSON.stringify(payload, null, 4));
+       return update(state, {
+         editorOpened: { $set: true },
+         editingId: { $set: payload.id },
+@@ -116,9 +120,34 @@ export default (
+         pendingTerminals: { $set: defaultArray },
+       });
+     }
++    case WS_NOTIFICATION_PENDING_TERMINALS: {
++      return update(state, {
++        pendingTerminals: { $set: payload },
++      });
++    }
+     case WS_NOTIFICATION_TERMINAL: {
++      let { Id, term } = payload;
++      return update(
++        state,
++        {
++          $apply: (terminals) => {
++            if (terminals) {
++              const idx = terminals.findIndex((t) => t.Id == Id);
++              if (idx != -1)
++                return update(terminals, {
++                  [idx]: { data: { $set: term } },
++                });
++            }
++            return terminals;
++          },
++        },
++        "terminals.data"
++      );
+     }
+     case WS_NOTIFICATION_TERMINAL_LIST: {
++      return update(state, {
++        terminals: { data: { $set: payload.list } },
++      });
+     }
+     case WS_NOTIFICATION_TERMINAL_STATUS: {
+       let { Id, Status } = payload;
+@@ -151,11 +180,6 @@ export default (
+         terminalMainTree: { data: { $set: payload.tree } },
+       });
+     }
+-    case WS_NOTIFICATION_PENDING_TERMINALS: {
+-      return update(state, {
+-        pendingTerminals: { $set: payload },
+-      });
+-    }
+     case GET_DEFAULT_KEYBOARD_MAPPING: {
+       return update(state, {
+         defaultKeyboardMapping: { data: { $set: payload } },
+@@ -166,7 +190,34 @@ export default (
+         defaultMouseMapping: { data: { $set: payload } },
+       });
+     }
+-    default:
++    case WS_NOTIFICATION: {
++      return state;
++    }
++    case LOAD_SUCCESS: {
++      let { path, data } = payload;
++      let Id = data.Id;
++      let NeedToRestart = data.NeedToRestart;
++      if (path === "terminals.editingTerminal" && typeof NeedToRestart !== "undefined") {
++        return update(
++          state,
++          {
++            $apply: (terminals) => {
++              if (terminals) {
++                const idx = terminals.findIndex((t) => t.Id == Id);
++                if (idx != -1)
++                  return update(terminals, {
++                    [idx]: { NeedToRestart: { $set: NeedToRestart } },
++                  });
++              }
++              return terminals;
++            },
++          },
++          "terminals.data"
++        );
++      }
++    }
++    default: // 這邊就多了
++      // console.log("Terminal reducer type "+type+" " + JSON.stringify(payload, null, 4));
+       return state;
+   }
+ };

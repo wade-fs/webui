@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="sentiment_satisfied" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-1{fill:none}.cls-2{fill:#595758}
+        </style>
+    </defs>
+    <path id="Path_1128" d="M0 0h24v24H0z" class="cls-1"/>
+    <path id="Path_1129" d="M0 0h24v24H0z" class="cls-1"/>
+    <circle id="Ellipse_195" cx="1.5" cy="1.5" r="1.5" class="cls-2" transform="translate(14 8)"/>
+    <circle id="Ellipse_196" cx="1.5" cy="1.5" r="1.5" class="cls-2" transform="translate(7 8)"/>
+    <circle id="Ellipse_197" cx="1.5" cy="1.5" r="1.5" class="cls-2" transform="translate(14 8)"/>
+    <circle id="Ellipse_198" cx="1.5" cy="1.5" r="1.5" class="cls-2" transform="translate(7 8)"/>
+    <path id="Path_1130" d="M11.99 2A10 10 0 1 0 22 12 10 10 0 0 0 11.99 2zM12 20a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-2.5a5.5 5.5 0 0 0 5.12-3.5h-1.67a3.976 3.976 0 0 1-6.9 0H6.88A5.5 5.5 0 0 0 12 17.5z" class="cls-2"/>
+</svg>

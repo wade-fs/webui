@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="add_server" width="42" height="42" viewBox="0 0 42 42">
+    <defs>
+        <style>
+            .cls-2{fill:#595758}
+        </style>
+    </defs>
+    <g id="Group_1105">
+        <rect id="round" width="42" height="42" fill="#ddd" rx="21"/>
+    </g>
+    <g id="Group_2201" transform="translate(9.075 10.425)">
+        <g id="Group_2201-2">
+            <path id="Path_895" d="M22 22.05H2a1.05 1.05 0 1 1 0-2.1h20a1.05 1.05 0 0 1 0 2.1z" class="cls-2"/>
+        </g>
+        <path id="Path_896" d="M16.5 11.156a2.1 2.1 0 0 0-.309.031c.012-.125.038-.246.038-.375A3.965 3.965 0 0 0 8.4 9.934a2.457 2.457 0 0 0-.272-.028 2.625 2.625 0 1 0 0 5.25H16.5a2 2 0 0 0 0-4z" class="cls-2"/>
+        <path id="Path_695" fill="#80bc00" d="M26.9 5.047h-3.85V8.9h-2.1V5.05H17.1v-2.1h3.85V-.9h2.1v3.85h3.85z"/>
+        <path id="Path_897" d="M20.95 10.9V16a.951.951 0 0 1-.95.95H4a.951.951 0 0 1-.95-.95V6A.951.951 0 0 1 4 5.05h11.1v-2.1H4A3.053 3.053 0 0 0 .95 6v10A3.054 3.054 0 0 0 4 19.05h16A3.054 3.054 0 0 0 23.05 16v-5.1z" class="cls-2"/>
+    </g>
+</svg>

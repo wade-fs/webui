@@ -1,0 +1,119 @@
+.ws-message,
+.msgstatus,
+.infobar-bgc-error {
+  --ws-info-bar: rgba($color: #fff, $alpha: 0.2);
+  --info-success: #e1f8b3;
+  --info-error: #f8d6da;
+}
+
+header.w-container {
+  display: flex;
+  position: relative;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  height: var(--header-height);
+  background-color: var(--header-bg);
+  nav {
+    margin-right: 60px;
+    > ul {
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: space-between;
+      width: 220px;
+      > li {
+        position: relative;
+      }
+      ul.showbox {
+        position: absolute;
+        width: fit-content;
+        top: 70px;
+        font-size: 16px;
+        font-weight: 700;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.35);
+        transform: translateX(-50%);
+        overflow: visible;
+        z-index: 99;
+        li {
+          padding: 8px;
+          white-space: nowrap;
+          border-bottom: 1px solid var(--border-color);
+          cursor: pointer;
+        }
+        li.header-mac {
+          display: flex;
+          justify-content: space-around;
+          > span {
+            width: 30px;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+.circle-gray-sm {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  top: 0px;
+  left: 38px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: var(--text-color);
+  border-radius: 12px;
+}
+
+.msgstatus {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: space-between;
+  top: 2%;
+  left: 76%;
+  width: fit-content;
+  min-width: 200px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+  color: var(--header-bg);
+  text-align: center;
+  padding: 6px 16px;
+  transform: translateX(-50%);
+  background-color: var(--info-success);
+  border-radius: 10px;
+  z-index: 1051;
+  .close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+  }
+}
+
+.infobar-bgc-error {
+  background-color: var(--info-error);
+  color: var(--primary-error);
+}
+
+.ws-message {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 14px;
+  width: fit-content;
+  min-width: 320px;
+  height: fit-content;
+  min-height: 30px;
+  background: var(--ws-info-bar);
+  border-radius: 4px;
+  margin-top: 14px;
+  margin-right: 30px;
+  padding: 8px 16px;
+  border: 1px solid #fff;
+}

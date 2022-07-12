@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="table_terminal_off_disable" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-2{fill:none}
+        </style>
+    </defs>
+    <path id="Path_1035" fill="#dc3545" d="M10 0A10 10 0 1 1 0 10 10 10 0 0 1 10 0z" transform="translate(2 2)"/>
+    <g id="Group_1566">
+        <path id="Rectangle_44" d="M0 0H24V24H0z" class="cls-2"/>
+    </g>
+    <g id="Group_1580" transform="translate(3 3)">
+        <path id="Path_598" d="M7.5 11.175h18v18h-18z" class="cls-2" transform="translate(-7.5 -11.175)"/>
+        <g id="disable_icon" transform="translate(3.063 3.063)">
+            <path id="Path_599" fill="#fff" d="M15.5 13.175a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm-4.8 6a4.8 4.8 0 0 1 4.8-4.8 4.741 4.741 0 0 1 2.94 1.014l-6.726 6.726a4.741 4.741 0 0 1-1.014-2.94zm4.8 4.8a4.741 4.741 0 0 1-2.94-1.014l6.726-6.726a4.741 4.741 0 0 1 1.014 2.94 4.8 4.8 0 0 1-4.8 4.8z" transform="translate(-9.5 -13.175)"/>
+        </g>
+    </g>
+</svg>

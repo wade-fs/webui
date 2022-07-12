@@ -1,0 +1,28 @@
+<svg id="menu_setting" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #595758;
+      }
+
+      .cls-2 {
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <g id="Group_4355" data-name="Group 4355">
+    <g id="Group_4352" data-name="Group 4352">
+      <rect id="Rectangle_544" data-name="Rectangle 544" class="cls-1" width="40" height="6" rx="2" transform="translate(0 4.333)"/>
+      <rect id="Rectangle_545" data-name="Rectangle 545" class="cls-1" width="4" height="10" rx="2" transform="translate(18 2)"/>
+    </g>
+    <g id="Group_4353" data-name="Group 4353">
+      <rect id="Rectangle_546" data-name="Rectangle 546" class="cls-1" width="40" height="6" rx="2" transform="translate(0 16.813)"/>
+      <rect id="Rectangle_547" data-name="Rectangle 547" class="cls-1" width="4" height="10" rx="2" transform="translate(28.014 15)"/>
+    </g>
+    <g id="Group_4354" data-name="Group 4354">
+      <rect id="Rectangle_548" data-name="Rectangle 548" class="cls-1" width="40" height="6" rx="2" transform="translate(0 30)"/>
+      <rect id="Rectangle_549" data-name="Rectangle 549" class="cls-1" width="4" height="10" rx="2" transform="translate(8 28)"/>
+    </g>
+  </g>
+  <rect id="Rectangle_550" data-name="Rectangle 550" class="cls-2" width="40" height="40"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="42" height="46.113" viewBox="0 0 42 46.113">
+    <defs>
+        <filter id="fy0u21e41a" width="28.25" height="33.519" x="6.875" y="12.594" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur result="blur" stdDeviation="2"/>
+            <feFlood flood-opacity=".2"/>
+            <feComposite in2="blur" operator="in"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+        <filter id="240mdxxjib" width="34.466" height="34.72" x="3.767" y="0" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur result="blur-2" stdDeviation="2"/>
+            <feFlood flood-opacity=".2"/>
+            <feComposite in2="blur-2" operator="in"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g>
+        <g>
+            <g>
+                <g filter="url(#fy0u21e41a)" transform="translate(0 2.057) translate(-258.176 -445.943) translate(258.18 443.89)">
+                    <path fill="#cce499" d="M55.3 59.864l-8.125-6.6-8.125 6.6V38.345H55.3z" transform="translate(-26.18 -19.75)"/>
+                </g>
+                <g filter="url(#240mdxxjib)" transform="translate(0 2.057) translate(-258.176 -445.943) translate(258.18 443.89)">
+                    <path fill="#fff" d="M11.233 0a11.3 11.3 0 0 1 11.233 11.36 11.3 11.3 0 0 1-11.233 11.36A11.3 11.3 0 0 1 0 11.36 11.3 11.3 0 0 1 11.233 0z" transform="translate(9.77 6)"/>
+                </g>
+            </g>
+            <path fill="#80bc00" d="M43.968 34.935l-2.814-2.847-.939.949 3.753 3.8L52.01 28.7l-.939-.949z" transform="translate(0 2.057) translate(-258.176 -445.943) translate(233.063 428.955)"/>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,33 @@
+export const DEFAULT_KEYBOARD = {
+  FullScreenHotkeyCode: "RIGHT",
+  FullScreenHotkeyState: "CTRL",
+  GroupHotkeyNext: "LEFT",
+  GroupHotkeyPrev: "UP",
+  GroupHotkeyState: "CTRL",
+  IFHotkeyCode: "DOWN",
+  IFHotkeyState: "CTRL",
+  MainMenuHotkeyCode: "F1",
+  MainMenuHotkeyState: "CTRL",
+  SwapHotkeyCode: "F2",
+  SwapHotkeyState: "CTRL",
+  TileHotkeyCode: "F3",
+  TileHotkeyState: "CTRL",
+};
+
+export const DEFAULT_MOUSE = {
+  CalibrateTouchScreen: "LEFT",
+  DisableButton: "",
+  DisplayClient: "",
+  DisplayNext: "SCROLLDOWN",
+  DisplayPrev: "NONE",
+  FullScreen: "SCROLLUP",
+  LeftMouseButton: "",
+  LogOnRelevanceUser: "NONE",
+  MainMenu: "NONE",
+  RightMouseButton: "",
+  ScrollDown: "",
+  ScrollUp: "",
+  Swap: "MIDDLE",
+  Tile: "RIGHT",
+  Virtualkeyboard: "",
+};
