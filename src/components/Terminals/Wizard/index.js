@@ -349,8 +349,8 @@ export default class Wizard extends React.Component {
     // );
     return {
       [MAC]: defaultTerminal[MAC],
-      [Manufacturer]: "Arista",
-      [Model]: modelFixOptions[0],
+      [Manufacturer]: defaultTerminal[Manufacturer],
+      [Model]: defaultTerminal[Model],
       // [IpAddressMethod]: defaultTerminal[IpAddressMethod],
     };
   }
@@ -953,6 +953,7 @@ export default class Wizard extends React.Component {
       terminalGroups,
       verifyAuthUserResult,
     } = data;
+	//hardware.Model = data.defaultTerminal?.Model;
     const selectedTab = tabs[selectedTabIndex].label;
     const applications = getDataForBaseCard(extractApplications(monitors));
     const autoClose = JSON.stringify(terminalInfo);

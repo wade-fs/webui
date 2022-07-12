@@ -153,7 +153,6 @@ export default (
       return state;
     }
     case OPEN_TERMINAL_EDITOR: {
-      console.log("Terminal reducer type "+type+" " + JSON.stringify(payload, null, 4));
       return update(state, {
         editorOpened: { $set: true },
         editingId: { $set: payload.id },
