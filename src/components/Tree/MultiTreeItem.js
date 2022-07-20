@@ -88,12 +88,11 @@ export default class MultiTreeItem extends Component {
       state: { show },
     } = this;
     let filter = true;
+    let status = data.Status ?? "";
+    let isOff = status == "" || status.indexOf("F") >= 0;
     switch (treeType) {
       case "terminalReplace":
-        if (
-          data.IsGroup ||
-          ((data.Status.indexOf("F") >= 0 || data.Status === "") && data.Replaceable)
-        ) {
+        if ( data.IsGroup || (isOff && data.Replaceable)) {
           filter = false;
         }
         break;

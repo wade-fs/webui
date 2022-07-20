@@ -27,6 +27,13 @@ export default (store) => (next) => (action) => {
     case WS_NOTIFICATION: {
       let { type: wsType, payload: wsPayload } = payload;
       switch (wsType) {
+        case TERMINAL: {
+          store.dispatch({
+            type: WS_NOTIFICATION_TERMINAL,
+            payload: wsPayload,
+          });
+          break;
+        }
         case TERMINAL_STATUS: {
           store.dispatch({
             type: WS_NOTIFICATION_TERMINAL_STATUS,

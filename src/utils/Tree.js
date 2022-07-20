@@ -52,6 +52,7 @@ function tempMapping(objectList, groupList) {
       ParentId: cur.ParentId,
       IsGroup: false,
       ModifiedTS: cur.ModifiedTS,
+      GroupType:cur.GroupType,
     });
     return acc;
   }, mappingGroup(groupList));
@@ -67,6 +68,7 @@ function mappingGroup(groupList) {
         ParentId: curGroup.ParentId,
         IsGroup: true,
         ModifiedTS: curGroup.ModifiedTS,
+        GroupType:curGroup.GroupType,
         Children: [],
       };
       return accGroup;

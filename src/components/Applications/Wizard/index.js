@@ -10,7 +10,12 @@ import WizardSidebar, { Tab } from "components/ObjectCommon/WizardSidebar";
 import AddObjectToGroup from "components/ObjectCommon/AddObjectToGroup";
 import CloseWizardAlert from "components/Alert/CloseWizardAlert";
 import ObjectPicker from "components/ObjectCommon/ObjectPicker";
+import { getObjectById } from "utils/Object";
 
+import {
+  getTerminalSetting,
+  clearTerminalSetting,
+} from "actions/TerminalActions";
 import {
   closeApplicationWizard,
   addApplication,
@@ -35,6 +40,7 @@ import {
   RDS_SERVER,
 } from "const/Applications/ApplicationConsts";
 import { DUPLICATE_NAME_ERROR } from "const/Message";
+import { CopyTerminalId } from "const/Terminals/TerminalFieldNames";
 import { NameInfo } from "const/Terminals/TerminalConsts";
 import {
   Id,
@@ -68,13 +74,15 @@ import {
   RdsServerIds,
   UseRDGateway,
 } from "const/Applications/ApplicationFieldNames";
-import { AppTabs, AppGroupTabs } from "const/Applications/ApplicationConsts";
+import { AppTabs, AppGroupTabs, VncTabs, VncGroupTabs } from "const/Applications/ApplicationConsts";
 import {
   DefaultApplication,
   DefaultAppGroup,
 } from "const/Applications/Default";
+import { DefaultTerminalInfo } from "const/Terminals/Default";
 
 import { checkDuplicateName } from "utils/Check";
+import { TERMINAL, VNC_GROUP_INFO, VNC_INFO } from "../../../const/Applications/ApplicationConsts";
 
 const applicationOptionsField = [
   {
@@ -90,17 +98,17 @@ const applicationOptionsField = [
   //   form: Checkbox,
   // },
   /*{
-		title: 'Include Camera Overlays',
-		name: 'UseOverlays',
-		options: {type: 'checkbox', inputStyle: {top: '8px'}},
-		form: Checkbox
-	},*/
+    title: 'Include Camera Overlays',
+    name: 'UseOverlays',
+    options: {type: 'checkbox', inputStyle: {top: '8px'}},
+    form: Checkbox
+  },*/
   /*{
-		title: 'Include Virtual Screen Overlays.',
-		name: 'UseVirtualScreenOverlays',
-		options: {type: 'checkbox', inputStyle: {top: '8px'}},
-		form: Checkbox
-	},*/
+    title: 'Include Virtual Screen Overlays.',
+    name: 'UseVirtualScreenOverlays',
+    options: {type: 'checkbox', inputStyle: {top: '8px'}},
+    form: Checkbox
+  },*/
 ];
 const connectionOptionsFields = [
   {
@@ -155,11 +163,54 @@ const sessionScalingOptionsField = [
   },
 ];
 
+const filterTab = (tab, isGroup) => {
+  if (tab === 'RDS') {
+    if (isGroup) {
+      return [...AppGroupTabs]
+    } else {
+      return [...AppTabs]
+    }
+  }
+  if (tab === 'VNC') {
+    if (isGroup) {
+      return [...VncGroupTabs]
+    } else {
+      return [...VncTabs]
+    }
+  }
+}
+
+const filterNameLabel = (tab, isGroup) => {
+  if (tab === 'RDS') {
+    if (isGroup) {
+      return 'Application Group Name'
+    } else {
+      return "Application Name"
+    }
+  }
+  if (tab === 'VNC') {
+    if (isGroup) {
+      return 'Vnc Group Name'
+    } else {
+      return 'Vnc Name'
+    }
+  }
+}
+
+const label = (tab) => {
+  if (tab === 'RDS') {
+    return 'Application Group'
+  }
+  if (tab === 'VNC') {
+    return 'Vnc Group'
+  }
+}
+
 export default class Wizard extends React.Component {
   constructor(props) {
     super(props);
     const isGroup = props.data.isGroup;
-    const tabs = isGroup === true ? [...AppGroupTabs] : [...AppTabs];
+    const tabs = filterTab(props.tab, isGroup);
     const updateTabs = tabs.map((item, index) =>
       index == 0
         ? new Tab(item, { clickable: true, visited: true })
@@ -173,10 +224,12 @@ export default class Wizard extends React.Component {
       selectedTabIndex: 0,
       showExitAlert: false,
       showServerPicker: false,
+      showTerminalPicker: false,
       selectedServerId: "",
       appType: Path,
       defaultClose: "",
       errorFields: {},
+      terminalInfo: { ...DefaultTerminalInfo }
     };
     props.dispatch(loadServers());
   }
@@ -198,7 +251,6 @@ export default class Wizard extends React.Component {
       },
       state: { data, errorFields, tabs, selectedTabIndex },
     } = this;
-
     data[e.target.name] = e.target.value;
     if (e.target.name === Name || e.target.name === ParentId) {
       const hasDuplicateName = checkDuplicateName(
@@ -263,6 +315,19 @@ export default class Wizard extends React.Component {
     });
   };
 
+  changeTerminal = (e) => {
+    let {
+      state: { terminalInfo, errorFields }
+    } = this;
+    terminalInfo[e.target.name] = e.target.value;
+    if (e.target.name === ParentId) {
+      this.props.dispatch(getTerminalSetting(terminalInfo[ParentId]));
+    }
+    if (e.target.error) {
+      errorFields[e.target.name] = e.target.error;
+    }
+  }
+
   setTabClickable = (tabs, selectedTabIndex, isCurrentTabCompleted) => {
     tabs[selectedTabIndex].completed = isCurrentTabCompleted;
     tabs.forEach((tab) => {
@@ -293,8 +358,14 @@ export default class Wizard extends React.Component {
   openServerPicker = () => {
     this.setState({ showServerPicker: true });
   };
+  openTerminalPicker = () => {
+    this.setState({ showTerminalPicker: true });
+  };
   closeServerPicker = () => {
     this.setState({ showServerPicker: false });
+  };
+  closeTerminalPicker = () => {
+    this.setState({ showTerminalPicker: false });
   };
 
   gotoTab = (offset) => {
@@ -340,12 +411,16 @@ export default class Wizard extends React.Component {
     } = this;
     delete data[ParentName];
     const isGroup = this.props.data.isGroup;
+    const tab = this.props.tab;
     if (isGroup === false) {
       delete data[Resolution];
       if (data.UseScreenSize) {
         delete data["SessionHeight"];
         delete data["SessionWidth"];
       }
+    }
+    if (tab === 'VNC') {
+      data["GroupType"] = 'VNC'
     }
     dispatch(addApplication(data, isGroup));
   };
@@ -409,6 +484,19 @@ export default class Wizard extends React.Component {
     this.setState({ data, selectedServerId });
     this.closeServerPicker();
   };
+  addTerminal = (id) => {
+    let {
+      state: { data, selectedServerId },
+    } = this;
+    selectedServerId = id;
+    data.RdsServerIds =
+      data.RdsServerIds == null || data.RdsServerIds.length == 0
+        ? `${id}`
+        : `${data.RdsServerIds},${id}`;
+    this.setState({ data, selectedServerId });
+    this.closeTerminalPicker();
+  };
+
   removeRdsServer = () => {
     let {
       state: { data, selectedServerId },
@@ -438,7 +526,7 @@ export default class Wizard extends React.Component {
         name={name}
         options={{ value: options?.value ?? data[name], ...options }}
         Tag={Tag}
-        // description={description}
+        description={description}
         onChange={this.change}
       />
     );
@@ -447,16 +535,23 @@ export default class Wizard extends React.Component {
   basicInfoCard() {
     let {
       props: {
-        data: { isGroup, applicationGroups },
+        data: { isGroup, applicationGroups, applicationMainTree },
+        tab,
+        terminals: { terminals, terminalGroups, terminalMainTree }
       },
-      state: { data, errorFields },
+      state: { data, errorFields, terminalInfo },
     } = this;
-    const nameLabel = isGroup ? "Application Group Name" : "Application Name";
+    const nameLabel = filterNameLabel(tab, isGroup)
     let parentName = "";
     const parentId = parseInt(data.ParentId);
     if (parentId != null && parentId != 0) {
       parentName = applicationGroups.data.find((item) => item.Id === parentId)
-        .Name;
+        .Name
+    }
+    let terminalParentName = getObjectById(terminalInfo[ParentId], terminals)?.Name;
+    let mainTree = {};
+    if (tab !== '') {
+      mainTree.data = applicationMainTree.data.filter(item => item.GroupType === tab);
     }
     return (
       <div className="wrap01 mt-12  wrap-bg-w pb-24">
@@ -476,16 +571,31 @@ export default class Wizard extends React.Component {
             NameInfo
           )}
         </div>
-        <label className="pt-12">Application Group</label>
+        <label className="pt-12">{label(tab, isGroup)}</label>
         <AddObjectToGroup
           isGroup={isGroup}
           objectGroups={applicationGroups}
           selectGroupName={parentName}
-          mainTree={this.props.data.applicationMainTree}
+          mainTree={mainTree}
           treeType="appGroup"
           onConfirm={this.change}
           pickerTitle="CHOOSE EXISTING GROUP"
         />
+        {(tab === 'VNC' && !isGroup) &&
+          <>
+            <label className="pt-12">Select Terminal</label>
+            <AddObjectToGroup
+              isGroup={isGroup}
+              objectGroups={terminalGroups}
+              mainTree={terminalMainTree}
+              treeType="terminal"
+              selectGroupName={terminalParentName}
+              onConfirm={this.changeTerminal}
+              pickerTitle="CHOOSE TERMINAL"
+            />
+            <label className="pt-12">Select Terminal Screen</label>
+          </>
+        }
       </div>
     );
   }
@@ -615,8 +725,68 @@ export default class Wizard extends React.Component {
                     (index == 0
                       ? " mt-12 mb-8"
                       : index == selectedServers.length - 1
-                      ? ""
-                      : " mb-8") +
+                        ? ""
+                        : " mb-8") +
+                    (server[Id] == selectedServerId ? " select" : "")
+                  }
+                  onClick={() => this.toggleSelectServer(server[Id])}
+                >
+                  {server[Name]}
+                  {selectedServerId == server[Id] && (
+                    <div
+                      className="action-delete-sm"
+                      onClick={() => this.removeRdsServer(server[Id])}
+                    ></div>
+                  )}
+                </div>
+              ))}
+            </Fragment>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  addTerminalCard() {
+    let {
+      props: { terminals },
+      state: { data, selectedServerId },
+    } = this;
+    let selectedTerminals;
+    let rdsServers = [];
+    if (data[RdsServerIds] != null && data[RdsServerIds] != "") {
+      rdsServers = data[RdsServerIds].split(",");
+    }
+    if (terminals.terminals.data != null) {
+      selectedTerminals = terminals.terminals.data.filter(
+        (server) => rdsServers.indexOf(server[Id] + "") != -1
+      );
+    }
+    return (
+      <div className="wrap01 mt-12  wrap-bg-w pb-8">
+        <h3 className=" border-bottom h-40">TERMINAL</h3>
+        <div className=" align-left">
+          <label for="">The highest server will be the priority.</label>
+          {selectedTerminals.length < 1 && (
+            <div
+              className="addnew-btn mt-12"
+              onClick={() => this.openTerminalPicker()}
+            >
+              ＋ ADD NEW
+            </div>
+          )}
+          {selectedTerminals != null && selectedTerminals.length > 0 && (
+            <Fragment>
+              {selectedTerminals.map((server, index) => (
+                <div
+                  key={server.Id}
+                  className={
+                    "schedule-btn-2" +
+                    (index == 0
+                      ? " mt-12 mb-8"
+                      : index == selectedTerminals.length - 1
+                        ? ""
+                        : " mb-8") +
                     (server[Id] == selectedServerId ? " select" : "")
                   }
                   onClick={() => this.toggleSelectServer(server[Id])}
@@ -819,13 +989,14 @@ export default class Wizard extends React.Component {
 
   render() {
     let {
-      props: { servers },
+      props: { servers, terminals },
       state: {
         tabs,
         data,
         selectedTabIndex,
         showExitAlert,
         showServerPicker,
+        showTerminalPicker,
         defaultClose,
       },
     } = this;
@@ -862,7 +1033,9 @@ export default class Wizard extends React.Component {
                 <div className="wizard-container">
                   <div className="modal-wizard-card">
                     {(selectedTab === APPLICATION_GROUP_INFO ||
-                      selectedTab === APPLICATION_INFO) &&
+                      selectedTab === APPLICATION_INFO ||
+                      selectedTab === VNC_GROUP_INFO ||
+                      selectedTab === VNC_INFO) &&
                       this.basicInfoCard()}
                     {selectedTab === APPLICATION_PROPERTIES && (
                       <Fragment>
@@ -899,6 +1072,12 @@ export default class Wizard extends React.Component {
                         {/* {this.rdsGatewaySettingsCard()} */}
                       </Fragment>
                     )}
+                    {selectedTab === TERMINAL && (
+                      <Fragment>
+                        {this.addTerminalCard()}
+                        {/* {this.rdsGatewaySettingsCard()} */}
+                      </Fragment>
+                    )}
                   </div>
                   <NavButton
                     canBack={this.canBack()}
@@ -917,6 +1096,15 @@ export default class Wizard extends React.Component {
                   pickerTitle="ADD RDS SERVER"
                   onCancel={this.closeServerPicker}
                   onConfirm={this.addRdsServers}
+                />
+              )}
+              {showTerminalPicker && (
+                <ObjectPicker
+                  treeType="appServer"
+                  mainTree={terminals.terminalMainTree.data}
+                  pickerTitle="ADD TERMINAL"
+                  onCancel={this.closeTerminalPicker}
+                  onConfirm={this.addTerminal}
                 />
               )}
             </Modal.Body>

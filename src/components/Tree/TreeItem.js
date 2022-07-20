@@ -212,17 +212,16 @@ export default class TreeItem extends Component {
       state: { show },
     } = this;
     let filter = defaultFilter;
+    let id = data?.Id ?? 0;
+    let status = wsItems[id]?.Status ?? "";
+    let replaceable = wsItems[id]?.Replaceable ?? false;
+    let isOff = status == "" || status.indexOf("F") >= 0;
     switch (treeType) {
       case "terminal":
         filter = false;
         break;
       case "terminalReplace":
-        if (
-          data.IsGroup ||
-          ((wsItems[data.Id].Status.indexOf("F") >= 0 ||
-            wsItems[data.Id].Status === "") &&
-            wsItems[data.Id].Replaceable)
-        ) {
+        if (data.IsGroup || (isOff && replaceable)) {
           filter = false;
         }
         break;

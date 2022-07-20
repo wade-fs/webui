@@ -15,7 +15,6 @@ import {
 } from "actions/ApplicationActions";
 import { loadTerminalsAndGroups } from "actions/TerminalActions";
 import { loadServersAndGroups } from "actions/ServerActions";
-
 import { ApplicationObject } from "const/Consts";
 import { LOADED, LOADING } from "const/DataLoaderState";
 
@@ -28,6 +27,7 @@ class Applications extends React.Component {
       selectedId: undefined,
       showAllTree: false,
       filterFavorite: false,
+      tab: 'RDS',
     };
   }
 
@@ -71,13 +71,15 @@ class Applications extends React.Component {
   toggleFilterAll = () => {
     this.setState({ selectedId: undefined, filterFavorite: false });
   };
+  selectTab = (tab) => {
+    this.setState({ tab: tab });
+  };
 
   render() {
     let {
       props: { data, terminals, servers, dispatch, showAppReminder },
-      state: { selectedId, showAllTree, filterFavorite },
+      state: { selectedId, showAllTree, filterFavorite, tab },
     } = this;
-
     const state = getObjectProperty(data, "applications.state");
     const applicationsById = data.applications?.data?.reduce((acc, cur) => {
       acc[cur.Id] = cur;
@@ -107,7 +109,9 @@ class Applications extends React.Component {
             data={data}
             parentId={selectedId ?? 0}
             servers={servers}
+            terminals={terminals}
             dispatch={dispatch}
+            tab={tab}
           />
         )}
         <section className="main-group-content">
@@ -153,6 +157,8 @@ class Applications extends React.Component {
             toggleAllTree={this.toggleAllTree}
             onSelect={this.selectGroup}
             openEditor={this.openEditor}
+            selectTab={this.selectTab}
+            currentTab={tab}
           />
         </section>
         <ObjectDashboard
@@ -174,6 +180,7 @@ class Applications extends React.Component {
           selectedId={selectedId}
           wizardOpened={data.wizardOpened}
           editorOpened={data.editorOpened}
+          currentTab={tab}
         />
       </Fragment>
     );

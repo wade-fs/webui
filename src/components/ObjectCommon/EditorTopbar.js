@@ -78,7 +78,7 @@ export default class EditorTopbar extends React.Component {
     let {
       props: { dispatch, editType, status, editingId, onCancel },
     } = this;
-    if (status.indexOf("F") >= 0) return;
+
     dispatch(operateTerminal(editingId, operateType));
   };
 
@@ -101,13 +101,6 @@ export default class EditorTopbar extends React.Component {
         status,
         disabled = false,
         mac = "",
-        isNtr = false,
-        isBooting = false,
-        isActive = false,
-		isError = false,
-        isBusy = false,
-        isOff = false,
-        isNolic = false,
         showOp = false,
         showTrash = true,
         showPower = true,
@@ -119,6 +112,26 @@ export default class EditorTopbar extends React.Component {
 
     const selectedTab = tabs[selectedTabIndex];
 
+	status = status ?? "";
+    const isNtr = status.indexOf("N") >= 0;
+    const isNolic = status.indexOf("I") >= 0;
+    const isBusy = status.indexOf("B") >= 0;
+    const isDisabled = status.indexOf("D") >= 0;
+    const isOff = status == "" || status.indexOf("F") >= 0;
+    const isOffDisabled = isOff && isDisabled;
+    const isActive = status.indexOf("A") >= 0 || status.indexOf("L") >= 0;
+    const isActiveDisabled = (isActive || isNolic) && isDisabled;
+    const isActiveNtr = (isActive || isNolic) && isNtr;
+    const isActiveDisabledNtr = (isActive || isNolic) && isDisabled && isNtr;
+    const isActiveBusy = isBusy;
+    const isBooting = status.indexOf("B") >= 0;
+    const isBootingDisabled = (isBooting || isNolic) && isDisabled;
+    const isError = status.indexOf("E") >= 0;
+    const isErrorDisabled = isError && isDisabled;
+    const isErrorNtr = isError && isNtr;
+    const isErrorDisabledNtr = isError && isDisabled && isNtr;
+
+//    console.log("Topbar '"+status+"' ("+isBooting+","+isError+","+isActive+","+isNolic+","+disabled+","+isNtr+","+isBusy+")");
     return (
       <Fragment>
         {showAlert && (

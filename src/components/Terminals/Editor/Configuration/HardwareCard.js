@@ -42,6 +42,7 @@ export default class HardwareCard extends React.Component {
       );
       this.setState({ modelOptions: modelOptions });
     }
+    // TODO: 這邊對 isOff/isActive 的判斷需要商榷
 	const status = this.props.status ?? "";
 	const isOff = (status == "" ||
 		status.indexOf("F") >= 0 ||

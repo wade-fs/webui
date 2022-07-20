@@ -20,6 +20,7 @@ export default function StatusInfoCard({
     terminalCount = terminals.data.filter(
       (node) => node.ParentId === editingId
     ).length;
+    // TODO: 對各種狀態的判斷需要確認
     activeCount = terminals.data.filter(
       (node) => node.ParentId === editingId && node[Status].indexOf("A") >= 0
     ).length;

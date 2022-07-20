@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 
 import { getTerminalStatus } from "utils/Status";
-export let terminalStatus = "OFF"; // 主要給 Shadow 用
+export let terminalStatus = "F"; // 主要給 Shadow 用
 
 export default class Header extends React.Component {
   constructor(props) {
@@ -14,14 +14,15 @@ export default class Header extends React.Component {
     } = this;
     if (title == null) title = "";
     let termStatus = getTerminalStatus("header", terminal);
+    // TODO 這邊的優先順序需要確認
     if (termStatus.indexOf("active") != -1) {
-      terminalStatus = "ACTIVE";
+      terminalStatus = "A";
     } else if (termStatus.indexOf("booting") != -1) {
-      terminalStatus = "BOOTING";
+      terminalStatus = "B";
     } else if (termStatus.indexOf("error") != -1) {
-      terminalStatus = "ERROR";
+      terminalStatus = "E";
     } else {
-      terminalStatus = "OFF";
+      terminalStatus = "F";
     }
     return (
       <header className="editor-header">

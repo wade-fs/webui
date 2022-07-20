@@ -113,7 +113,6 @@ export default class ObjectTitles extends React.Component {
     let {
       props: { dispatch },
     } = this;
-	if (status.indexOf("F") >= 0) return;
     dispatch(operateTerminal(editingId, operateType));
   };
 
@@ -267,7 +266,6 @@ export default class ObjectTitles extends React.Component {
         e.target.setAttribute("data-expand", "false");
       }
     }
-
     return expandData?.map((screen, screenIdx) => (
       <div key={screenIdx + 1} className="expand-list-card">
         <div className="expand-list-card-title">
@@ -410,7 +408,7 @@ export default class ObjectTitles extends React.Component {
     let {
       props: { data, terminals, servers },
     } = this;
-    const expandData = data[idx]?.RdsServerIds.split(",").map((rdsServerId) => {
+    const expandData = data[idx]?.RdsServerIds !== '' && data[idx]?.RdsServerIds.split(",").map((rdsServerId) => {
       const rdsServer = servers.data.find(
         (server) => server.Id === parseInt(rdsServerId)
       );
@@ -432,33 +430,35 @@ export default class ObjectTitles extends React.Component {
           })),
       };
     });
-    return expandData?.map((appDetail) => (
-      <div
-        key={appDetail?.rdsServer.id}
-        className={`expand-list-card${expandData.length === 1 ? "-lg" : ""}`}
-      >
+    if (expandData !== false) {
+      return expandData?.map((appDetail) => (
         <div
-          className={checkExpandTitleError(
-            servers.data.find((s) => s.Id === appDetail.rdsServer.id)
-          )}
+          key={appDetail?.rdsServer.id}
+          className={`expand-list-card${expandData.length === 1 ? "-lg" : ""}`}
         >
-          {appDetail?.rdsServer.name}
+          <div
+            className={checkExpandTitleError(
+              servers.data.find((s) => s.Id === appDetail.rdsServer.id)
+            )}
+          >
+            {appDetail?.rdsServer.name}
+          </div>
+          <ul className="expand-list-card-content">
+            {appDetail?.terminals?.map((item) => (
+              <li key={item.id}>
+                <div
+                  className={`${getTerminalStatus(
+                    "item",
+                    terminals.data.find((t) => t.Id === item.id)
+                  )} mr-8`}
+                ></div>
+                {item.name}
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="expand-list-card-content">
-          {appDetail?.terminals?.map((item) => (
-            <li key={item.id}>
-              <div
-                className={`${getTerminalStatus(
-                  "item",
-                  terminals.data.find((t) => t.Id === item.id)
-                )} mr-8`}
-              ></div>
-              {item.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-    ));
+      ));
+    }
   }
 
   getParentName(original, ParentId) {
@@ -491,6 +491,7 @@ export default class ObjectTitles extends React.Component {
         selected,
         object,
         showRightClick,
+        currentTab,
       },
       state: {
         showCopyAlert,
@@ -505,12 +506,12 @@ export default class ObjectTitles extends React.Component {
     } = this;
     const groupOriginal =
       objectGroups.data == null ||
-      (Array.isArray(objectGroups.data) && objectGroups.data.length === 0)
+        (Array.isArray(objectGroups.data) && objectGroups.data.length === 0)
         ? {}
         : objectGroups.data.reduce((map, object) => {
-            map[object.Id] = object;
-            return map;
-          }, {});
+          map[object.Id] = object;
+          return map;
+        }, {});
     return (
       <ul className="main-page-content">
         {showCopyAlert && (
@@ -537,9 +538,9 @@ export default class ObjectTitles extends React.Component {
           />
         )}
         {state !== undefined &&
-        (data === "null" ||
-          data == null ||
-          (data != null && data.length === 0)) ? (
+          (data === "null" ||
+            data == null ||
+            (data != null && data.length === 0)) ? (
           <div className="no-list-item">
             {state === "LOADING" ? (
               <p>Loading...</p>
@@ -547,10 +548,9 @@ export default class ObjectTitles extends React.Component {
               <div>
                 <div className="list-action-add-disable"></div>
                 <p>
-                  {`No ${
-                    object.toUpperCase().charAt(0) +
-                    object.slice(1, object.length)
-                  } found.`}
+                  {`No ${object !== ApplicationObject ? object.toUpperCase().charAt(0) +
+                    object.slice(1, object.length) : currentTab
+                    } found.`}
                 </p>
                 {object === "server" && hasItems === false && (
                   <p>
@@ -581,6 +581,7 @@ export default class ObjectTitles extends React.Component {
               DeviceControl,
               ConfigLock,
               NeedToRestart,
+              RdsServerIds,
               ...others
             } = object;
             const checked = selected === null
@@ -588,21 +589,19 @@ export default class ObjectTitles extends React.Component {
                 : selected[Id] === null
                   ? false
                   : selected[Id];
-  const status = object.Status ?? "";
-  const editingId = object.Id ?? 0;
-  const disabled = object.Disabled ?? false;
-  const ip = object.IpAddress ?? "";
-  const mac = object.MAC ?? "";
-  const power = ip !== "";
+  let status = object.Status ?? "";
+  status = status === "OFF" ? "F" : status;
+  const editingId = Id ?? 0;
+  const disabled = Disabled ?? false;
 
   const isNtr = editingId > 0 && status.indexOf("N") >= 0;
   const isNolic = editingId > 0 && status.indexOf("I") >= 0;
   const isBusy = editingId > 0 && status.indexOf("B") >= 0;
   const isDisabled = status.indexOf("D") >= 0;
-  const isOff = status == "" || !power || status.indexOf("F") >= 0;
+  const isOff = status == "" || status.indexOf("F") >= 0;
   const isOffDisabled = isOff && isDisabled;
-  const isActive = editingId > 0 && status.indexOf("A") >= 0;
-  const isActiveDisabled = isActive && isDisabled;
+  const isActive = editingId > 0 && (status.indexOf("A") >= 0 || status.indexOf("L") >= 0);
+  const isActiveDisabled = (isActive || isNolic) && isDisabled;
   const isActiveNtr = isActive && isNtr;
   const isActiveDisabledNtr = isActive && isDisabled && isNtr;
   const isActiveBusy = isBusy;
@@ -612,6 +611,8 @@ export default class ObjectTitles extends React.Component {
   const isErrorDisabled = isError && isDisabled;
   const isErrorNtr = isError && isNtr;
   const isErrorDisabledNtr = isError && isDisabled && isNtr;
+
+//  console.log("Title '"+status+"' ("+editingId+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isDisabled+","+isNtr+","+isBusy+")");
 
             return (
               <li key={Id} className="main-page-list" data-expand={showExpand}>
@@ -677,9 +678,7 @@ export default class ObjectTitles extends React.Component {
                             : () => this.openCopyAlert(Id, ParentId)
                         }
                       ></div>
-                      {object.Status === undefined ||
-                      object.Status.indexOf("F")>=0 ||
-                      object.Status === "" ? (
+                      {isOff ? (
                         <div
                           className="list-action-delete"
                           onClick={
@@ -731,9 +730,7 @@ export default class ObjectTitles extends React.Component {
                             )}
                             {isActive || isError || isNolic ? (
                               <div
-                                className={
-                                  object.NeedToRestart === true &&
-                                  object.Status.indexOf("A") >= 0
+                                className={ isNtr && isActive
                                     ? "operate-restart-alert"
                                     : "operate-restart"
                                 }
@@ -747,24 +744,24 @@ export default class ObjectTitles extends React.Component {
                               <div className="operate-restart-disabled"></div>
                             )}
                             {isDisabled ? (
-                                <div
-                                  className="operate-enable"
-                                  onClick={
-                                    state === "LOADING"
-                                      ? null
-                                      : () => this.operateAction(Id, "enable")
-                                  }
-                                ></div>
-                              ) : (
-                                <div
-                                  className="operate-disable"
-                                  onClick={
-                                    state === "LOADING"
-                                      ? null
-                                      : () => this.operateAction(Id, "disable")
-                                  }
-                                ></div>
-                              )}
+                              <div
+                                className="operate-enable"
+                                onClick={
+                                  state === "LOADING"
+                                    ? null
+                                    : () => this.operateAction(Id, "enable")
+                                }
+                              ></div>
+                            ) : (
+                              <div
+                                className="operate-disable"
+                                onClick={
+                                  state === "LOADING"
+                                    ? null
+                                    : () => this.operateAction(Id, "disable")
+                                }
+                              ></div>
+                            )}
                             {isOff ? (
                                 <div
                                   className="operate-power-on"

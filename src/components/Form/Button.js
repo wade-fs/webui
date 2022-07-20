@@ -53,3 +53,37 @@ export function CancelAndConfirm({
     </div>
   );
 }
+
+export function Tab({
+  tabWidth,
+  tabZIndex,
+  tabClass,
+  subTabs,
+  currentTab,
+  selectTab,
+}) {
+  return (
+    <nav className="modal-sub-tab-form-button">
+      <ul>
+        {subTabs.map((tab, index) => (
+          <li
+          key={tab}
+          className={tabClass + (tab === currentTab ? " sub-tab-click" : "")}
+            name={tab}
+            style={
+              tab === currentTab
+              ? { left: String(tabWidth * index + 20 + "px"), zIndex: 10 }
+                : {
+                    left: String(tabWidth * index + 20 + "px"),
+                    zIndex: tabZIndex - index,
+                  }
+            }
+            onClick={(e) => selectTab(e.target.getAttribute("name"))}
+            >
+            {tab}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}

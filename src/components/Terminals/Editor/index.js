@@ -362,7 +362,8 @@ export default class Editor extends React.Component {
       editingId,
       isGroup ? terminalGroups : terminals
     );
-    const status = terminal?.Status ?? "";
+    let status = terminal?.Status ?? "";
+	status = status === "OFF" ? "F" : status;
     const disabled = terminal?.Disabled ?? "";
     const ip = terminal?.IpAddress ?? "";
     const mac = terminal?.MAC ?? "";
@@ -372,10 +373,10 @@ export default class Editor extends React.Component {
     const isNolic = editingId > 0 && status.indexOf("I") >= 0;
     const isBusy = editingId > 0 && status.indexOf("B") >= 0;
     const isDisabled = status.indexOf("D") >= 0;
-    const isOff = status == "" || !power || status.indexOf("F") >= 0;
+    const isOff = status == "" || status.indexOf("F") >= 0;
     const isOffDisabled = isOff && isDisabled;
-    const isActive = editingId > 0 && status.indexOf("A") >= 0;
-    const isActiveDisabled = isActive && isDisabled;
+    const isActive = editingId > 0 && (status.indexOf("A") >= 0 || status.indexOf("L") >= 0);
+    const isActiveDisabled = (isActive || isNolic) && isDisabled;
     const isActiveNtr = isActive && isNtr;
     const isActiveDisabledNtr = isActive && isDisabled && isNtr;
     const isActiveBusy = isBusy;
@@ -386,6 +387,7 @@ export default class Editor extends React.Component {
     const isErrorNtr = isError && isNtr;
     const isErrorDisabledNtr = isError && isDisabled && isNtr;
 
+//    console.log("Editor '"+status+"'("+mac+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isNtr+","+isBusy+")");
     this.title = terminal?.Name ?? "";
 
     const isLoading = editingTerminal.state == LOADING;
@@ -436,11 +438,8 @@ export default class Editor extends React.Component {
               trash={this.trash}
               favorite={this.favorite}
               lock={this.lock}
-              showTrash={
-                isGroup ||
-                (editingId != 0 && (status.indexOf("F")>=0 || status === ""))
-              }
-              showOp={editingId != 0 && status.indexOf("B") == 0}
+              showTrash={ isGroup || (editingId != 0 && isOff) }
+              showOp={editingId > 0 && !isBooting}
               status={status}
               disabled={disabled}
               isNtr={isNtr}

@@ -125,18 +125,15 @@ export default (
                   const idx = terminals.findIndex((t) => t.Id == Id);
                   if (idx != -1) {
                     if (typeof NeedToRestart !== "undefined" && typeof Disabled !== "undefined") {
-                      console.log("LOAD with NeedToRestart: "+NeedToRestart + " Disabled: "+Disabled);
                       return update(terminals, {
                         [idx]: { NeedToRestart: { $set: NeedToRestart },
                                  Disabled: { $set: Disabled } }
                       });
                     } else if (typeof NeedToRestart !== "undefined") {
-                      console.log("LOAD with NeedToRestart: "+NeedToRestart);
                       return update(terminals, {
                         [idx]: { NeedToRestart: { $set: NeedToRestart } }
                       });
                     } else {
-                      console.log("LOAD with Disabled: "+Disabled);
                       return update(terminals, {
                         [idx]: { Disabled: { $set: Disabled } }
                       });
@@ -192,17 +189,24 @@ export default (
       });
     }
     case WS_NOTIFICATION_TERMINAL: {
-      let { Id, term } = payload;
+      let { Id, Term } = payload;
       return update(
         state,
         {
           $apply: (terminals) => {
             if (terminals) {
+              // 先找出 terminals 中的 term idx
               const idx = terminals.findIndex((t) => t.Id == Id);
-              if (idx != -1)
-                return update(terminals, {
-                  [idx]: { data: { $set: term } },
+              if (idx > 0) {
+                let t = terminals[idx];
+                // Term include 部份 terminal 的欄位，就像 PUT 在做的事
+                Object.keys(Term).forEach(key => {
+                   t[key] = Term[key];
                 });
+                return update(terminals, {
+                  [idx]: { data: { $set: t } },
+                });
+              }
             }
             return terminals;
           },
@@ -217,6 +221,7 @@ export default (
     }
     case WS_NOTIFICATION_TERMINAL_STATUS: {
       let { Id, Status } = payload;
+      console.log("TerminalReducer for ws term status: "+Id +", "+Status);
       return update(
         state,
         {
@@ -235,7 +240,6 @@ export default (
       );
     }
     default: // 這邊就多了
-      // console.log("Terminal reducer type "+type+" " + JSON.stringify(payload, null, 4));
       return state;
   }
 };

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import classNames from "classnames";
 
-import { TerminalObject, ServerObject, ApplicationObject } from "const/Consts";
+import { TerminalObject, ServerObject, ApplicationObject, VncObject } from "const/Consts";
 import { getObjectProperty, stringValid, clone } from "lib/Util";
 import Search from "components/Other/Search";
 import ObjectTitles from "./ObjectTitles";
@@ -108,7 +108,7 @@ export default class ObjectDashboard extends React.Component {
 
   getData() {
     let {
-      props: { object, selectedId, filterDefault },
+      props: { object, selectedId, filterDefault, currentTab },
       state: {
         sortByName,
         searchText,
@@ -121,6 +121,9 @@ export default class ObjectDashboard extends React.Component {
 
     let data = getObjectProperty(this.props.data, `${object}s.data`);
     if (data !== null && data !== undefined) {
+      if (currentTab == "RDS" || currentTab == "VNC") {
+        data = data.filter((item) => item.GroupType === currentTab);
+      }
       data = data.filter((item) => {
         if (!stringValid(searchText)) return true;
         return item.Name.toLowerCase().includes(searchText.toLowerCase());
@@ -128,7 +131,9 @@ export default class ObjectDashboard extends React.Component {
       if (filterActive !== null) {
         data = data.filter((item) => {
           let { Status } = item;
-          return filterActive ? Status.indexOf("A")>=0 : Status.indexOf("F")>=0;
+          let isOff = Status == "" || Status.indexOf("F") >= 0;
+          let isActive = Status.indexOf("A")>=0 || Status.indexOf("L") >= 0;
+          return filterActive ? isActive : isOff;
         });
       }
       if (filterEnable !== null)
@@ -204,6 +209,7 @@ export default class ObjectDashboard extends React.Component {
         editorOpened,
         objects,
         objectGroups,
+        currentTab,
       },
       state: {
         showExpand,
@@ -241,7 +247,7 @@ export default class ObjectDashboard extends React.Component {
       ).length;
       offCount = data.filter(
         (node) =>
-          node.Status.indexOf("F")>=0 &&
+          (node.Status == "" || node.Status.indexOf("F")>=0) &&
           (node.ParentId === selectedId || selectedId === undefined)
       ).length;
       disabledCount = data.filter(
@@ -391,6 +397,44 @@ export default class ObjectDashboard extends React.Component {
                 </div>
               </Fragment>
             )}
+            {object == ApplicationObject && (
+              <Fragment>
+                <div className="add-side"></div>
+                <div>
+                  <div
+                    onClick={() =>
+                      this.changeFilter(
+                        filterEnable,
+                        filterEnable === true ? null : true,
+                        "filterEnable"
+                      )
+                    }
+                    className={classNames(
+                      "filter-btn",
+                      filterEnable === true ? "bar-click" : null
+                    )}
+                  >
+                    ENABLE
+                  </div>
+                  <div
+                    onClick={() =>
+                      this.changeFilter(
+                        filterEnable,
+                        filterEnable === false ? null : false,
+                        "filterEnable"
+                      )
+                    }
+                    className={classNames(
+                      "filter-btn",
+                      filterEnable === false ? "bar-click" : null
+                    )}
+                  >
+                    <div className="filter-disabled"></div>
+                    DISABLE
+                  </div>
+                </div>
+              </Fragment>
+            )}
             <div className="add-side"></div>
             <div>
               <div
@@ -424,7 +468,9 @@ export default class ObjectDashboard extends React.Component {
               inputClass="searchbar wp-100"
               placeholder={
                 "Search " +
-                `${object.charAt(0).toUpperCase() + object.slice(1)}`
+                `${object !== ApplicationObject ?
+                  object.charAt(0).toUpperCase() + object.slice(1) : currentTab
+                }`
               }
               value={searchText}
               setSearchText={this.setSearchText}
@@ -493,6 +539,7 @@ export default class ObjectDashboard extends React.Component {
           wizardOpened={wizardOpened}
           editorOpened={editorOpened}
           editingId={editingId}
+          currentTab={currentTab}
         />
         {Object.values(selected).includes(true) && this.popActionsCard()}
       </section>
