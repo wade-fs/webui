@@ -46,16 +46,16 @@
 - ![-active-disabled][7] ![][26]			-active-disabled
 - ![-active-disabled-restart][8] ![][27]	-active-disabled-restart
 - ![-active-busy][9] ![][28]				-active-busy
-- ![-error][5] ![][29]						-error
-- ![-error-restart][6] ![][30]				-error-restart
-- ![-error-disabled][7] ![][31]				-error-disabled
-- ![-error-disabled-restart][8] ![][32]		-error-disabled-restart
-- ![-error-busy][9] ![][33]					-error-busy
-- ![-nolic][5] ![][34]						-nolic
-- ![-nolic-restart][6] ![][35]				-nolic-restart
-- ![-nolic-disabled][7] ![][36]				-nolic-disabled
-- ![-nolic-disabled-restart][8] ![][37]		-nolic-disabled-restart
-- ![-nolic-busy][9] ![][38]					-nolic-busy
+- ![-error][10] ![][29]						-error
+- ![-error-restart][11] ![][30]				-error-restart
+- ![-error-disabled][12] ![][31]			-error-disabled
+- ![-error-disabled-restart][13] ![][32]	-error-disabled-restart
+- ![-error-busy][14] ![][33]				-error-busy
+- ![-nolic][15] ![][34]						-nolic
+- ![-nolic-restart][16] ![][35]				-nolic-restart
+- ![-nolic-disabled][17] ![][36]			-nolic-disabled
+- ![-nolic-disabled-restart][18] ![][37]	-nolic-disabled-restart
+- ![-nolic-busy][19] ![][38]				-nolic-busy
 
 |ITEM						|Normal						|DISABLE						|ENABLE			|REBOOT/RESTART		|POWER-ON				|POWER-OFF		|
 |:--------------------------|:--------------------------|:------------------------------|:--------------|:------------------|:----------------------|:--------------|
