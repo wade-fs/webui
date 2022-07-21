@@ -57,40 +57,39 @@
 - ![-nolic-disabled-restart][8] ![][37]		-nolic-disabled-restart
 - ![-nolic-busy][9] ![][38]					-nolic-busy
 
-ITEM						|Normal						|DISABLE						|ENABLE			|REBOOT/RESTART		|POWER-ON				|POWER-OFF
-:---------------------------|:--------------------------|:------------------------------|:--------------|:------------------|:----------------------|:--------
-O(F)F						|-off						|-off-disabled					|X				|X					|-booting				|X
-							|							|								|				|					| -active-busy			|
-							|							|								|				|					| -active				|
-							|							|								|	 			|					| /-error				|
-							|							|								|	 			|					| /-nolic				|
-OF(F)+(D)ISABLED			|-off-disabled				|X								|-off			|X					|X						|X
-(B)OOTING					|-booting					|-booting-disabled				|X				|X					|X						|X
-(B)OOTING+(D)ISABLED		|-booting-disabled			|X								|-booting		|X					|X						|X
-(A)CTIVE					|-active					|-active-disabled				|X				|-active-busy		|X						|-active-busy
-							|							|								|				| -active			|						| -off
-							|							|								|				| /-error			|						|
-(A)CTIVE+(N)TR				|-active-restart			|-active-disabled-restart		|X				|同上				|X						|同上
-(A)CTIVE+(D)ISABLED			|-active-disabled			|X								|-active		|-active-busy		|X						|-active-busy
-							|							|								|				| -active-disabled	|						| -off-disabled
-							|							|								|				| /-error-disabled	|						|
-(A)CTIVE+(D)ISABLED+(N)TR	|-active-disabled-restart	|X								|-active-restart|同上				|X						|同上
-(E)RROR						|-error						|-error-disabled				|X				|-error-busy		|X						|-error-busy
-							|							|								|				| -active			|						| -off
-							|							|								|				| /-error			|						|
-(E)RROR+(N)TR				|-error-restart				|-error-disabled-restart		|X				|同上				|X						|同上
-(E)RROR+(D)ISABLED			|-error-disabled			|X								|-error			|-error-busy		|X						|-error-busy
-							|							|								|				| -active-disabled	|						| -off-disabled
-							|							|								|				| /-error-disabled	|						|
-(E)RROR+(D)ISABLED+(N)TR	|-error-disabled-restart	|X								|-error-restart	|同上				|X						|同上
-NOL(I)C						|-nolic						|-nolic-disabled				|X				|-nolic-busy		|X						|-nolic-busy
-							|							|								|				| -nolic			|						| -off
-							|							|								|				| /-active			|						|
-							|							|								|				| /-error			|						|
-NOL(I)C+(N)TR				|-nolic-restart				|-nolic-disabled-restart		|X				|同上				|X						|同上
-NOL(I)C+(D)ISABLED			|-nolic-disabled			|X								|-nolic			|-nolic-busy		|X						|-nolic-busy
-							|							|								|				| -active-disabled	|						| -off-disabled
-							|							|								|				| /-error-disabled	|						|
-							|							|								|				| /-nolic-disabled	|						|
-NOL(I)C+(D)ISABLED+(N)TR	|-nolic-disabled-restart	|X								|-nolic-restart	|同上				|X						|同上
-
+|ITEM						|Normal						|DISABLE						|ENABLE			|REBOOT/RESTART		|POWER-ON				|POWER-OFF		|
+|:--------------------------|:--------------------------|:------------------------------|:--------------|:------------------|:----------------------|:--------------|
+|O(F)F						|-off						|-off-disabled					|X				|X					|-booting				|X 				|
+|							|							|								|				|					| -active-busy			| 				|
+|							|							|								|				|					| -active				| 				|
+|							|							|								|	 			|					| /-error				| 				|
+|							|							|								|	 			|					| /-nolic				| 				|
+|OF(F)+(D)ISABLED			|-off-disabled				|X								|-off			|X					|X						|X 				|
+|(B)OOTING					|-booting					|-booting-disabled				|X				|X					|X						|X 				|
+|(B)OOTING+(D)ISABLED		|-booting-disabled			|X								|-booting		|X					|X						|X 				|
+|(A)CTIVE					|-active					|-active-disabled				|X				|-active-busy		|X						|-active-busy 	|
+|							|							|								|				| -active			|						| -off 			|
+|							|							|								|				| /-error			|						| 				|
+|(A)CTIVE+(N)TR				|-active-restart			|-active-disabled-restart		|X				|同上				|X						|同上 			|
+|(A)CTIVE+(D)ISABLED		|-active-disabled			|X								|-active		|-active-busy		|X						|-active-busy 	|
+|							|							|								|				| -active-disabled	|						| -off-disabled |
+|							|							|								|				| /-error-disabled	|						| 				|
+|(A)CTIVE+(D)ISABLED+(N)TR	|-active-disabled-restart	|X								|-active-restart|同上				|X						|同上 			|
+|(E)RROR					|-error						|-error-disabled				|X				|-error-busy		|X						|-error-busy 	|
+|							|							|								|				| -active			|						| -off 			|
+|							|							|								|				| /-error			|						| 				|
+|(E)RROR+(N)TR				|-error-restart				|-error-disabled-restart		|X				|同上				|X						|同上 			|
+|(E)RROR+(D)ISABLED			|-error-disabled			|X								|-error			|-error-busy		|X						|-error-busy 	|
+|							|							|								|				| -active-disabled	|						| -off-disabled |
+|							|							|								|				| /-error-disabled	|						| 				|
+|(E)RROR+(D)ISABLED+(N)TR	|-error-disabled-restart	|X								|-error-restart	|同上				|X						|同上 			|
+|NOL(I)C					|-nolic						|-nolic-disabled				|X				|-nolic-busy		|X						|-nolic-busy 	|
+|							|							|								|				| -nolic			|						| -off 			|
+|							|							|								|				| /-active			|						| 				|
+|							|							|								|				| /-error			|						| 				|
+|NOL(I)C+(N)TR				|-nolic-restart				|-nolic-disabled-restart		|X				|同上				|X						|同上 			|
+|NOL(I)C+(D)ISABLED			|-nolic-disabled			|X								|-nolic			|-nolic-busy		|X						|-nolic-busy 	|
+|							|							|								|				| -active-disabled	|						| -off-disabled |
+|							|							|								|				| /-error-disabled	|						| 				|
+|							|							|								|				| /-nolic-disabled	|						| 				|
+|NOL(I)C+(D)ISABLED+(N)TR	|-nolic-disabled-restart	|X								|-nolic-restart	|同上				|X						|同上 			|
