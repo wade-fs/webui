@@ -66,3 +66,17 @@ export const DefaultSchedule = {
   StartTime: "",
   FrequencyInMinute: 0,
 };
+
+export const DefaultTouch = {
+  TouchEnabled: false,
+  TouchVendor: "eGalax",
+  TouchUsb: 0,
+  TouchCom1: false,
+  TouchCom2: false,
+  TouchCom3: false,
+  TouchCom4: false,
+  TouchCom5: false,
+  TouchCom6: false,
+  TouchCom7: false,
+  TouchCom8: false,
+}

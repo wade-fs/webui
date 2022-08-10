@@ -86,6 +86,8 @@ export default class ScreenShape extends Component {
     this.setState({ dragScreenId: undefined, dragMonitorId: undefined });
   }
   async onDropMonitor(e) {
+    e.preventDefault && e.preventDefault(); 
+    e.stopPropagation && e.stopPropagation(); 
     let data = e.dataTransfer.getData("text");
     e.target.classList.remove("drag-hover");
     let selectedSmall = false;

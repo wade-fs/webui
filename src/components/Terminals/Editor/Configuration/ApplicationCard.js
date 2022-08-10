@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { ApplyAll } from "components/Card";
 import { MultiTree } from "components/Tree";
 import AppOverride from "components/AppOverride";
+import VncOverride from "components/VncOverride";
 
 import { stringValid } from "lib/Util";
 import { getApplication, openSubAppEditor } from "actions/ApplicationActions";
@@ -26,8 +27,8 @@ export default class ApplicationCard extends React.Component {
       this.state = {
         isInherited: isInherited,
         appOverrides:
-          this.props.appOverrides.data !== "null"
-            ? this.props.appOverrides.data
+          this.props.appOverrides.appData !== "null"
+            ? this.props.appOverrides.appData
             : {},
         selectedMapFromId: {},
         returnedMapFromId: {},
@@ -36,9 +37,11 @@ export default class ApplicationCard extends React.Component {
         terminal: terminal,
         data: data, // {SelectedScreen: 'ScreenA', Applications: []}
         showApplicationDeleteAlert: false,
+        groupType : "RDS",
         showOverride: false,
         screenOptions: screenOptions,
         currentOverrideIdx: undefined,
+        tab: 'RDS',
       };
       this.deleteIdx = -1;
     }
@@ -68,7 +71,7 @@ export default class ApplicationCard extends React.Component {
       this.props.isGroup &&
       this.props.isWizard &&
       this.props.terminal.ApplicationApplyAll !==
-        this.state.terminal.ApplicationApplyAll
+      this.state.terminal.ApplicationApplyAll
     ) {
       terminal = this.state.terminal;
       terminal[ApplicationApplyAll] = this.props.terminal.ApplicationApplyAll;
@@ -99,7 +102,7 @@ export default class ApplicationCard extends React.Component {
     const terminal = { ...this.props.terminal };
     const appOverrides = JSON.parse(
       JSON.stringify(
-        isReset ? this.props.oriAppOverrides.data : this.props.appOverrides.data
+        isReset ? this.props.oriAppOverrides.appData : this.props.appOverrides.appData
       )
     );
     const screenOptions = getScreenOptions();
@@ -352,7 +355,7 @@ export default class ApplicationCard extends React.Component {
     if (!isWizard) {
       const overrideEdited = checkEdit(
         editData,
-        oriAppOverrides.data[editData.AppId]
+        oriAppOverrides.appData[editData.AppId]
       );
       checkAppOverrideEdit(overrideEdited ? true : false);
     }
@@ -369,6 +372,7 @@ export default class ApplicationCard extends React.Component {
     returnedMapFromId[openApp.AppId] = openApp;
     this.setState({
       returnedMapFromId,
+      groupType : openApp.GroupType,
       showOverride: true,
       currentOverrideIdx: overrideIdx,
     });
@@ -391,7 +395,7 @@ export default class ApplicationCard extends React.Component {
 
   getItem(screen, application, index) {
     let {
-      props: { isEditMode },
+      props: { isEditMode, appOverrides },
       state: { returnedMapFromId },
     } = this;
     const appId = application.AppId;
@@ -416,10 +420,10 @@ export default class ApplicationCard extends React.Component {
                 className="down"
                 onClick={() => this.down(screen, index)}
               ></span>
-              {application.DisplayNameOverride ||
-              application.UserAccessOverride ||
-              application.AppCommandOverride ||
-              application.VideoSettingOverride ? (
+              { appOverrides.appData[appId].DisplayNameOverride ||
+                appOverrides.appData[appId].UserAccessOverride ||
+                appOverrides.appData[appId].AppCommandOverride ||
+                appOverrides.appData[appId].VideoSettingOverride ? (
                 <div className="item-app-override"></div>
               ) : (
                 <div className="item-app"></div>
@@ -437,10 +441,10 @@ export default class ApplicationCard extends React.Component {
         {!isEditMode && (
           <div className="selected-app-item" style={{ cursor: "default" }}>
             <div>
-              {application.DisplayNameOverride ||
-              application.UserAccessOverride ||
-              application.AppCommandOverride ||
-              application.VideoSettingOverride ? (
+              { appOverrides.appData[appId].DisplayNameOverride ||
+                appOverrides.appData[appId].UserAccessOverride ||
+                appOverrides.appData[appId].AppCommandOverride ||
+                appOverrides.appData[appId].VideoSettingOverride ? (
                 <div className="item-app-override"></div>
               ) : (
                 <div className="item-app"></div>
@@ -475,25 +479,34 @@ export default class ApplicationCard extends React.Component {
     return super.getEditButton();
   }
 
+  selectTab = (tab) => {
+    this.setState({ tab: tab });
+  };
+
   render() {
     let {
       props: {
         isLoaded,
         isEditMode,
         editingId = 0,
-        appMultiTree,
         adUsers,
         verifyAuthUserResult,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
         isGroup,
         isInDisplay,
         selectedScreen,
         selectedScreenId,
         dispatch,
+        oriAppOverrides,
+        appOverrides,
       },
       state: {
         isInherited,
         data,
         terminal,
+        groupType,
         showOverride,
         showAllTree,
         screenOptions,
@@ -501,9 +514,11 @@ export default class ApplicationCard extends React.Component {
         selectedMapFromId,
         returnedMapFromId,
         usedMapFromId,
+        tab,
       },
     } = this;
 
+    //console.log("TECA appOverrides", appOverrides);
     const hasSelectedApps = Object.keys(selectedMapFromId).length > 0;
     const hasSelectedOverrides = Object.keys(returnedMapFromId).length > 0;
     return (
@@ -513,23 +528,14 @@ export default class ApplicationCard extends React.Component {
           style={
             isInDisplay
               ? {
-                  minWidth: "600px",
-                  height: "95%",
-                  padding: "0",
-                  border: "none",
-                }
+                minWidth: "600px",
+                height: "95%",
+                padding: "0",
+                border: "none",
+              }
               : { minWidth: "960px", height: "95%" }
           }
         >
-          {/* {isGroup && isLoaded && (
-            <ApplyAll
-              name={ApplicationApplyAll}
-              isEditMode={isEditMode}
-              value={terminal[ApplicationApplyAll]}
-              onChange={this.change}
-              disabled={!isEditMode || isInherited}
-            />
-          )} */}
           <div className="display-app-content">
             <div className="display-available-content">
               <div className="display-title">AVAILABLE</div>
@@ -538,13 +544,22 @@ export default class ApplicationCard extends React.Component {
                   isEditMode={isEditMode}
                   showAllTree={showAllTree}
                   editingId={editingId}
-                  tree={appMultiTree}
+                  tree={tab === "RDS" ? rdsMainTree.data : vncMainTree.data}
                   treeType="application"
+                  rdss={rdss}
+                  rdsGroups={rdsGroups}
+                  rdsMainTree={rdsMainTree}
+                  vncs={vncs}
+                  vncGroups={vncGroups}
+                  vncMainTree={vncMainTree}
                   selectedMapFromId={selectedMapFromId}
                   usedMapFromId={usedMapFromId}
                   toggleAllTree={this.toggleAllTree}
                   onSelect={this.selectApp}
                   onOpenSubEditor={this.openSubEditor}
+                  selectTab={this.selectTab}
+                  currentTab={tab}
+                  tab={tab}
                 />
               </div>
             </div>
@@ -621,8 +636,21 @@ export default class ApplicationCard extends React.Component {
           </div>
         </div>
         {showOverride && (
+          groupType === "RDS" ?
           <div style={{ overflow: "auto" }}>
             <AppOverride
+              dispatch={dispatch}
+              isGroup={isGroup}
+              data={data[selectedScreen][currentOverrideIdx]}
+              adUsers={adUsers}
+              verifyAuthUserResult={verifyAuthUserResult}
+              onConfirm={this.closeOverride}
+              onCancel={this.cancelOverride}
+            />
+          </div>
+          :
+          <div style={{ overflow: "auto" }}>
+            <VncOverride
               dispatch={dispatch}
               isGroup={isGroup}
               data={data[selectedScreen][currentOverrideIdx]}

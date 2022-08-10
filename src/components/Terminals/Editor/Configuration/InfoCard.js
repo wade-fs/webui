@@ -31,19 +31,24 @@ export default class InfoCard extends React.Component {
 
   change = (e) => {
     let {
-      props: { isGroup, data, objects, objectGroups, onChange },
+      props: { isGroup, data, objects, objectGroups, onChange, editingId },
       state: { errorFields },
     } = this;
-
     data[e.target.name] = e.target.value;
+
+    if (e.target.error) {
+      console.log("TECI name", e.target.name, "error", e.target.error);
+      errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
     if (e.target.name === Name || e.target.name === ParentId) {
       const hasDuplicateName = checkDuplicateName(
+        editingId,
         data[Name],
         data[ParentId],
         isGroup === false ? objects : objectGroups
       );
-      if (data[e.target.name].length > 0) {
-      }
       if (hasDuplicateName) {
         errorFields[e.target.name] = DUPLICATE_NAME_ERROR;
       } else {
@@ -54,9 +59,6 @@ export default class InfoCard extends React.Component {
           delete errorFields[Name];
         }
       }
-    }
-    if (e.target.error) {
-      errorFields[e.target.name] = e.target.error;
     }
     const canApply =
       isTerminalInfoCompleted(data) && isDefaultObject(errorFields);

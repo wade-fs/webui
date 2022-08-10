@@ -85,7 +85,7 @@ class Servers extends React.Component {
 
   render() {
     let {
-      props: { data, terminals, applications, dispatch, showServerReminder },
+      props: { data, terminals, applications, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, dispatch, showServerReminder },
       state: { selectedId, showAllTree, filterFavorite },
     } = this;
     const state = getObjectProperty(data, "servers.state");
@@ -112,6 +112,8 @@ class Servers extends React.Component {
           <Wizard
             data={data}
             parentId={selectedId != null ? selectedId : 0}
+          rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+          vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
             dispatch={dispatch}
           />
         )}
@@ -151,9 +153,15 @@ class Servers extends React.Component {
             outerClass=" main-page-tree"
             expandClass=" ml-20"
             tree={data.serverMainTree.data}
+            treeType="appServerTree"
+          rdss={rdss}
+          rdsGroups={rdsGroups}
+          rdsMainTree={rdsMainTree}
+          vncs={vncs}
+          vncGroups={vncGroups}
+          vncMainTree={vncMainTree}
             filterFavorite={filterFavorite}
             showAllTree={showAllTree}
-            treeType="appServerTree"
             wsItems={serversById}
             selectedId={selectedId}
             toggleAllTree={this.toggleAllTree}
@@ -164,7 +172,13 @@ class Servers extends React.Component {
         <ObjectDashboard
           data={data}
           terminals={terminals?.terminals}
-          applications={applications?.applications}
+          applications={applications?.data}
+          rdss={rdss}
+          rdsGroups={rdsGroups}
+          rdsMainTree={rdsMainTree}
+          vncs={vncs}
+          vncGroups={vncGroups}
+          vncMainTree={vncMainTree}
           original={serversById}
           objects={data.servers}
           objectGroups={data.serverGroups}

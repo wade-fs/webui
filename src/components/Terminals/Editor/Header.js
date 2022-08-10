@@ -12,7 +12,6 @@ export default class Header extends React.Component {
     let {
       props: { terminal, title, close },
     } = this;
-    if (title == null) title = "";
     let termStatus = getTerminalStatus("header", terminal);
     // TODO 這邊的優先順序需要確認
     if (termStatus.indexOf("active") != -1) {

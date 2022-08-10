@@ -22,13 +22,21 @@ export default class InfoCard extends React.Component {
 
   change = (e) => {
     let {
-      props: { isGroup, data, objects, objectGroups, onChange },
+      props: { isGroup, data, objects, objectGroups, onChange, editingId },
       state: { errorFields },
     } = this;
 
     data[e.target.name] = e.target.value;
+
+    if (e.target.error) {
+      console.log("SWI name", e.target.name, "error", e.target.error);
+      errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
     if (e.target.name === Name || e.target.name === ParentId) {
       const hasDuplicateName = checkDuplicateName(
+        editingId,
         data[Name],
         data[ParentId],
         isGroup === false ? objects : objectGroups
@@ -47,9 +55,6 @@ export default class InfoCard extends React.Component {
       if (e.target.error == null) {
         delete errorFields[e.target.name];
       }
-    }
-    if (e.target.error) {
-      errorFields[e.target.name] = e.target.error;
     }
     this.setState({
       errorFields,

@@ -22,13 +22,16 @@ export function checkListEdit(list, oriList) {
   return listEdit;
 }
 
-export function checkDuplicateName(name, parentId, list) {
+export function checkDuplicateName(id, name, parentId, list) {
   if (!stringValid(name)) return false;
   let noDuplicate;
+  if (!list.data) {
+    return true;
+  }
   if (parentId != null) {
     noDuplicate = list.data
-      .filter((item) => item[ParentId] === parentId)
-      .every((item) => item[Name] != name);
+      .filter((item) => item[ParentId] === parentId && item.Id != id)
+      .every((item) => item.Name != name);
   } else {
     noDuplicate = list.data.every((item) => item[Name] != name);
   }

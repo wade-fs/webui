@@ -1,6 +1,8 @@
 const DefaultInfo = {
   Name: "",
   ParentId: 0,
+  Tid: 0,
+  Screen: "A"
 };
 
 const DefaultProperty = {

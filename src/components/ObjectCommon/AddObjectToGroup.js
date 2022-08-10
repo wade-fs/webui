@@ -85,8 +85,12 @@ export default class AddObjectToGroup extends React.Component {
         wsItems,
         disabled,
         mainTree,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
         pickerTitle,
         selectGroupName,
+        selectTerminalName,
         field = "ParentId",
         outerClass = "mt-8",
       },
@@ -98,7 +102,7 @@ export default class AddObjectToGroup extends React.Component {
           name="ParentName"
           options={{
             type: "input",
-            value: selectGroupName,
+            value: selectGroupName || selectTerminalName,
             className: "w-240",
             style: {
               opacity: "1",
@@ -119,6 +123,9 @@ export default class AddObjectToGroup extends React.Component {
             editingId={editingId}
             treeType={treeType}
             mainTree={mainTree.data}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+            currentTab={currentTab}
             wsItems={wsItems}
             pickerTitle={pickerTitle}
             onCancel={this.closeAddGroupModal}

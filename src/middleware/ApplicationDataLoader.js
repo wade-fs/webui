@@ -59,36 +59,66 @@ export default (store) => (next) => (action) => {
                 if (value.result === false) {
                   throw Error(value.data);
                 }
-                const appList = value.data;
+                const apps = value.data.RDS;
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.applications",
+                    data: apps,
+                  },
+                });
+                const vncs = value.data.VNC;
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.vncs",
+                    data: vncs,
+                  },
+                });
                 groupLoader()
                   .then(async (value) => {
                     if (value.result === false) {
                       throw Error(value.data);
                     }
-                    const appGroupList = value.data;
+                    const appGroups = value.data.RDS;
                     dispatch({
                       type: LOAD_SUCCESS,
                       payload: {
                         path: "applications.applicationGroups",
-                        data: appGroupList,
+                        data: appGroups,
                       },
                     });
+
+                    const vncGroups = value.data.VNC;
                     dispatch({
                       type: LOAD_SUCCESS,
                       payload: {
-                        path: "applications.applications",
-                        data: appList,
+                        path: "applications.vncGroups",
+                        data: vncGroups,
                       },
                     });
+
                     const applicationMainTree = await convertListToTree(
-                      appList,
-                      appGroupList
+                      apps,
+                      appGroups
                     );
                     dispatch({
                       type: LOAD_SUCCESS,
                       payload: {
                         path: "applications.applicationMainTree",
                         data: applicationMainTree,
+                      },
+                    });
+
+                    const vncMainTree = await convertListToTree(
+                      vncs,
+                      vncGroups
+                    );
+                    dispatch({
+                      type: LOAD_SUCCESS,
+                      payload: {
+                        path: "applications.vncMainTree",
+                        data: vncMainTree,
                       },
                     });
                   })
@@ -117,11 +147,29 @@ export default (store) => (next) => (action) => {
                 if (value.result === false) {
                   throw Error(value.data);
                 }
-                const appList = value.data;
-                const appGroupList = state.applications.applicationGroups.data;
+                const apps = value.data.RDS;
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.applications",
+                    data: apps,
+                  },
+                });
+
+                const vncs = value.data.VNC;
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.vncs",
+                    data: vncs,
+                  },
+                });
+
+                // 從 state 取出資料, 重建樹
+                const appGroups = state.applications.applicationGroups.data;
                 const applicationMainTree = await convertListToTree(
-                  appList,
-                  appGroupList
+                  apps,
+                  appGroups,
                 );
                 dispatch({
                   type: LOAD_SUCCESS,
@@ -130,11 +178,17 @@ export default (store) => (next) => (action) => {
                     data: applicationMainTree,
                   },
                 });
+
+                const vncGroups = state.applications.vncGroups.data;
+                const vncMainTree = await convertListToTree(
+                  vncs,
+                  vncGroups
+                );
                 dispatch({
                   type: LOAD_SUCCESS,
                   payload: {
-                    path: path,
-                    data: appList,
+                    path: "applications.vncMainTree",
+                    data: vncMainTree,
                   },
                 });
               })
@@ -159,11 +213,11 @@ export default (store) => (next) => (action) => {
                 if (value.result === false) {
                   throw Error(value.data);
                 }
-                const appGroupList = value.data;
-                const appList = state.applications.applications.data;
+                const appGroups = value.data.RDS;
+                const apps = state.applications.applications.data;
                 const applicationMainTree = await convertListToTree(
-                  appList,
-                  appGroupList
+                  apps,
+                  appGroups
                 );
                 dispatch({
                   type: LOAD_SUCCESS,
@@ -175,8 +229,29 @@ export default (store) => (next) => (action) => {
                 dispatch({
                   type: LOAD_SUCCESS,
                   payload: {
-                    path: path,
-                    data: appGroupList,
+                    path: "applications.applicationGroups",
+                    data: appGroups,
+                  },
+                });
+
+                const vncGroups = value.data.VNC;
+                const vncs = state.applications.vncs.data;
+                const vncMainTree = await convertListToTree(
+                  vncs,
+                  vncGroups,
+                );
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.vncMainTree",
+                    data: vncMainTree,
+                  },
+                });
+                dispatch({
+                  type: LOAD_SUCCESS,
+                  payload: {
+                    path: "applications.vncGroups",
+                    data: vncGroups,
                   },
                 });
               })

@@ -264,3 +264,4 @@ export const modelFixOptions = [
   "MicroBox-7824-H01",
   "H01_Series",
 ];
+export const terminalScreenOptions = ["A", "B", "C", "D", "E", "F", "G", "H"]

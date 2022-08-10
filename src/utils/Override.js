@@ -1,16 +1,18 @@
-import { DefaultAppOverride, DefaultOverride } from "const/Terminals/Override";
+import { DefaultAppOverride, DefaultVncOverride, DefaultOverride } from "const/Terminals/Override";
 
 import { apiGetAppList, apiGetAppOverride } from "api";
 
 export async function getAppOverride(editingId = 0) {
   const res = await apiGetAppList();
-  const appList = res.data;
+  const appList = Array.isArray(res.data.RDS) ? res.data.RDS.concat(res.data.VNC) : res.data.VNC;
+ 
   let mappingData = appList.reduce((acc, cur) => {
     acc[cur.Id] = {};
     acc[cur.Id] = convertAppToOverride(cur);
     acc[cur.Id].Id = 0;
     return acc;
   }, {});
+
   if (editingId !== 0) {
     const response = await apiGetAppOverride(editingId);
     if (Array.isArray(response.data) && response.data.length > 0) {
@@ -21,22 +23,37 @@ export async function getAppOverride(editingId = 0) {
     }
   }
   const appData = {
-    data: mappingData,
+    appData: mappingData,
   };
   return appData;
 }
 
 function convertAppToOverride(app) {
-  return Object.keys(DefaultAppOverride).reduce((acc, key) => {
-    if (key === "AppId") {
-      acc[key] = app.Id;
-    } else if (app[key] != null) {
-      acc[key] = app[key];
-    } else {
-      acc[key] = DefaultAppOverride[key];
-    }
-    return acc;
-  }, {});
+  if (app.GroupType === "RDS") {
+    const res = Object.keys(DefaultAppOverride).reduce((acc, key) => {
+      if (key === "AppId") {
+        acc[key] = app.Id;
+      } else if (app[key] != null) {
+        acc[key] = app[key];
+      } else {
+        acc[key] = DefaultAppOverride[key];
+      }
+      return acc;
+    }, {});
+    return res;
+  } else {
+    const res = Object.keys(DefaultVncOverride).reduce((acc, key) => {
+      if (key === "AppId") {
+        acc[key] = app.Id;
+      } else if (app[key] != null) {
+        acc[key] = app[key];
+      } else {
+        acc[key] = DefaultVncOverride[key];
+      }
+      return acc;
+    }, {});
+    return res;
+  }
 }
 
 export function findOverrideById(terminal, applications) {
@@ -55,9 +72,11 @@ export function findOverrideById(terminal, applications) {
 }
 
 export async function checkAppOverride(appOverrides) {
+  return appOverrides;
+/*
   let updateData = JSON.parse(JSON.stringify(appOverrides));
   let idx = 0;
-  // check default
+  
   for await (const item of appOverrides) {
     Object.keys(DefaultOverride).forEach((key) => {
       if (item[key] === undefined) {
@@ -73,4 +92,5 @@ export async function checkAppOverride(appOverrides) {
     idx++;
   }
   return updateData;
+*/
 }

@@ -52,17 +52,18 @@ export default class InfoCard extends React.Component {
   change = (e) => {
     let {
       props: {
-        dispatch,
-        isGroup,
-        data,
-        errorFields,
-        objects,
-        objectGroups,
-        onChange,
-        handleErrorFields,
+        dispatch, isGroup, data, errorFields, objects,
+        objectGroups, onChange, handleErrorFields, editingId
       },
     } = this;
     data[e.target.name] = e.target.value;
+
+    if (e.target.error) {
+      console.log("TWI name", e.target.name, "error", e.target.error);
+      errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
     if (e.target.name == CopySettingFrom) {
       this.setState({ copyType: e.target.value });
       if (e.target.value === "Default") {
@@ -80,6 +81,7 @@ export default class InfoCard extends React.Component {
       }
     } else if (e.target.name === Name || e.target.name === ParentId) {
       const hasDuplicateName = checkDuplicateName(
+        editingId,
         data[Name],
         data[ParentId],
         isGroup === false ? objects : objectGroups
@@ -94,9 +96,6 @@ export default class InfoCard extends React.Component {
           delete errorFields[Name];
         }
       }
-    }
-    if (e.target.error) {
-      errorFields[e.target.name] = e.target.error;
     }
     onChange(data);
     handleErrorFields(errorFields);

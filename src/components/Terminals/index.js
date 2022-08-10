@@ -166,16 +166,16 @@ class Terminals extends React.Component {
 
   render() {
     let {
-      props: { dispatch, data, servers, applications, infobar },
+      props: { dispatch, data, servers, applications, applicationGroups, applicationMainTree, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, currentTab, infobar },
       state: { selectedId, showAllTree, filterDefault, filterFavorite },
     } = this;
 
     const state = getObjectProperty(data, "terminals.state");
-	//console.log("components/Terminals/index.js() " + JSON.stringify(this.state, null, 4));
     const terminalsById = data.terminals?.data?.reduce((acc, cur) => {
       acc[cur.Id] = cur;
       return acc;
     }, {});
+
     return (
       <Fragment>
         {/* {(this.isEditorLoading() ||
@@ -187,6 +187,10 @@ class Terminals extends React.Component {
           <Editor
             data={data}
             applications={applications}
+            applicationGroups={applicationGroups}
+            applicationMainTree={applicationMainTree}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
             servers={servers}
             infobar={infobar}
             dispatch={dispatch}
@@ -195,6 +199,13 @@ class Terminals extends React.Component {
         {applications?.subEditorOpened && (
           <AppEditor
             data={applications}
+            applications={applications}
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
             servers={servers}
             dispatch={dispatch}
           />
@@ -203,6 +214,12 @@ class Terminals extends React.Component {
           <Wizard
             data={data}
             applications={applications}
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
             dispatch={dispatch}
             parentId={selectedId != null ? selectedId : 0}
           />
@@ -248,9 +265,15 @@ class Terminals extends React.Component {
             outerClass=" main-page-tree"
             expandClass=" ml-20"
             tree={data.terminalMainTree.data}
+            treeType="terminalTree"
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
             filterFavorite={filterFavorite}
             showAllTree={showAllTree}
-            treeType="terminalTree"
             wsItems={terminalsById}
             selectedId={selectedId}
             toggleAllTree={this.toggleAllTree}
@@ -261,11 +284,17 @@ class Terminals extends React.Component {
         <ObjectDashboard
           data={data}
           servers={servers?.servers}
-          applications={applications?.applications}
+          applications={applications?.data}
+          vncs={vncs?.data}
           original={terminalsById}
           objects={data.terminals}
           objectGroups={data.terminalGroups}
           mainTree={data.terminalMainTree}
+          rdss={rdss}
+          rdsGroups={rdsGroups}
+          rdsMainTree={rdsMainTree}
+          vncGroups={vncGroups}
+          vncMainTree={vncMainTree}
           dispatch={dispatch}
           isGroup={false}
           object={TerminalObject}

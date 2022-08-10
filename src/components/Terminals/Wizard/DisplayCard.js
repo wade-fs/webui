@@ -13,8 +13,10 @@ export default class DisplayCard extends React.Component {
         isGroup,
         data,
         editingId = 0,
-        appMultiTree,
         applications,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
         hardware,
         hardwareInfo,
         defaultMouseMapping,
@@ -41,13 +43,15 @@ export default class DisplayCard extends React.Component {
           terminal={{ data: data }}
           parentTerminal={parentTerminal}
           applications={applications.data}
+          rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+          vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+          currentTab={currentTab}
           hardwareInfo={hardwareInfo}
           defaultMouseMapping={defaultMouseMapping}
           style={{ marginTop: "20px" }}
           className="wrap01 mb-26 flex"
           onChange={onChange}
           editingId={editingId}
-          appMultiTree={appMultiTree}
           dispatch={dispatch}
           appOverrides={appOverrides}
           oriAppOverrides={oriAppOverrides}

@@ -5,6 +5,7 @@
   margin-left: auto;
   margin-right: auto;
 }
+
 .wrapper2 {
   width: 96.875%;
   min-width: 1366px;
@@ -30,16 +31,19 @@
   height: 768px;
   // overflow-x: auto;
   padding: 0 1%;
+
   .wrap01 {
     width: 100%;
     min-width: 660px;
     letter-spacing: 0;
     word-spacing: 0;
     position: relative;
+
     h3 {
       padding: 10px 0;
       font-size: 18px;
       font-weight: bold;
+
       span {
         padding-left: 8px;
         font-size: 16px;
@@ -53,13 +57,16 @@
 .editor-content {
   letter-spacing: 0;
   word-spacing: 0;
-  > li {
+
+  >li {
     height: 62px;
     margin-bottom: 12px;
-    > label {
+
+    >label {
       font-size: 12px;
     }
-    > p[data-view="true"] {
+
+    >p[data-view="true"] {
       margin-top: 7px;
       font-size: 14px;
       font-weight: 500;
@@ -79,6 +86,7 @@
   padding-left: 1.61290323%;
   padding-right: 1.61290323%;
   border: 1px solid var(--border-color);
+
   .no-radius {
     border-radius: 6px 6px 0 0;
   }
@@ -87,13 +95,16 @@
 .groupcontainer-2 {
   width: 99%;
   margin-left: 12px;
+
   &::-webkit-scrollbar {
     width: 10px;
   }
+
   &::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 50px;
   }
+
   &::-webkit-scrollbar-thumb {
     background-color: #b4b4b4;
     border-radius: 50px;
@@ -115,21 +126,26 @@
   min-width: 920px;
   width: 96.774193%;
   margin: 0 auto;
+
   .select-model-2 {
     width: 100%;
     margin: 0;
   }
+
   p {
     margin: 0;
     padding-left: 1.666666%;
   }
+
   .model-title {
     background-color: #fff;
+
     p {
       font-size: 12px;
       font-weight: 500;
       color: #a1a09c;
     }
+
     .title {
       float: left;
       height: 33px;
@@ -137,21 +153,25 @@
       border-top: 1px solid #a1a09c;
       border-bottom: 1px solid #a1a09c;
     }
+
     .title-left {
       width: 31.041666%;
       min-width: 298px;
     }
+
     .title-center {
       width: 17.9166667%;
       min-width: 172px;
       border-left: 1px solid #a1a09c;
       border-right: 1px solid #a1a09c;
     }
+
     .title-right {
       width: 51.041666%;
       min-width: 490px;
     }
   }
+
   ul {
     li {
       height: 36px;
@@ -160,23 +180,28 @@
       font-weight: 500;
       color: #46423a;
     }
+
     .select {
       background-color: #fff;
     }
   }
+
   .select-content {
     width: 48.958333%;
     min-width: 470px;
     background-color: #fff;
+
     .click {
       background-color: var(--primary-color);
       color: #fff;
       position: relative;
     }
+
     .click.border-bottom:after {
       contain: "";
       border-bottom: 0;
     }
+
     .click:before {
       content: "‣";
       color: #fff;
@@ -185,22 +210,27 @@
       top: 0;
       right: 8px;
     }
+
     p {
       float: left;
       padding-left: 3.403455%;
     }
+
     .left {
       width: 63.402553%;
       min-width: 298px;
     }
+
     .right {
       width: 36.595744%;
       min-width: 172px;
     }
+
     .model-content {
       position: relative;
       cursor: pointer;
     }
+
     .model-content:after {
       content: "";
       width: 93.191184%;
@@ -212,15 +242,19 @@
       left: 0;
     }
   }
+
   .select-content2 {
     width: 51.041666%;
     min-width: 490px;
+
     p {
       padding-left: 3.265306%;
     }
+
     li {
       position: relative;
     }
+
     li:after {
       content: "";
       width: 5px;
@@ -235,6 +269,7 @@
 .bgcontainer {
   position: relative;
   font-size: 0;
+
   li {
     display: inline-flex;
     justify-content: space-between;
@@ -246,24 +281,29 @@
     line-height: 36px;
     letter-spacing: 0;
     word-spacing: 0;
+
     .bor-r {
       border-right: 1px solid #a1a09c;
     }
   }
+
   .event-type {
     width: 17.395833%;
     min-width: 167px;
     padding-left: 1.666666%;
   }
+
   .date {
     width: 32.708333%;
     min-width: 314px;
     padding-left: 1.666666%;
   }
+
   .time {
     width: 38%;
     min-width: 168px;
   }
+
   .actions {
     width: 8%;
     margin-left: 4px;
@@ -272,10 +312,12 @@
   .bg-list {
     border-top: 1px solid #a1a09c;
     border-bottom: 1px solid #a1a09c;
+
     li {
       font-size: 12px;
       color: #a1a09c;
     }
+
     .event-type {
       border-right: 1px solid #a1a09c;
     }
@@ -288,4 +330,12 @@
 
 .bgcontainer:nth-child(odd) {
   background: #f4f4f5;
+}
+
+.touch-btn-content {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 10px 4px;
+  gap: 10px;
 }

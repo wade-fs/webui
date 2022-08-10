@@ -221,7 +221,6 @@ export default (
     }
     case WS_NOTIFICATION_TERMINAL_STATUS: {
       let { Id, Status } = payload;
-      console.log("TerminalReducer for ws term status: "+Id +", "+Status);
       return update(
         state,
         {

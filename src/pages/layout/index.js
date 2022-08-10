@@ -78,6 +78,8 @@ class Page extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     // check data is Loaded or not
+    // TODO 到這邊，this.props.data.applications 有時 含 applications +vncs 有時又只有 applications
+    // console.log("this.props.data.applications", this.props.data.applications, "this.props.data.vncs", this.props.data.vncs);
     if (!this.state.isLoaded && this.state.tab === "") {
       if (
         this.props.data.terminals.terminals.state === "LOADED" &&
@@ -86,9 +88,7 @@ class Page extends React.Component {
       ) {
         if (!this.hasServer()) {
           this.setState({ isLoaded: true, tab: SERVERS });
-        } else if (
-          this.props.data.applications.applications.data?.length === 0
-        ) {
+        } else if ( this.props.data.applications.applications.data?.length === 0) {
           this.setState({
             isLoaded: true,
             tab: APPLICATIONS,
@@ -165,6 +165,7 @@ class Page extends React.Component {
       props: { data },
       state: { tab, x, y },
     } = this;
+
     const token = data.auths.token;
     const productInfo = data.auths.productInfo;
     // During api get product info, show not show login page.
@@ -177,6 +178,8 @@ class Page extends React.Component {
     const showHomepage = token.data != null && token.state == LOADED;
 
     const showServerReminder = !this.hasServer();
+    // 到這邊 data.applications 含 applications + vncs
+    // console.log("data.applications", data.applications);
     const showAppReminder =
       this.hasServer() &&
       Array.isArray(data.applications.applications.data) &&
@@ -298,13 +301,27 @@ class Page extends React.Component {
                 {tab === TERMINALS && (
                   <Terminals
                     servers={data.servers}
-                    applications={data.applications}
+                    applications={data.applications.applications}
+                    applicationGroups={data.applications.applicationGroups}
+                    applicationMainTree={data.applications.applicationMainTree}
+                    rdss={data.applications.applications}
+                    rdsGroups={data.applications.applicationGroups}
+                    rdsMainTree={data.applications.applicationMainTree}
+                    vncs={data.applications.vncs}
+                    vncGroups={data.applications.vncGroups}
+                    vncMainTree={data.applications.vncMainTree}
                   />
                 )}
                 {tab === SERVERS && (
                   <Servers
                     terminals={data.terminals}
-                    applications={data.applications}
+                    applications={data.applications.applications}
+                    rdss={data.applications.applications}
+                    rdsGroups={data.applications.applicationGroups}
+                    rdsMainTree={data.applications.applicationMainTree}
+                    vncs={data.applications.vncs}
+                    vncGroups={data.applications.vncGroups}
+                    vncMainTree={data.applications.vncMainTree}
                     showServerReminder={showServerReminder}
                   />
                 )}
@@ -312,6 +329,12 @@ class Page extends React.Component {
                   <Applications
                     terminals={data.terminals}
                     servers={data.servers}
+                    rdss={data.applications.applications}
+                    rdsGroups={data.applications.applicationGroups}
+                    rdsMainTree={data.applications.applicationMainTree}
+                    vncs={data.applications.vncs}
+                    vncGroups={data.applications.vncGroups}
+                    vncMainTree={data.applications.vncMainTree}
                     showAppReminder={showAppReminder}
                   />
                 )}
@@ -337,15 +360,16 @@ class Page extends React.Component {
   }
 }
 
+export const onDispatch = (action) => {
+  return mapToDispatch(action);
+};
+
+// TODO 這邊會產生一大串的警告訊息
 const ConnectedPage = connect((state) => {
   return {
     data: state,
   };
 })(Page);
-
-export const onDispatch = (action) => {
-  return mapToDispatch(action);
-};
 
 ReactDOM.render(
   <Provider store={store}>

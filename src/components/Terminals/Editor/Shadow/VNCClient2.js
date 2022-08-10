@@ -51,8 +51,12 @@ class VNCClient2 extends React.Component {
   }
 
   getconnection = () => {
-    let base;
-    base = `${WsEndpoint}/${this.props.terminalIp}/shadow/${
+	//const pre = "ws://"+this.props.terminalIp+":4088/ws";
+	const pre = "ws://localhost:4088/ws";
+    const base1 = `${pre}/${this.props.terminalIp}/shadow/${
+      this.props.screenIdx + 1
+    }`;
+    const base = `${WsEndpoint}/${this.props.terminalIp}/shadow/${
       this.props.screenIdx + 1
     }`;
     return base;
@@ -116,7 +120,7 @@ class VNCClient2 extends React.Component {
 
   render() {
     let {
-      props: { screenIdx },
+      props: { screenIdx, terminalIp },
       state: { state, text },
     } = this;
     return (

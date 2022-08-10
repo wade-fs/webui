@@ -114,7 +114,7 @@ export default class Server extends React.Component {
 
   render() {
     let {
-      props: { isLoaded, isEditMode, data, servers },
+      props: { isLoaded, isEditMode, data, servers, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, currentTab },
       state: { showServerPicker, showServerDeleteAlert, deleteIdx },
     } = this;
     let rdsServers = [];
@@ -165,6 +165,9 @@ export default class Server extends React.Component {
             <ObjectPicker
               treeType="appServer"
               mainTree={servers.serverMainTree.data}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+            currentTab={currentTab}
               pickerTitle="ADD RDS SERVER"
               onCancel={this.closeServerPicker}
               onConfirm={this.addServer}

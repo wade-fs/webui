@@ -35,6 +35,7 @@ export default class QuickSwitch extends React.Component {
                 data={data}
                 servers={servers.servers}
                 applications={applications.applications}
+                vncs={applications.vncs}
                 objects={data.terminals}
                 objectGroups={data.terminalGroups}
                 mainTree={data.terminalMainTree}

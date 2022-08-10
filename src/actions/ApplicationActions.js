@@ -184,34 +184,42 @@ export function closeApplicationWizard() {
   };
 }
 
-export function updateAppList(appGroupList) {
+export function updateAppList(appGroupList, vncGroupList) {
   return async (dispatch) => {
     const response = await apiGetAppList();
     if (response.result === true) {
-      let appList = response.data;
-      let tree = convertListToTree(appList, appGroupList);
+      let appList = response.data.RDS;
+      let vncList = response.data.VNC;
+      let appTree = convertListToTree(appList, appGroupList);
+      let vncTree = convertListToTree(vncList, vncGroupList);
       dispatch({
         type: UPDATE_APP_LIST,
         payload: {
-          list: appList,
-          tree: tree,
+          appList: appList,
+          appTree: appTree,
+          vncList: vncList,
+          vncTree: vncTree,
         },
       });
     }
   };
 }
 
-export function updateAppGroupList(appList) {
+export function updateAppGroupList(appList, vncList) {
   return async (dispatch) => {
     const response = await apiGetAppGroupList();
     if (response.result === true) {
-      let appGroupList = response.data;
-      let tree = convertListToTree(appList, appGroupList);
+      let appGroupList = response.data.RDS;
+      let vncGroupList = response.data.VNC;
+      let appTree = convertListToTree(appList, appGroupList);
+      let vncTree = convertListToTree(vncList, vncGroupList);
       dispatch({
         type: UPDATE_APP_GROUP_LIST,
         payload: {
-          list: appGroupList,
-          tree: tree,
+          appList: appGroupList,
+          appTree: appTree,
+          vncList: vncGroupList,
+          vncTree: vncTree,
         },
       });
     }

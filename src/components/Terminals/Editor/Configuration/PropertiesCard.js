@@ -29,7 +29,7 @@ export default class PropertiesCard extends React.Component {
     super(props);
     const isInherited =
       props.disableApplyAllProperties != null &&
-      Object.keys(props.disableApplyAllProperties).length > 0
+        Object.keys(props.disableApplyAllProperties).length > 0
         ? true
         : false;
     const disableApplyAllProperties = getDisabledProperties(

@@ -18,27 +18,34 @@ export default class InfoCard extends React.Component {
   }
   change = (e) => {
     let {
-      props: { isGroup, data, objects, objectGroups, onChange },
+      props: { isGroup, data, objects, objectGroups, onChange, editingId },
       state: { errorFields },
     } = this;
     data[e.target.name] = e.target.value;
-    const hasDuplicateName = checkDuplicateName(
-      data[Name],
-      data[ParentId],
-      isGroup === false ? objects : objectGroups
-    );
-    if (hasDuplicateName) {
-      errorFields[Name] = DUPLICATE_NAME_ERROR;
-    } else {
-      if (e.target.name === ParentId) {
-        const isNameValid = nameValidator(data[Name]);
-        if (isNameValid == null) delete errorFields[Name];
-      } else {
-        delete errorFields[Name];
-      }
-    }
+
     if (e.target.error) {
+      console.log("SECI name", e.target.name, "error", e.target.error);
       errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
+    if (e.target.name === Name || e.target.name === ParentId) {
+      const hasDuplicateName = checkDuplicateName(
+        editingId,
+        data[Name],
+        data[ParentId],
+        isGroup === false ? objects : objectGroups
+      );
+      if (hasDuplicateName) {
+        errorFields[Name] = DUPLICATE_NAME_ERROR;
+      } else {
+        if (e.target.name === ParentId) {
+          const isNameValid = nameValidator(data[Name]);
+          if (isNameValid == null) delete errorFields[Name];
+        } else {
+          delete errorFields[Name];
+        }
+      }
     }
     const canApply = data[Name] !== "" && isDefaultObject(errorFields);
     this.setState({ errorFields }, () => {

@@ -63,11 +63,18 @@ export default class UserInput extends React.Component {
 
   change = (e) => {
     let {
-      props: { userList, selectedIdx, updateCanSwitch },
+      props: { userList, selectedIdx, updateCanSwitch, editingId },
       state: { data, edited, errorFields },
     } = this;
 
     data[e.target.name] = e.target.value;
+
+    if (e.target.error) {
+      console.log("SAU name", e.target.name, "error", e.target.error);
+      errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
     if (selectedIdx !== -1) {
       edited = checkEdit(data, userList.data[selectedIdx]);
     } else {
@@ -76,6 +83,7 @@ export default class UserInput extends React.Component {
     updateCanSwitch(!edited);
     if (e.target.name == Username) {
       const hasDuplicateName = checkDuplicateName(
+        editingId,
         data[Username],
         undefined,
         userList

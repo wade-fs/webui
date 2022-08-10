@@ -61,14 +61,12 @@ export async function apiDeleteTerminalGroup(id) {
 
 // api get
 export async function apiGetTerminal(id) {
-  console.log(`apiGetTerminal(${id})`);
   const url = `api/terminal/${id}`; // new api
   return await apiGet(url);
 }
 
 // api operate
 export async function apiOperateTerminal(id, action) {
-  console.log(`apiOperateTerminal(${id},${action})`);
   if (action === "poweroff") action = "power-off";
   if (action === "poweron") action = "power-on";
   const url = `api/terminal/operate/${action}/${id}`; // new api

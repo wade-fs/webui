@@ -27,8 +27,8 @@ export default class ApplicationCard extends React.Component {
         terminal: terminal,
         screenOptions: screenOptions,
         appOverrides:
-          this.props.appOverrides.data !== "null"
-            ? this.props.appOverrides.data
+          this.props.appOverrides.appData !== "null"
+            ? this.props.appOverrides.appData
             : {},
         selectedMapFromId: {},
         returnedMapFromId: {},
@@ -54,7 +54,7 @@ export default class ApplicationCard extends React.Component {
       this.setState({ terminal });
     }
     // check app update
-    if (prevProps.appOverrides.data !== this.props.appOverrides.data) {
+    if (prevProps.appOverrides.appData !== this.props.appOverrides.appData) {
       const [data, usedMapFromId, screenOptions] = this.updateAppsFromProps();
       this.setState({
         data,
@@ -68,7 +68,7 @@ export default class ApplicationCard extends React.Component {
     let usedMapFromId = {};
     let data = this.state?.data ?? {};
     const terminal = this.props.terminal.data;
-    const appOverrides = this.props.appOverrides.data;
+    const appOverrides = this.props.appOverrides.appData;
     const screenOptions = getScreenOptions();
     function getSelectedApplications(appOverrides, usedMapFromId) {
       usedMapFromId = Object.values(appOverrides).reduce((acc, cur) => {
@@ -371,9 +371,11 @@ export default class ApplicationCard extends React.Component {
       props: {
         isLoaded,
         editingId = 0,
-        appMultiTree,
         adUsers,
         verifyAuthUserResult,
+        currentTab,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
         isGroup,
         selectedScreen,
         selectedScreenId,
@@ -419,8 +421,15 @@ export default class ApplicationCard extends React.Component {
                   isEditMode={true}
                   showAllTree={showAllTree}
                   editingId={editingId}
-                  tree={appMultiTree}
+                  tree={currentTab === "RDS" ? rdsMainTree.data : vncMainTree.data}
                   treeType="application"
+                  currentTab={currentTab}
+                  rdss={rdss}
+                  rdsGroups={rdsGroups}
+                  rdsMainTree={rdsMainTree}
+                  vncs={vncs}
+                  vncGroups={vncGroups}
+                  vncMultiTree={vncMainTree}
                   selectedMapFromId={selectedMapFromId}
                   usedMapFromId={usedMapFromId}
                   toggleAllTree={this.toggleAllTree}

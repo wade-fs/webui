@@ -1,13 +1,16 @@
 import { ABOUT, CONFIGURATION } from "const/Consts";
 // Wizard Sidebar Tab
+export const TERMINAL = "TERMINAL";
 export const TERMINAL_INFO = "TERMINAL INFO";
 export const TERMINAL_GROUP_INFO = "TERMINAL GROUP INFO";
+export const TERMINAL_SCREEN = "TERMINAL SCREEN";
 export const HARDWARE = "HARDWARE";
 export const TERMINAL_PROPERTIES = "PROPERTIES";
 export const PROPERTIES = "PROPERTIES";
 export const DISPLAY = "DISPLAY";
 export const APPLICATION = "APPLICATION";
 export const USER_ACCESS = "USER ACCESS";
+export const TOUCH = "TOUCH";
 export const MODULE = "MODULE";
 export const CONTROL = "CONTROL";
 
@@ -17,6 +20,7 @@ export const TerminalGroupTabs = [
   DISPLAY,
   APPLICATION,
   USER_ACCESS,
+  TOUCH,
   MODULE,
   // CONTROL,
 ];
@@ -27,6 +31,7 @@ export const TerminalTabs = [
   DISPLAY,
   APPLICATION,
   USER_ACCESS,
+  TOUCH,
   MODULE,
   // CONTROL,
 ];
@@ -45,6 +50,7 @@ export const EditorConfigTabs = [
   PROPERTIES,
   DISPLAY,
   USER_ACCESS,
+  TOUCH,
   // CONTROL,
 ];
 export const EditorGroupConfigTabs = [
@@ -52,6 +58,7 @@ export const EditorGroupConfigTabs = [
   PROPERTIES,
   DISPLAY,
   USER_ACCESS,
+  TOUCH,
   // CONTROL,
 ];
 
@@ -71,6 +78,7 @@ export const UseSettingsFromTitle = "USE SETTING FORM";
 export const AskFirst = "Ask first";
 export const WarnFirst = "Warn first";
 export const ShadowOptions = ["YES", AskFirst, WarnFirst, "NO"];
+export const VendorOptions = ["eGalax"];
 
 export const NameMaxCount = 20;
 export const DescriptionMaxCount = 200;

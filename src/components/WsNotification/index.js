@@ -18,7 +18,7 @@ const CLOSED = 3;
 class WS {
   constructor(url, props = {}) {
     let defaultProps = {
-      reconnect: 2000, //reconnect if failed or disconnected
+      reconnect: 3000, //reconnect if failed or disconnected
       onMessage: null,
     };
     this.props = { ...defaultProps, ...props, url };
@@ -27,7 +27,7 @@ class WS {
   connect() {
     this.reconnect = true;
     if (this.timer) clearTimeout(this.timer);
-    let ws = new WebSocket(this.props.url);
+    const ws = new WebSocket(this.props.url);
 
     ws.onopen = (event) => {
       this.state = event.target.readyState;
@@ -117,9 +117,9 @@ class WsNotification extends React.Component {
               case "DELETE":
               case "POST":
               case "PUT":
-                this.props.dispatch(
-                  updateServerGroupList(this.props.servers.servers.data)
-                );
+                this.props.dispatch(updateServerGroupList(
+                  this.props.servers.servers.data
+                ));
                 break;
               default:
                 break;
@@ -130,9 +130,10 @@ class WsNotification extends React.Component {
               case "DELETE":
               case "POST":
               case "PUT":
-                this.props.dispatch(
-                  updateAppList(this.props.applications.applications.data)
-                );
+                this.props.dispatch( updateAppList(
+                    this.props.applications.applicationGroups.data,
+                    this.props.applications.vncGroups.data
+                ));
                 break;
               default:
                 break;
@@ -143,11 +144,10 @@ class WsNotification extends React.Component {
               case "DELETE":
               case "POST":
               case "PUT":
-                this.props.dispatch(
-                  updateAppGroupList(
-                    this.props.applications.applicationGroups.data
-                  )
-                );
+                this.props.dispatch( updateAppGroupList(
+                  this.props.applications.applications.data,
+                  this.props.applications.vncs.data
+                ));
                 break;
               default:
                 break;

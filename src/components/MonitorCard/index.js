@@ -674,50 +674,15 @@ export default class MonitorCard extends React.Component {
   render() {
     let {
       props: {
-        isLoaded = true,
-        isEditMode,
-        isCancel,
-        displayEdit = true,
-        resetCancel,
-        setAppOverrides,
-        checkAppOverrideEdit = null,
-        editingId = 0,
-        terminalMainTree,
-        appMultiTree,
-        isWizard,
-        terminal,
-        hardwareInfo,
-        applications,
-        adUsers,
-        verifyAuthUserResult,
-        parentTerminal,
-        defaultMouseMapping,
-        className = "wrap01 wrap-bg-w",
-        disabled = false,
-        isGroup = false,
-        style = {},
-        dispatch,
-        onChangeEdit,
-        appOverrides,
-        oriAppOverrides,
-		onChange,
+        isLoaded = true, isEditMode, isCancel, displayEdit = true, resetCancel, setAppOverrides, checkAppOverrideEdit = null, editingId = 0,
+        terminalMainTree, isWizard, terminal, hardwareInfo,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
+        adUsers, verifyAuthUserResult, parentTerminal, defaultMouseMapping, className = "wrap01 wrap-bg-w", disabled = false, isGroup = false, style = {}, dispatch, onChangeEdit, appOverrides, oriAppOverrides, onChange,
       },
       state: {
-        data,
-        maxPort,
-        maxPortArray,
-        selectedTag,
-        selectedScreenId,
-        screens,
-        resIndex,
-        hzIndex,
-        colorIndex,
-        allMonitorSetting,
-        showMultistationSettings,
-        showMouseButtonMapSettings,
-        selectedMonitors,
-        selectedMonitorArray,
-        scale,
+        data, maxPort, maxPortArray, selectedTag, selectedScreenId, screens, resIndex, hzIndex, colorIndex, allMonitorSetting, showMultistationSettings, showMouseButtonMapSettings, selectedMonitors, selectedMonitorArray, scale,
       },
     } = this;
 
@@ -836,8 +801,14 @@ export default class MonitorCard extends React.Component {
                 oriAppOverrides={oriAppOverrides}
                 editingId={editingId}
                 terminalMainTree={terminalMainTree}
-                appMultiTree={appMultiTree}
                 terminal={terminal.data}
+                rdss={rdss}
+                rdsGroups={rdsGroups}
+                rdsMainTree={rdsMainTree}
+                vncs={vncs}
+                vncGroups={vncGroups}
+                vncMainTree={vncMainTree}
+                currentTAb={currentTab}
                 adUsers={adUsers}
                 verifyAuthUserResult={verifyAuthUserResult}
                 dispatch={dispatch}

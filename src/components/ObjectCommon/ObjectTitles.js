@@ -180,6 +180,7 @@ export default class ObjectTitles extends React.Component {
     };
     switch (object) {
       case "terminal":
+        // TODO: 怎麼updateTerminal() 的參數跟定義不同？
         dispatch(updateTerminal(objectId, data, false));
         break;
       case "server":
@@ -235,27 +236,36 @@ export default class ObjectTitles extends React.Component {
 
   terminalExpand(idx) {
     let {
-      props: { data, applications, servers },
+      props: { data, currentTab, applications, rdss, vncs, servers },
     } = this;
     const screenOfAppIds = data[idx]?.ScreenOfAppIds?.split(";");
     const expandData = screenOfAppIds?.map((appIds) => {
       const appIdsArray = appIds.split(",");
       return appIdsArray.map((id) => {
-        const app = applications?.data?.find((app) => app.Id === parseInt(id));
-        const RdsServerIdsArray = app?.RdsServerIds?.split(",") ?? [];
-        const rdsServers = RdsServerIdsArray.map((serverId) => {
-          let server = servers.data.find(
-            (server) => server.Id === parseInt(serverId)
-          );
+        const app = rdss?.data?.find((app) => app.Id === parseInt(id));
+        const vnc = vncs?.find((vnc) => vnc.Id === parseInt(id));
+        if (app) {
+          const RdsServerIdsArray = app?.RdsServerIds?.split(",") ?? [];
+          const rdsServers = RdsServerIdsArray.map((serverId) => {
+            let server = servers.data.find(
+              (server) => server.Id === parseInt(serverId)
+            );
+            return {
+              id: server === undefined ? null : server.Id,
+              name: server === undefined ? null : server.Name,
+            };
+          });
           return {
-            id: server.Id,
-            name: server.Name,
+            app: { id: app?.Id, name: app?.Name },
+            rdsServers: rdsServers,
           };
-        });
-        return {
-          app: { id: app?.Id, name: app?.Name },
-          rdsServers: rdsServers,
-        };
+        }
+        if (vnc) {
+          return {
+            app: { id: vnc?.Id, name: vnc?.Name },
+            rdsServers: "",	// TODO 應該與卡拉討論，資料也要修正成 Input Source
+          };
+        }
       });
     });
 
@@ -274,13 +284,13 @@ export default class ObjectTitles extends React.Component {
         </div>
         <ul className="expand-list-card-content">
           {expandData[screenIdx].map((detail, appIdx) => (
-            <li key={detail.app.id}>
+            <li key={detail.app?.id+"-"+detail.app?.name}>
               {detail.app?.name != null && (
                 <div className="card-content-left">
                   <div
                     className={`${getAppStatus(
                       "item",
-                      applications.data.find((a) => a.Id === detail.app.id)
+                      applications.find((a) => a.Id === detail.app.id)
                     )} mr-8`}
                   ></div>
                   {detail.app?.name}
@@ -296,7 +306,7 @@ export default class ObjectTitles extends React.Component {
                   ></div>
                   <div className="card-contend-right" style={{ top: "-6px" }}>
                     <ul className="single-item">
-                      <li>
+                      <li key={detail.rdsServers[0]?.id}>
                         <div
                           className={`${getRdsServerStatus(
                             "item",
@@ -310,7 +320,7 @@ export default class ObjectTitles extends React.Component {
                     </ul>
                     <ul className="multi-item">
                       {detail.rdsServers.map((item) => (
-                        <li key={item.id}>
+                        <li key={item.id+"-"+item.name}>
                           <div
                             className={`${getRdsServerStatus(
                               "item",
@@ -332,7 +342,7 @@ export default class ObjectTitles extends React.Component {
   }
   rdsServerExpand(idx) {
     let {
-      props: { data, terminals, applications },
+      props: { data, terminals, objects, applications, vncs},
     } = this;
     const expandData = terminals?.data
       ?.filter((terminal) =>
@@ -347,7 +357,7 @@ export default class ObjectTitles extends React.Component {
         terminal: { id: filterTerminal.Id, name: filterTerminal.Name },
         apps: filterTerminal.ScreenOfAppIds?.split(";")
           .filter((appId) =>
-            applications.data.find(
+            applications.data?.find(
               (app) =>
                 app.Id === parseInt(appId) &&
                 app.RdsServerIds.split(",").includes(data[idx].Id.toString())
@@ -387,7 +397,7 @@ export default class ObjectTitles extends React.Component {
               </div>
               <ul className="expand-list-card-content">
                 {rdsServerDetail?.apps?.map((app) => (
-                  <li key={app.id}>
+                  <li key={app.id+"-"+app.name}>
                     <div
                       className={`${getAppStatus(
                         "item",
@@ -445,7 +455,7 @@ export default class ObjectTitles extends React.Component {
           </div>
           <ul className="expand-list-card-content">
             {appDetail?.terminals?.map((item) => (
-              <li key={item.id}>
+              <li key={item.id+"-"+item.name}>
                 <div
                   className={`${getTerminalStatus(
                     "item",
@@ -478,40 +488,47 @@ export default class ObjectTitles extends React.Component {
   render() {
     let {
       props: {
-        state,
-        data,
-        inEditor,
-        objects,
-        objectGroups,
-        mainTree,
-        original,
-        isGroup,
-        showExpand,
-        hasItems,
-        selected,
-        object,
-        showRightClick,
+        state, data, inEditor,
+        applications, objects, objectGroups, mainTree,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
         currentTab,
+        original, isGroup, showExpand, hasItems, selected, object, showRightClick,
       },
       state: {
-        showCopyAlert,
-        showDeleteAlert,
-        showActionList,
-        actionListIdx,
-        objectType,
-        objectId,
-        treeType,
-        parentId,
+        showCopyAlert, showDeleteAlert, showActionList, actionListIdx, objectType, objectId, treeType, parentId,
       },
     } = this;
-    const groupOriginal =
-      objectGroups.data == null ||
+    let groupOriginal;
+
+    if (treeType == "appGroup") {
+      if (currentTab == "RDS") {
+        groupOriginal = rdsGroups.data == null ||
+          (Array.isArray(rdsGroups.data) && rdsGroups.data.length === 0)
+          ? {}
+          : rdsGroups.data.reduce((map, object) => {
+            map[object.Id] = object;
+            return map;
+          }, {});
+      } else {
+        groupOriginal = vncGroups.data == null ||
+          (Array.isArray(vncGroups.data) && vncGroups.data.length === 0)
+          ? {}
+          : vncGroups.data.reduce((map, object) => {
+            map[object.Id] = object;
+            return map;
+          }, {});
+  	  }
+    } else {
+      groupOriginal = objectGroups.data == null ||
         (Array.isArray(objectGroups.data) && objectGroups.data.length === 0)
         ? {}
         : objectGroups.data.reduce((map, object) => {
           map[object.Id] = object;
           return map;
         }, {});
+    }
+
     return (
       <ul className="main-page-content">
         {showCopyAlert && (
@@ -520,6 +537,9 @@ export default class ObjectTitles extends React.Component {
             objects={objects}
             objectGroups={objectGroups}
             mainTree={mainTree}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+            currentTab={currentTab}
             objectType={objectType}
             treeType={treeType}
             isGroup={isGroup}
@@ -537,14 +557,10 @@ export default class ObjectTitles extends React.Component {
             no={this.closeDeleteAlert}
           />
         )}
-        {state !== undefined &&
-          (data === "null" ||
-            data == null ||
+        {state !== undefined && (data === "null" || data == null ||
             (data != null && data.length === 0)) ? (
           <div className="no-list-item">
-            {state === "LOADING" ? (
-              <p>Loading...</p>
-            ) : (
+            {state === "LOADING" ? ( <p>Loading...</p>) : (
               <div>
                 <div className="list-action-add-disable"></div>
                 <p>
@@ -585,37 +601,50 @@ export default class ObjectTitles extends React.Component {
               ...others
             } = object;
             const checked = selected === null
-                ? null
-                : selected[Id] === null
-                  ? false
-                  : selected[Id];
-  let status = object.Status ?? "";
-  status = status === "OFF" ? "F" : status;
-  const editingId = Id ?? 0;
-  const disabled = Disabled ?? false;
+              ? null
+              : selected[Id] === null
+                ? false
+                : selected[Id];
+            let status = object.Status ?? "";
+            status = status === "OFF" ? "F" : status;
+            const editingId = Id ?? 0;
+            const disabled = Disabled ?? false;
 
   const isNtr = editingId > 0 && status.indexOf("N") >= 0;
-  const isNolic = editingId > 0 && status.indexOf("I") >= 0;
-  const isBusy = editingId > 0 && status.indexOf("B") >= 0;
-  const isDisabled = status.indexOf("D") >= 0;
+  const isDisabled = Disabled || status.indexOf("D") >= 0;
+  const isBusy = editingId > 0 && (status.indexOf("R") >= 0 ||
+            status.indexOf("T") >= 0 || status.indexOf("P") >= 0 ||
+            status.indexOf("O") >= 0);
+
   const isOff = status == "" || status.indexOf("F") >= 0;
+  const isOffBusy = status.indexOf("W") >= 0;
   const isOffDisabled = isOff && isDisabled;
-  const isActive = editingId > 0 && (status.indexOf("A") >= 0 || status.indexOf("L") >= 0);
+
+  const isBooting = status.indexOf("B") >= 0 || status.indexOf("W") >= 0 || status.indexOf("C") >= 0;
+  const isBootingDisabled = isBooting && isDisabled;
+
+  const isActive = editingId > 0 &&
+    (status.indexOf("A") >= 0 || status.indexOf("E") < 0 && status.indexOf("L") >= 0);
   const isActiveDisabled = (isActive || isNolic) && isDisabled;
   const isActiveNtr = isActive && isNtr;
   const isActiveDisabledNtr = isActive && isDisabled && isNtr;
   const isActiveBusy = isBusy;
-  const isBooting = status.indexOf("B") >= 0;
-  const isBootingDisabled = isBooting && isDisabled;
+
   const isError = editingId > 0 && status.indexOf("E") >= 0;
   const isErrorDisabled = isError && isDisabled;
   const isErrorNtr = isError && isNtr;
   const isErrorDisabledNtr = isError && isDisabled && isNtr;
+  const isErrorBusy = isError && isBusy;
 
-//  console.log("Title '"+status+"' ("+editingId+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isDisabled+","+isNtr+","+isBusy+")");
+  const isNolic = editingId > 0 && status.indexOf("I") >= 0;
+  const isNolicDisabled = isNolic && isDisabled;
+  const isNolicNtr = isNolic && isNtr;
+  const isNolicDisabledNtr = isNolic && isDisabled && isNtr;
+  const isNolicBusy = isNolic && (isBusy || isBooting);
+
 
             return (
-              <li key={Id} className="main-page-list" data-expand={showExpand}>
+              <li key={Id+"-"+Name} className="main-page-list" data-expand={showExpand}>
                 <Fragment>
                   <div className="main-page-list-header">
                     <div
@@ -704,7 +733,7 @@ export default class ObjectTitles extends React.Component {
                       {this.props.object === TerminalObject &&
                         (showActionList && idx === actionListIdx ? (
                           <div className="home-operate-list">
-                            {isActive||isError||isNolic? (
+                            {isActive||isError? (
                               <div
                                 className="operate-calibrate"
                                 onClick={
@@ -716,7 +745,7 @@ export default class ObjectTitles extends React.Component {
                             ) : (
                               <div className="operate-calibrate-disabled"></div>
                             )}
-                            {isActive || isError || isNolic ? (
+                            {(isActive||isError||isNolic) && !(isBooting||isBusy) ? (
                               <div
                                 className="operate-reboot"
                                 onClick={
@@ -728,11 +757,11 @@ export default class ObjectTitles extends React.Component {
                             ) : (
                               <div className="operate-reboot-disabled"></div>
                             )}
-                            {isActive || isError || isNolic ? (
+                            {(isActive||isError||isNolic) && !(isBooting||isBusy) ? (
                               <div
-                                className={ isNtr && isActive
-                                    ? "operate-restart-alert"
-                                    : "operate-restart"
+                                className={isNtr && isActive
+                                  ? "operate-restart-alert"
+                                  : "operate-restart"
                                 }
                                 onClick={
                                   state === "LOADING"
@@ -763,24 +792,24 @@ export default class ObjectTitles extends React.Component {
                               ></div>
                             )}
                             {isOff ? (
-                                <div
-                                  className="operate-power-on"
-                                  onClick={
-                                    state === "LOADING"
-                                      ? null
-                                      : () => this.operateAction(Id, "poweron")
-                                  }
-                                ></div>
-                              ) : (isActive || isError || isNolic ? (
-                                <div
-                                  className="operate-power-off"
-                                  onClick={
-                                    state === "LOADING"
-                                      ? null
-                                      : () => this.operateAction(Id, "poweroff")
-                                  }
-                                ></div>
-                              ) : (
+                              <div
+                                className="operate-power-on"
+                                onClick={
+                                  state === "LOADING"
+                                    ? null
+                                    : () => this.operateAction(Id, "poweron")
+                                }
+                              ></div>
+                            ) : (isActive || isError || isNolic ? (
+                              <div
+                                className="operate-power-off"
+                                onClick={
+                                  state === "LOADING"
+                                    ? null
+                                    : () => this.operateAction(Id, "poweroff")
+                                }
+                              ></div>
+                            ) : (
                               <div className="operate-power-disabled"></div>
                             ))}
                             <div
@@ -797,7 +826,7 @@ export default class ObjectTitles extends React.Component {
                                 : () => this.toggleActionList(idx)
                             }
                           >
-                            {(isDisabled || isNtr ) && (
+                            {(isDisabled || isNtr) && (
                               <div
                                 className="list-action-operates-alert"
                                 onClick={

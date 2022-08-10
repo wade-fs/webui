@@ -108,7 +108,7 @@ export default class ObjectDashboard extends React.Component {
 
   getData() {
     let {
-      props: { object, selectedId, filterDefault, currentTab },
+      props: { object, applications, objects, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, selectedId, filterDefault, currentTab },
       state: {
         sortByName,
         searchText,
@@ -119,11 +119,17 @@ export default class ObjectDashboard extends React.Component {
       },
     } = this;
 
-    let data = getObjectProperty(this.props.data, `${object}s.data`);
-    if (data !== null && data !== undefined) {
-      if (currentTab == "RDS" || currentTab == "VNC") {
-        data = data.filter((item) => item.GroupType === currentTab);
+    let data;
+    if (object == "application") {
+      if (currentTab == "RDS") {
+        data = rdss.data;
+      } else {
+        data = vncs.data;
       }
+    } else {
+      data = getObjectProperty(this.props.data, `${object}s.data`);
+    }
+    if (data !== null && data !== undefined) {
       data = data.filter((item) => {
         if (!stringValid(searchText)) return true;
         return item.Name.toLowerCase().includes(searchText.toLowerCase());
@@ -184,31 +190,12 @@ export default class ObjectDashboard extends React.Component {
     );
     let {
       props: {
-        dispatch,
-        editingId,
-        mainTree,
-        terminals,
-        servers,
-        applications,
-        inEditor = true,
-        hasItems = true,
-        showRightClick = false,
-        isGroup = false,
-        isRestart = false,
-        hideFavorite = false,
-        hideNew = false,
-        hideGroup = false,
-        searchContainerWrapper,
-        groupContainerWrapper,
-        original,
-        object,
-        selectedId,
-        insideEditor,
-        filterDefault,
-        wizardOpened,
-        editorOpened,
-        objects,
-        objectGroups,
+        data, dispatch, editingId,
+        terminals, servers, applications,
+        objects, objectGroups, mainTree,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        inEditor = true, hasItems = true, showRightClick = false, isGroup = false, isRestart = false, hideFavorite = false, hideNew = false, hideGroup = false, searchContainerWrapper, groupContainerWrapper, original, object, selectedId, insideEditor, filterDefault, wizardOpened, editorOpened,
         currentTab,
       },
       state: {
@@ -222,7 +209,9 @@ export default class ObjectDashboard extends React.Component {
         filterError,
       },
     } = this;
-    let data = this.getData();
+
+	let dataOrg = data;
+    data = this.getData();
     let all =
       !stringValid(searchText) &&
       filterActive === null &&
@@ -525,9 +514,15 @@ export default class ObjectDashboard extends React.Component {
           terminals={terminals}
           servers={servers}
           applications={applications}
-          mainTree={mainTree}
           objects={objects}
           objectGroups={objectGroups}
+          mainTree={mainTree}
+          rdss={rdss}
+          rdsGroups={rdsGroups}
+          rdsMainTree={rdsMainTree}
+          vncs={vncs}
+          vncGroups={vncGroups}
+          vncMainTree={vncMainTree}
           original={original}
           isGroup={isGroup}
           hasItems={hasItems}

@@ -25,12 +25,20 @@ export default class CopyObjectAlert extends React.Component {
   }
   change = (e) => {
     let {
-      props: { isGroup, objects, objectGroups },
+      props: { isGroup, objects, objectGroups, editingId },
       state: { data, errorFields },
     } = this;
     data[e.target.name] = e.target.value;
+
+    if (e.target.error) {
+      console.log("AC name", e.target.name, "error", e.target.error);
+      errorFields[e.target.name] = e.target.error;
+    } else {
+      delete errorFields[e.target.name];
+    }
     if (e.target.name === Name || e.target.name === ParentId) {
       const hasDuplicateName = checkDuplicateName(
+        editingId,
         data[Name],
         data[ParentId],
         isGroup === false ? objects : objectGroups
@@ -45,9 +53,6 @@ export default class CopyObjectAlert extends React.Component {
           delete errorFields[Name];
         }
       }
-    }
-    if (e.target.error) {
-      errorFields[e.target.name] = e.target.error;
     }
     this.setState({ data, errorFields });
   };
@@ -91,13 +96,13 @@ export default class CopyObjectAlert extends React.Component {
         objects,
         objectGroups,
         mainTree,
+        vncMainTree,
         cancel,
         pickerTitle,
         isGroup,
       },
       state: { data, errorFields },
     } = this;
-
     const parentName = getObjectById(data[ParentId], objectGroups)?.Name;
     const canConfirm = isDefaultObject(errorFields) && stringValid(data[Name]);
     return (
@@ -125,6 +130,7 @@ export default class CopyObjectAlert extends React.Component {
               </label>
               <AddObjectToGroup
                 mainTree={mainTree}
+                vncMainTree={vncMainTree}
                 objects={objects}
                 objectGroups={objectGroups}
                 treeType={treeType}

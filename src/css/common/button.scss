@@ -8,20 +8,24 @@
   color: #fff;
   border: 1px solid transparent;
   border-radius: 10px;
+
   &:hover {
     box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.2);
   }
 }
+
 .alert-btn {
   @extend .primary-btn;
   background-color: #e44467;
   box-shadow: none;
 }
+
 .cancel-btn {
   @extend .primary-btn;
   background-color: #fff;
   color: var(--text-color);
   box-shadow: none;
+
   &:hover {
     box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
     background-color: rgba(#595758, $alpha: 0.05);
@@ -40,6 +44,7 @@
   border-radius: 4px;
   white-space: nowrap;
   cursor: pointer;
+
   a {
     font-size: 12px;
     color: var(--header-bg);
@@ -63,9 +68,11 @@
   color: #005596;
   letter-spacing: 0;
   word-spacing: 0;
+
   .schedule-btn-2n::after {
     display: none;
   }
+
   .select {
     background-color: #005596;
     color: #fff;
@@ -90,9 +97,11 @@
   display: flex;
   align-items: center;
   margin-top: 8px;
+
   [disabled] {
     opacity: 0.35;
   }
+
   p {
     display: inline-block;
     font-size: 16px;
@@ -101,6 +110,7 @@
     text-align: center;
     margin: 0;
   }
+
   .count-add {
     display: inline-block;
     width: 32px;
@@ -109,10 +119,12 @@
     background-repeat: no-repeat;
     background-size: cover;
     cursor: pointer;
+
     &[disabled]:hover {
       cursor: not-allowed;
     }
   }
+
   .count-minus {
     display: inline-block;
     width: 32px;
@@ -121,6 +133,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     cursor: pointer;
+
     &[disabled]:hover {
       cursor: not-allowed;
     }
@@ -142,6 +155,7 @@
   border: 1px solid var(--third-light-gray);
   cursor: pointer;
 }
+
 .day-selected {
   color: #fff;
   background-color: var(--primary-color);
@@ -228,6 +242,7 @@
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
+
   p {
     margin: 0;
   }
@@ -247,10 +262,12 @@
   border: 1px solid var(--text-color);
   border-radius: 30px;
   cursor: pointer;
+
   &:hover {
     color: #fff;
     background-color: var(--primary-gray);
     border-color: var(--primary-gray);
+
     span {
       color: #fff;
     }
@@ -302,5 +319,34 @@
   background-color: transparent;
   border: none;
   box-shadow: none;
+  cursor: pointer;
+}
+
+.touch-btn {
+  width: 98px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background-color: var(--modal-sub-tab-bg);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.touch-btn-active {
+  width: 98px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background-color: var(--primary-color);
+  border-radius: 10px;
+  color: #fff;
   cursor: pointer;
 }

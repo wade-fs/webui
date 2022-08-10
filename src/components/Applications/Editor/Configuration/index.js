@@ -24,6 +24,9 @@ import {
   APPLICATION_INFO,
   APPLICATION_GROUP_INFO,
   APPLICATION_PROPERTIES,
+  VNC_INFO,
+  VNC_GROUP_INFO,
+  VNC_PROPERTIES,
   CONNECTION_PROPERTIES,
   SCALING_RESOLUTION,
   LOAD_BALANCED,
@@ -37,8 +40,9 @@ export default class Configuration extends React.Component {
   constructor(props) {
     super(props);
     const subTabs =
-      props.data.isGroup === false
-        ? [
+      props.treeTab === "RDS" ?
+        (props.data.isGroup === false
+          ? [
             APPLICATION_INFO,
             APPLICATION_PROPERTIES,
             // CONNECTION_PROPERTIES,
@@ -46,7 +50,17 @@ export default class Configuration extends React.Component {
             // LOAD_BALANCED,
             SERVER,
           ]
-        : [APPLICATION_GROUP_INFO];
+          : [APPLICATION_GROUP_INFO]) :
+        (props.data.isGroup === false
+          ? [
+            VNC_INFO,
+            VNC_PROPERTIES,
+            // CONNECTION_PROPERTIES,
+            SCALING_RESOLUTION,
+            // LOAD_BALANCED,
+            // SERVER,
+          ]
+          : [VNC_GROUP_INFO])
     this.state = {
       editData: {},
       subTabs: subTabs,
@@ -88,14 +102,14 @@ export default class Configuration extends React.Component {
       props: { tab },
     } = this;
     const oriData = this.getOriData(tab);
-    let edtied = checkEdit(data, oriData);
-    if (otherEdited.length > 0 && edtied === false) {
-      edtied = otherEdited.some((value) => value === true);
+    let edited = checkEdit(data, oriData);
+    if (otherEdited.length > 0 && edited === false) {
+      edited = otherEdited.some((value) => value === true);
     }
-    canApply = canApply && edtied;
+    canApply = canApply && edited;
     this.setState(
       { editData: data, canApply: canApply },
-      this.props.onChangeEdit(edtied)
+      this.props.onChangeEdit(edited)
     );
   };
   edit = () => {
@@ -153,7 +167,6 @@ export default class Configuration extends React.Component {
     let {
       state: { editData },
     } = this;
-
     const oriData = this.getOriData(tab);
     editData = { ...oriData };
     this.setState({ editData: editData });
@@ -167,9 +180,12 @@ export default class Configuration extends React.Component {
     switch (tab) {
       case APPLICATION_INFO:
       case APPLICATION_GROUP_INFO:
+      case VNC_INFO:
+      case VNC_GROUP_INFO:
         oriData = info;
         break;
       case APPLICATION_PROPERTIES:
+      case VNC_PROPERTIES:
         oriData = properties;
         break;
       case CONNECTION_PROPERTIES:
@@ -242,10 +258,14 @@ export default class Configuration extends React.Component {
         isEditMode,
         isEdited,
         data,
+        dispatch,
         tab,
+        currentTab,
         editingId,
         servers,
         selectConfigTab,
+        treeTab,
+        terminalsData
       },
       state: { editData, subTabs, canApply },
     } = this;
@@ -254,6 +274,9 @@ export default class Configuration extends React.Component {
       applicationMainTree,
       applications,
       applicationGroups,
+      vncMainTree,
+      vncs,
+      vncGroups,
     } = data;
 
     return (
@@ -297,20 +320,30 @@ export default class Configuration extends React.Component {
                   onApply={this.apply}
                 >
                   {(tab === APPLICATION_INFO ||
-                    tab === APPLICATION_GROUP_INFO) && (
-                    <Info
-                      isLoaded={isLoaded}
-                      isEditMode={isEditMode}
-                      isGroup={data.isGroup}
-                      subEditorOpened={data.subEditorOpened}
-                      data={editData}
-                      applicationMainTree={applicationMainTree}
-                      objects={applications}
-                      objectGroups={applicationGroups}
-                      editingId={editingId}
-                      onChange={this.change}
-                    />
-                  )}
+                    tab === APPLICATION_GROUP_INFO ||
+                    tab === VNC_INFO ||
+                    tab === VNC_GROUP_INFO) && (
+                      <Info
+                        isLoaded={isLoaded}
+                        isEditMode={isEditMode}
+                        isGroup={data.isGroup}
+                        subEditorOpened={data.subEditorOpened}
+                        data={editData}
+                        dispatch={dispatch}
+                        applicationMainTree={applicationMainTree}
+                        objects={applications}
+                        objectGroups={applicationGroups}
+                        vncMainTree={vncMainTree}
+                        vncs={vncs}
+                        vncGroups={vncGroups}
+                        editingId={editingId}
+                        onChange={this.change}
+                        tab={tab}
+                        currentTab={currentTab}
+                        treeTab={treeTab}
+                        terminalsData={terminalsData}
+                      />
+                    )}
                   {tab === APPLICATION_PROPERTIES && (
                     <Property
                       isLoaded={isLoaded}
@@ -319,7 +352,7 @@ export default class Configuration extends React.Component {
                       onChange={this.change}
                     />
                   )}
-                  {tab === CONNECTION_PROPERTIES && (
+                  {currentTab == "RDS" && tab === CONNECTION_PROPERTIES && (
                     <Connection
                       isLoaded={isLoaded}
                       isEditMode={isEditMode}
@@ -335,7 +368,7 @@ export default class Configuration extends React.Component {
                       onChange={this.change}
                     />
                   )}
-                  {tab === LOAD_BALANCED && (
+                  {currentTab == "RDS" && tab === LOAD_BALANCED && (
                     <LoadBalance
                       isLoaded={isLoaded}
                       isEditMode={isEditMode}
@@ -343,7 +376,7 @@ export default class Configuration extends React.Component {
                       onChange={this.change}
                     />
                   )}
-                  {tab === SERVER && (
+                  {currentTab == "RDS" && tab === SERVER && (
                     <Server
                       isLoaded={isLoaded}
                       isEditMode={isEditMode}

@@ -7,6 +7,11 @@ import {
   FrequencyInMinute,
 } from "../../const/Other/ScheduleConsts";
 
+import {
+  DefaultTouch,
+  DefaultTerminalInfo
+} from "../../const/Terminals/Default";
+
 export const Id = "Id";
 export const AppId = "AppId";
 export const Status = "Status";
@@ -57,6 +62,33 @@ export const HardwareFields = [
   MAC,
   SecondaryMAC,
 ];
+
+// Touch fields
+export const TouchEnabled = "TouchEnabled"
+export const TouchVendor = "TouchVendor"
+export const TouchUsb = "TouchUsb"
+export const TouchCom1 = "TouchCom1"
+export const TouchCom2 = "TouchCom2"
+export const TouchCom3 = "TouchCom3"
+export const TouchCom4 = "TouchCom4"
+export const TouchCom5 = "TouchCom5"
+export const TouchCom6 = "TouchCom6"
+export const TouchCom7 = "TouchCom7"
+export const TouchCom8 = "TouchCom8"
+export const TouchFields = [
+  TouchEnabled,
+  TouchVendor,
+  TouchUsb,
+  TouchCom1,
+  TouchCom2,
+  TouchCom3,
+  TouchCom4,
+  TouchCom5,
+  TouchCom6,
+  TouchCom7,
+  TouchCom8,
+]
+
 
 // Terminal options
 export const AllowShadow = "AllowShadow";
@@ -253,11 +285,12 @@ export const ConfigurationFields = [
   ...TerminalOptionsFields,
   ...AuthUserFields,
   ...ControlFields,
+  ...TouchFields,
 ];
 
-export function extractConfiguration(terminal) {
+export function extractConfiguration(terminal, defaultValue) {
   return {
-    ...extractFields(terminal, ConfigurationFields),
+    ...extractFields(terminal, ConfigurationFields, defaultValue),
     ...extractMonitors(terminal),
   };
 }
@@ -437,23 +470,27 @@ export function extractAuthUser(terminal) {
 }
 
 export function extractTerminalInfo(terminal) {
-  return extractFields(terminal, TerminalInfoFields);
+  return extractFields(terminal, TerminalInfoFields, DefaultTerminalInfo);
 }
 
 export function extractTerminalInfoWizard(terminal) {
-  return extractFields(terminal, TerminalInfoWizardFields);
+  return extractFields(terminal, TerminalInfoWizardFields, DefaultTerminalInfo);
 }
 
 export function extractHardware(terminal) {
-  return extractFields(terminal, HardwareFields);
+  return extractFields(terminal, HardwareFields, null); // TODO
 }
 
 export function extractTerminalOptions(terminal) {
-  return extractFields(terminal, TerminalOptionsFields);
+  return extractFields(terminal, TerminalOptionsFields, null); // TODO
 }
 
 export function extractControls(terminal) {
-  return extractFields(terminal, ControlFields);
+  return extractFields(terminal, ControlFields, null); // TODO
+}
+
+export function extractTouch(terminal) {
+  return extractFields(terminal, TouchFields, DefaultTouch) // TODO
 }
 
 export function extractSchedule(terminal) {
@@ -461,15 +498,15 @@ export function extractSchedule(terminal) {
     Schedules,
     ScheduleApplyAll,
     EnabledSchedule,
-  ]);
+  ], null); // TODO
 }
 
 export function extractModule(terminal) {
-  return extractFields(terminal, [InstalledModules, ModuleApplyAll]);
+  return extractFields(terminal, [InstalledModules, ModuleApplyAll], null); // TODO
 }
 
 export function extractOtherApplyAll(terminal) {
-  return extractFields(terminal, [ScheduleApplyAll, ModuleApplyAll]);
+  return extractFields(terminal, [ScheduleApplyAll, ModuleApplyAll], null); // TODO
 }
 
 export function hasFullMonitorVideoConfig(video) {
@@ -493,7 +530,7 @@ export function extractMonitors(terminal) {
       terminal[NumberOfScreens],
       terminal[NumberOfMonitors]
     );
-    return extractFields(terminal, fields);
+    return extractFields(terminal, fields, null); // TODO
   }
   return {};
 }
@@ -535,16 +572,19 @@ export function extractApplications(terminal) {
     ApplicationApplyAll,
     NumberOfScreens,
   ];
-  return extractFields(terminal, fields);
+  return extractFields(terminal, fields, null); // TODO
 }
 
 export function extractTerminalAbout(terminal) {
-  return extractFields(terminal, TerminalAboutFields);
+  return extractFields(terminal, TerminalAboutFields, null); // TODO
 }
 
-export function extractFields(terminal, fields) {
+export function extractFields(terminal, fields, defaultValue) {
   if (terminal == null) return {};
-  let extract = {};
+  let extract = defaultValue;
+  if (extract == null) {
+    extract = {}
+  }
   for (var field of fields) {
     if (terminal.hasOwnProperty(field)) {
       extract[field] = terminal[field];

@@ -113,23 +113,37 @@ export default class EditorTopbar extends React.Component {
     const selectedTab = tabs[selectedTabIndex];
 
 	status = status ?? "";
-    const isNtr = status.indexOf("N") >= 0;
-    const isNolic = status.indexOf("I") >= 0;
-    const isBusy = status.indexOf("B") >= 0;
-    const isDisabled = status.indexOf("D") >= 0;
+    const isNtr = editingId > 0 && status.indexOf("N") >= 0;
+    const isDisabled = disabled || status.indexOf("D") >= 0;
+    const isBusy = editingId > 0 && (status.indexOf("R") >= 0 ||
+            status.indexOf("T") >= 0 || status.indexOf("P") >= 0 ||
+            status.indexOf("O") >= 0);
+ 
     const isOff = status == "" || status.indexOf("F") >= 0;
+    const isOffBusy = status.indexOf("W") >= 0;
     const isOffDisabled = isOff && isDisabled;
-    const isActive = status.indexOf("A") >= 0 || status.indexOf("L") >= 0;
+  
+    const isBooting = status.indexOf("B") >= 0 || status.indexOf("W") >= 0 || status.indexOf("C") >= 0;
+    const isBootingDisabled = isBooting && isDisabled;
+  
+    const isActive = editingId > 0 &&
+      (status.indexOf("A") >= 0 || status.indexOf("E") < 0 && status.indexOf("L") >= 0);
     const isActiveDisabled = (isActive || isNolic) && isDisabled;
-    const isActiveNtr = (isActive || isNolic) && isNtr;
-    const isActiveDisabledNtr = (isActive || isNolic) && isDisabled && isNtr;
-    const isActiveBusy = isBusy;
-    const isBooting = status.indexOf("B") >= 0;
-    const isBootingDisabled = (isBooting || isNolic) && isDisabled;
-    const isError = status.indexOf("E") >= 0;
+    const isActiveNtr = isActive && isNtr;
+    const isActiveDisabledNtr = isActive && isDisabled && isNtr;
+    const isActiveBusy = isActive && isBusy;
+  
+    const isError = editingId > 0 && status.indexOf("E") >= 0;
     const isErrorDisabled = isError && isDisabled;
     const isErrorNtr = isError && isNtr;
     const isErrorDisabledNtr = isError && isDisabled && isNtr;
+    const isErrorBusy = isError && isBusy;
+  
+    const isNolic = editingId > 0 && status.indexOf("I") >= 0;
+    const isNolicDisabled = isNolic && isDisabled;
+    const isNolicNtr = isNolic && isNtr;
+    const isNolicDisabledNtr = isNolic && isDisabled && isNtr;
+    const isNolicBusy = isNolic && isBusy;
 
 //    console.log("Topbar '"+status+"' ("+isBooting+","+isError+","+isActive+","+isNolic+","+disabled+","+isNtr+","+isBusy+")");
     return (
@@ -182,7 +196,7 @@ export default class EditorTopbar extends React.Component {
                   <div className="editor-operate-list">
                     {!isGroup && (
                       <Fragment>
-                        {isActive||isError||isNolic? (
+                        {isActive||isError? (
                           <div
                             className="editor-operate-calibrate"
                             onClick={() => this.operateAction("calibrate")}
@@ -190,7 +204,7 @@ export default class EditorTopbar extends React.Component {
                         ) : (
                           <div className="editor-operate-calibrate-disabled"></div>
                         )}
-                        {isActive||isError||isNolic ? (
+                        {(isActive||isError||isNolic) && !(isBooting||isBusy) ? (
                           <div
                             className="editor-operate-reboot"
                             onClick={() => this.operateAction("reboot")}
@@ -198,7 +212,7 @@ export default class EditorTopbar extends React.Component {
                         ) : (
                           <div className="editor-operate-reboot-disabled"></div>
                         )}
-                        {isActive||isError||isNolic ? (
+                        {(isActive||isError||isNolic) && !(isBooting||isBusy) ? (
                           <div
                             className={
                               isNtr

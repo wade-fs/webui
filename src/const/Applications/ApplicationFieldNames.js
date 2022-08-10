@@ -2,7 +2,9 @@ export const Id = "Id";
 export const Name = "Name";
 export const ParentId = "ParentId";
 export const ParentName = "ParentName";
-export const InfoFields = [Name, ParentId];
+export const Tid = "Tid";
+export const Screen = "Screen";
+export const InfoFields = [Name, ParentId, Tid, Screen];
 
 export const IsGroup = "IsGroup";
 

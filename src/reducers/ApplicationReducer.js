@@ -88,14 +88,18 @@ export default (
     }
     case UPDATE_APP_LIST: {
       return update(state, {
-        applications: { data: { $set: payload.list } },
-        applicationMainTree: { data: { $set: payload.tree } },
+        applications: { data: { $set: payload.appList } },
+        applicationMainTree: { data: { $set: payload.appTree } },
+        vncs: { data: { $set: payload.vncList } },
+        vncMainTree: { data: { $set: payload.vncTree } },
       });
     }
     case UPDATE_APP_GROUP_LIST: {
       return update(state, {
-        applicationGroups: { data: { $set: payload.list } },
-        applicationMainTree: { data: { $set: payload.tree } },
+        applicationGroups: { data: { $set: payload.appList } },
+        applicationMainTree: { data: { $set: payload.appTree } },
+        vncGroups: { data: { $set: payload.vncList } },
+        vncMainTree: { data: { $set: payload.vncTree } },
       });
     }
     default:

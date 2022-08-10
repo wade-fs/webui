@@ -25,7 +25,7 @@ class Applications extends React.Component {
     super(props);
     this.state = {
       selectedId: undefined,
-      showAllTree: false,
+      showAllTree: true,	// TODO: 預設打開樹
       filterFavorite: false,
       tab: 'RDS',
     };
@@ -77,14 +77,23 @@ class Applications extends React.Component {
 
   render() {
     let {
-      props: { data, terminals, servers, dispatch, showAppReminder },
+      props: { data, terminals, servers, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, dispatch, showAppReminder },
       state: { selectedId, showAllTree, filterFavorite, tab },
     } = this;
     const state = getObjectProperty(data, "applications.state");
-    const applicationsById = data.applications?.data?.reduce((acc, cur) => {
-      acc[cur.Id] = cur;
-      return acc;
-    }, {});
+
+	let applicationsById = {};
+    if (tab == "RDS") {
+      applicationsById = data.applications?.data?.reduce((acc, cur) => {
+        acc[cur.Id] = cur;
+        return acc;
+      }, {});
+    } else {
+      applicationsById = data.vncs?.data?.reduce((acc, cur) => {
+        acc[cur.Id] = cur;
+        return acc; 
+      }, {});
+    }
 
     return (
       <Fragment>
@@ -102,7 +111,15 @@ class Applications extends React.Component {
           ></Reminder>
         )}
         {data.editorOpened && (
-          <Editor data={data} servers={servers} dispatch={dispatch} />
+          <Editor
+            data={data}
+            terminalsData={terminals}
+            servers={servers}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+            dispatch={dispatch}
+            currentTab={tab}
+            treeTab={tab} />
         )}
         {data.wizardOpened && (
           <Wizard
@@ -110,6 +127,12 @@ class Applications extends React.Component {
             parentId={selectedId ?? 0}
             servers={servers}
             terminals={terminals}
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
             dispatch={dispatch}
             tab={tab}
           />
@@ -148,10 +171,18 @@ class Applications extends React.Component {
             hoverwidth={270}
             outerClass=" main-page-tree"
             expandClass=" ml-20"
-            tree={data.applicationMainTree.data}
+            tree = {tab == "RDS" ?
+              data.applicationMainTree.data :
+              data.vncMainTree.data}
+            treeType="appTree"
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
             filterFavorite={filterFavorite}
             showAllTree={showAllTree}
-            treeType="appTree"
             wsItems={applicationsById}
             selectedId={selectedId}
             toggleAllTree={this.toggleAllTree}
@@ -169,6 +200,14 @@ class Applications extends React.Component {
           objects={data.applications}
           objectGroups={data.applicationGroups}
           mainTree={data.applicationMainTree}
+          applications={data.applications.data}
+          applicationGroups={data.applicationGroups.data}
+          rdss={rdss}
+          rdsGroups={rdsGroups}
+          rdsMainTree={rdsMainTree}
+          vncs={vncs}
+          vncGroups={vncGroups}
+          vncMainTree={vncMainTree}
           dispatch={dispatch}
           isGroup={false}
           hasItems={!showAppReminder}

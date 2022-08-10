@@ -1,0 +1,2773 @@
+diff --git a/webui/src/actions/ApplicationActions.js b/webui/src/actions/ApplicationActions.js
+index be7e232f..e827c646 100644
+--- a/webui/src/actions/ApplicationActions.js
++++ b/webui/src/actions/ApplicationActions.js
+@@ -184,34 +184,42 @@ export function closeApplicationWizard() {
+   };
+ }
+ 
+-export function updateAppList(appGroupList) {
++export function updateAppList(appGroupList, vncGroupList) {
+   return async (dispatch) => {
+     const response = await apiGetAppList();
+     if (response.result === true) {
+-      let appList = response.data;
+-      let tree = convertListToTree(appList, appGroupList);
++      let appList = response.data.RDS;
++      let vncList = response.data.VNC;
++      let appTree = convertListToTree(appList, appGroupList);
++      let vncTree = convertListToTree(vncList, vncGroupList);
+       dispatch({
+         type: UPDATE_APP_LIST,
+         payload: {
+-          list: appList,
+-          tree: tree,
++          appList: appList,
++          appTree: appTree,
++          vncList: vncList,
++          vncTree: vncTree,
+         },
+       });
+     }
+   };
+ }
+ 
+-export function updateAppGroupList(appList) {
++export function updateAppGroupList(appList, vncList) {
+   return async (dispatch) => {
+     const response = await apiGetAppGroupList();
+     if (response.result === true) {
+-      let appGroupList = response.data;
+-      let tree = convertListToTree(appList, appGroupList);
++      let appGroupList = response.data.RDS;
++      let vncGroupList = response.data.VNC;
++      let appTree = convertListToTree(appList, appGroupList);
++      let vncTree = convertListToTree(vncList, vncGroupList);
+       dispatch({
+         type: UPDATE_APP_GROUP_LIST,
+         payload: {
+-          list: appGroupList,
+-          tree: tree,
++          appList: appGroupList,
++          appTree: appTree,
++          vncList: vncGroupList,
++          vncTree: vncTree,
+         },
+       });
+     }
+diff --git a/webui/src/components/Alert/CopyObjectAlert.js b/webui/src/components/Alert/CopyObjectAlert.js
+index e7c925bb..7867da4c 100644
+--- a/webui/src/components/Alert/CopyObjectAlert.js
++++ b/webui/src/components/Alert/CopyObjectAlert.js
+@@ -91,13 +91,13 @@ export default class CopyObjectAlert extends React.Component {
+         objects,
+         objectGroups,
+         mainTree,
++        vncMainTree,
+         cancel,
+         pickerTitle,
+         isGroup,
+       },
+       state: { data, errorFields },
+     } = this;
+-
+     const parentName = getObjectById(data[ParentId], objectGroups)?.Name;
+     const canConfirm = isDefaultObject(errorFields) && stringValid(data[Name]);
+     return (
+@@ -125,6 +125,7 @@ export default class CopyObjectAlert extends React.Component {
+               </label>
+               <AddObjectToGroup
+                 mainTree={mainTree}
++                vncMainTree={vncMainTree}
+                 objects={objects}
+                 objectGroups={objectGroups}
+                 treeType={treeType}
+diff --git a/webui/src/components/Applications/Editor/Configuration/Info.js b/webui/src/components/Applications/Editor/Configuration/Info.js
+index 20c7eff4..b0306625 100644
+--- a/webui/src/components/Applications/Editor/Configuration/Info.js
++++ b/webui/src/components/Applications/Editor/Configuration/Info.js
+@@ -105,8 +105,12 @@ export default class Info extends React.Component {
+         isGroup,
+         data,
+         editingId,
++        objects,
+         objectGroups,
+         applicationMainTree,
++        vncs,
++        vncGroups,
++        vncMainTree,
+         subEditorOpened,
+         treeTab,
+         tab,
+@@ -118,8 +122,13 @@ export default class Info extends React.Component {
+     const terminalScreenTitle = TERMINAL_SCREEN;
+     const parentId = data[ParentId];
+     let parentName = "";
++//    console.log("tab", tab, "treeTab", treeTab, "data", data, "objectGroups", objectGroups, "vncGroups", vncGroups);
+     if (parentId != null && parentId != 0) {
+-      parentName = objectGroups.data.find((item) => item.Id === parentId).Name;
++      if (treeTab == "VNC") {
++        parentName = vncGroups.data.find((item) => item.Id === parentId).Name;
++      } else {
++        parentName = objectGroups.data.find((item) => item.Id === parentId).Name;
++      }
+     }
+     let terminalParentName = getObjectById(data[Tid], terminalsData?.terminals)?.Name;
+     let mainTree = {};
+@@ -150,6 +159,7 @@ export default class Info extends React.Component {
+                   isGroup={isGroup}
+                   editingId={editingId}
+                   objectGroups={objectGroups}
++                  vncGroups={vncGroups}
+                   mainTree={mainTree}
+                   treeType="appGroup"
+                   selectGroupName={parentName}
+diff --git a/webui/src/components/Applications/Editor/Configuration/Server.js b/webui/src/components/Applications/Editor/Configuration/Server.js
+index 53cddac7..e31198d7 100644
+--- a/webui/src/components/Applications/Editor/Configuration/Server.js
++++ b/webui/src/components/Applications/Editor/Configuration/Server.js
+@@ -114,7 +114,7 @@ export default class Server extends React.Component {
+ 
+   render() {
+     let {
+-      props: { isLoaded, isEditMode, data, servers },
++      props: { isLoaded, isEditMode, data, servers, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, currentTab },
+       state: { showServerPicker, showServerDeleteAlert, deleteIdx },
+     } = this;
+     let rdsServers = [];
+@@ -165,6 +165,9 @@ export default class Server extends React.Component {
+             <ObjectPicker
+               treeType="appServer"
+               mainTree={servers.serverMainTree.data}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab={currentTab}
+               pickerTitle="ADD RDS SERVER"
+               onCancel={this.closeServerPicker}
+               onConfirm={this.addServer}
+diff --git a/webui/src/components/Applications/Editor/Configuration/index.js b/webui/src/components/Applications/Editor/Configuration/index.js
+index 7ed66c6b..7289a094 100644
+--- a/webui/src/components/Applications/Editor/Configuration/index.js
++++ b/webui/src/components/Applications/Editor/Configuration/index.js
+@@ -58,7 +58,7 @@ export default class Configuration extends React.Component {
+             // CONNECTION_PROPERTIES,
+             SCALING_RESOLUTION,
+             // LOAD_BALANCED,
+-            SERVER,
++            // SERVER,
+           ]
+           : [VNC_GROUP_INFO])
+     this.state = {
+@@ -260,6 +260,7 @@ export default class Configuration extends React.Component {
+         data,
+         dispatch,
+         tab,
++        currentTab,
+         editingId,
+         servers,
+         selectConfigTab,
+@@ -273,7 +274,11 @@ export default class Configuration extends React.Component {
+       applicationMainTree,
+       applications,
+       applicationGroups,
++      vncMainTree,
++      vncs,
++      vncGroups,
+     } = data;
++
+     return (
+       <Fragment>
+         {isLoading && <p className="wrap-960">Loading...</p>}
+@@ -328,9 +333,13 @@ export default class Configuration extends React.Component {
+                         applicationMainTree={applicationMainTree}
+                         objects={applications}
+                         objectGroups={applicationGroups}
++                        vncMainTree={vncMainTree}
++                        vncs={vncs}
++                        vncGroups={vncGroups}
+                         editingId={editingId}
+                         onChange={this.change}
+                         tab={tab}
++                        currentTab={currentTab}
+                         treeTab={treeTab}
+                         terminalsData={terminalsData}
+                       />
+@@ -343,7 +352,7 @@ export default class Configuration extends React.Component {
+                       onChange={this.change}
+                     />
+                   )}
+-                  {tab === CONNECTION_PROPERTIES && (
++                  {currentTab == "RDS" && tab === CONNECTION_PROPERTIES && (
+                     <Connection
+                       isLoaded={isLoaded}
+                       isEditMode={isEditMode}
+@@ -359,7 +368,7 @@ export default class Configuration extends React.Component {
+                       onChange={this.change}
+                     />
+                   )}
+-                  {tab === LOAD_BALANCED && (
++                  {currentTab == "RDS" && tab === LOAD_BALANCED && (
+                     <LoadBalance
+                       isLoaded={isLoaded}
+                       isEditMode={isEditMode}
+@@ -367,7 +376,7 @@ export default class Configuration extends React.Component {
+                       onChange={this.change}
+                     />
+                   )}
+-                  {tab === SERVER && (
++                  {currentTab == "RDS" && tab === SERVER && (
+                     <Server
+                       isLoaded={isLoaded}
+                       isEditMode={isEditMode}
+diff --git a/webui/src/components/Applications/Editor/index.js b/webui/src/components/Applications/Editor/index.js
+index c8554099..e5c92fc4 100644
+--- a/webui/src/components/Applications/Editor/index.js
++++ b/webui/src/components/Applications/Editor/index.js
+@@ -166,7 +166,7 @@ export default class Editor extends React.Component {
+ 
+   render() {
+     let {
+-      props: { data, servers, dispatch, treeTab, terminalsData },
++      props: { data, servers, dispatch, treeTab, currentTab, terminalsData },
+       state: {
+         isEditMode,
+         isEdited,
+@@ -270,6 +270,7 @@ export default class Editor extends React.Component {
+                   onChangeEdit={this.onChangeEdit}
+                   selectConfigTab={this.selectConfigTab}
+                   treeTab={treeTab}
++                  currentTab={currentTab}
+                   terminalsData={terminalsData}
+                 />
+               )}
+diff --git a/webui/src/components/Applications/Wizard/index.js b/webui/src/components/Applications/Wizard/index.js
+index a79e8cb2..b1c4d471 100644
+--- a/webui/src/components/Applications/Wizard/index.js
++++ b/webui/src/components/Applications/Wizard/index.js
+@@ -178,8 +178,7 @@ const filterTab = (tab, isGroup) => {
+     } else {
+       return [...AppTabs]
+     }
+-  }
+-  if (tab === 'VNC') {
++  } else if (tab === 'VNC') {
+     if (isGroup) {
+       return [...VncGroupTabs]
+     } else {
+@@ -195,8 +194,7 @@ const filterNameLabel = (tab, isGroup) => {
+     } else {
+       return "Application Name"
+     }
+-  }
+-  if (tab === 'VNC') {
++  } else if (tab === 'VNC') {
+     if (isGroup) {
+       return 'Vnc Group Name'
+     } else {
+@@ -208,8 +206,7 @@ const filterNameLabel = (tab, isGroup) => {
+ const label = (tab) => {
+   if (tab === 'RDS') {
+     return 'Application Group'
+-  }
+-  if (tab === 'VNC') {
++  } else if (tab === 'VNC') {
+     return 'Vnc Group'
+   }
+ }
+@@ -553,23 +550,30 @@ export default class Wizard extends React.Component {
+   basicInfoCard() {
+     let {
+       props: {
+-        data: { isGroup, applicationGroups, applicationMainTree },
++        data: { isGroup },
++        rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree,
+         tab,
+         terminals: { terminals, terminalGroups, terminalMainTree }
+       },
+       state: { data, errorFields },
+     } = this;
++
+     const nameLabel = filterNameLabel(tab, isGroup)
+     let parentName = "";
+     const parentId = parseInt(data.ParentId);
+     if (parentId != null && parentId != 0) {
+-      parentName = applicationGroups.data.find((item) => item.Id === parentId)
+-        .Name
++      if (tab === "RDS") {
++        parentName = rdsGroups.data?.find((item) => item.Id === parentId).Name
++      } else {
++        parentName = vncGroups?.data?.find((item) => item.Id === parentId).Name
++      }
+     }
+     let terminalParentName = getObjectById(data[Tid], terminals)?.Name;
+     let mainTree = {};
+-    if (tab !== '') {
+-      mainTree.data = applicationMainTree.data.filter(item => item.GroupType === tab || item.Id === 0);
++    if (tab === 'RDS') {
++      mainTree.data = rdsMainTree.data.filter(item => item.GroupType === tab || item.Id === 0);
++    } else {
++      mainTree.data = vncMainTree.data.filter(item => item.GroupType === tab || item.Id === 0);
+     }
+     return (
+       <div className="wrap01 mt-12  wrap-bg-w pb-24">
+@@ -592,9 +596,11 @@ export default class Wizard extends React.Component {
+         <label className="pt-12">{label(tab, isGroup)}</label>
+         <AddObjectToGroup
+           isGroup={isGroup}
+-          objectGroups={applicationGroups}
++          objectGroups={tab === "RDS" ? rdsGroups : vncGroups}
++          currentTab={tab}
++          tab={tab}
+           selectGroupName={parentName}
+-          mainTree={mainTree}
++          mainTree={tab === "RDS" ? rdsMainTree : vncMainTree}
+           treeType="appGroup"
+           onConfirm={this.change}
+           pickerTitle="CHOOSE EXISTING GROUP"
+@@ -719,7 +725,7 @@ export default class Wizard extends React.Component {
+ 
+   addRdsServerCard() {
+     let {
+-      props: { servers },
++      props: { servers, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree },
+       state: { data, selectedServerId },
+     } = this;
+     let selectedServers;
+@@ -858,6 +864,7 @@ export default class Wizard extends React.Component {
+       </div>
+     );
+   }
++
+   sessionResolutionOptionsCard() {
+     let {
+       state: { data },
+@@ -930,6 +937,7 @@ export default class Wizard extends React.Component {
+       </div>
+     );
+   }
++
+   // title: 'Applicatin Options'
+   // fields: [{title, name, options, form}]
+   getPropertiesCard(title, fields) {
+@@ -960,6 +968,7 @@ export default class Wizard extends React.Component {
+     let {
+       state: { data, appType },
+     } = this;
++
+     return (
+       <div className="wrap01 mt-12 wrap-bg-w pb-24">
+         <h3 className=" border-bottom h-40">TYPE</h3>
+@@ -1019,7 +1028,7 @@ export default class Wizard extends React.Component {
+ 
+   render() {
+     let {
+-      props: { servers, terminals, tab },
++      props: { servers, terminals, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, tab, currentTab },
+       state: {
+         tabs,
+         data,
+@@ -1030,6 +1039,7 @@ export default class Wizard extends React.Component {
+         defaultClose,
+       },
+     } = this;
++
+     const selectedTab = tabs[selectedTabIndex].label;
+     const autoClose = JSON.stringify(data);
+ 
+@@ -1085,36 +1095,14 @@ export default class Wizard extends React.Component {
+                         }
+                       </Fragment>
+                     )}
+-                    {/* {selectedTab === CONNECTION_OPTIONS &&
+-                      this.getPropertiesCard(
+-                        "CONNECTION",
+-                        connectionOptionsFields
+-                      )} */}
+-                    {/* {selectedTab === SESSION_OPTIONS && (
+-                      <Fragment>
+-                        {this.getPropertiesCard(
+-                          "SCALING OPTIONS",
+-                          sessionScalingOptionsField
+-                        )}
+-                        {this.sessionResolutionOptionsCard()}
+-                      </Fragment>
+-                    )} */}
+-                    {/* {selectedTab === LOAD_BALANCE && (
+-                      <Fragment>
+-                        {this.smartSessionWeightsCard()}
+-                        {this.queuingCard()}
+-                      </Fragment>
+-                    )} */}
+                     {selectedTab === RDS_SERVER && (
+                       <Fragment>
+                         {this.addRdsServerCard()}
+-                        {/* {this.rdsGatewaySettingsCard()} */}
+                       </Fragment>
+                     )}
+                     {selectedTab === TERMINAL && (
+                       <Fragment>
+                         {this.addTerminalCard()}
+-                        {/* {this.rdsGatewaySettingsCard()} */}
+                       </Fragment>
+                     )}
+                   </div>
+@@ -1132,6 +1120,9 @@ export default class Wizard extends React.Component {
+                 <ObjectPicker
+                   treeType="appServer"
+                   mainTree={servers.serverMainTree.data}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab={currentTab}
+                   pickerTitle="ADD RDS SERVER"
+                   onCancel={this.closeServerPicker}
+                   onConfirm={this.addRdsServers}
+@@ -1141,6 +1132,9 @@ export default class Wizard extends React.Component {
+                 <ObjectPicker
+                   treeType="appServer"
+                   mainTree={terminals.terminalMainTree.data}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab
+                   pickerTitle="ADD TERMINAL"
+                   onCancel={this.closeTerminalPicker}
+                   onConfirm={this.addTerminal}
+diff --git a/webui/src/components/Applications/index.js b/webui/src/components/Applications/index.js
+index aa48623d..5639afe0 100644
+--- a/webui/src/components/Applications/index.js
++++ b/webui/src/components/Applications/index.js
+@@ -25,7 +25,7 @@ class Applications extends React.Component {
+     super(props);
+     this.state = {
+       selectedId: undefined,
+-      showAllTree: false,
++      showAllTree: true,	// TODO: 預設打開樹
+       filterFavorite: false,
+       tab: 'RDS',
+     };
+@@ -77,14 +77,23 @@ class Applications extends React.Component {
+ 
+   render() {
+     let {
+-      props: { data, terminals, servers, dispatch, showAppReminder },
++      props: { data, terminals, servers, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, dispatch, showAppReminder },
+       state: { selectedId, showAllTree, filterFavorite, tab },
+     } = this;
+     const state = getObjectProperty(data, "applications.state");
+-    const applicationsById = data.applications?.data?.reduce((acc, cur) => {
+-      acc[cur.Id] = cur;
+-      return acc;
+-    }, {});
++
++	let applicationsById = {};
++    if (tab == "RDS") {
++      applicationsById = data.applications?.data?.reduce((acc, cur) => {
++        acc[cur.Id] = cur;
++        return acc;
++      }, {});
++    } else {
++      applicationsById = data.vncs?.data?.reduce((acc, cur) => {
++        acc[cur.Id] = cur;
++        return acc; 
++      }, {});
++    }
+ 
+     return (
+       <Fragment>
+@@ -102,7 +111,15 @@ class Applications extends React.Component {
+           ></Reminder>
+         )}
+         {data.editorOpened && (
+-          <Editor data={data} terminalsData={terminals} servers={servers} dispatch={dispatch} treeTab={tab} />
++          <Editor
++            data={data}
++            terminalsData={terminals}
++            servers={servers}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            dispatch={dispatch}
++            currentTab={tab}
++            treeTab={tab} />
+         )}
+         {data.wizardOpened && (
+           <Wizard
+@@ -110,6 +127,12 @@ class Applications extends React.Component {
+             parentId={selectedId ?? 0}
+             servers={servers}
+             terminals={terminals}
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
+             dispatch={dispatch}
+             tab={tab}
+           />
+@@ -148,10 +171,18 @@ class Applications extends React.Component {
+             hoverwidth={270}
+             outerClass=" main-page-tree"
+             expandClass=" ml-20"
+-            tree={data.applicationMainTree.data}
++            tree = {tab == "RDS" ?
++              data.applicationMainTree.data :
++              data.vncMainTree.data}
++            treeType="appTree"
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
+             filterFavorite={filterFavorite}
+             showAllTree={showAllTree}
+-            treeType="appTree"
+             wsItems={applicationsById}
+             selectedId={selectedId}
+             toggleAllTree={this.toggleAllTree}
+@@ -169,6 +200,14 @@ class Applications extends React.Component {
+           objects={data.applications}
+           objectGroups={data.applicationGroups}
+           mainTree={data.applicationMainTree}
++          applications={data.applications.data}
++          applicationGroups={data.applicationGroups.data}
++          rdss={rdss}
++          rdsGroups={rdsGroups}
++          rdsMainTree={rdsMainTree}
++          vncs={vncs}
++          vncGroups={vncGroups}
++          vncMainTree={vncMainTree}
+           dispatch={dispatch}
+           isGroup={false}
+           hasItems={!showAppReminder}
+diff --git a/webui/src/components/MonitorCard/index.js b/webui/src/components/MonitorCard/index.js
+index 684908b2..c79fe176 100644
+--- a/webui/src/components/MonitorCard/index.js
++++ b/webui/src/components/MonitorCard/index.js
+@@ -674,50 +674,15 @@ export default class MonitorCard extends React.Component {
+   render() {
+     let {
+       props: {
+-        isLoaded = true,
+-        isEditMode,
+-        isCancel,
+-        displayEdit = true,
+-        resetCancel,
+-        setAppOverrides,
+-        checkAppOverrideEdit = null,
+-        editingId = 0,
+-        terminalMainTree,
+-        appMultiTree,
+-        isWizard,
+-        terminal,
+-        hardwareInfo,
+-        applications,
+-        adUsers,
+-        verifyAuthUserResult,
+-        parentTerminal,
+-        defaultMouseMapping,
+-        className = "wrap01 wrap-bg-w",
+-        disabled = false,
+-        isGroup = false,
+-        style = {},
+-        dispatch,
+-        onChangeEdit,
+-        appOverrides,
+-        oriAppOverrides,
+-		onChange,
++        isLoaded = true, isEditMode, isCancel, displayEdit = true, resetCancel, setAppOverrides, checkAppOverrideEdit = null, editingId = 0,
++        terminalMainTree, isWizard, terminal, hardwareInfo,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
++        adUsers, verifyAuthUserResult, parentTerminal, defaultMouseMapping, className = "wrap01 wrap-bg-w", disabled = false, isGroup = false, style = {}, dispatch, onChangeEdit, appOverrides, oriAppOverrides, onChange,
+       },
+       state: {
+-        data,
+-        maxPort,
+-        maxPortArray,
+-        selectedTag,
+-        selectedScreenId,
+-        screens,
+-        resIndex,
+-        hzIndex,
+-        colorIndex,
+-        allMonitorSetting,
+-        showMultistationSettings,
+-        showMouseButtonMapSettings,
+-        selectedMonitors,
+-        selectedMonitorArray,
+-        scale,
++        data, maxPort, maxPortArray, selectedTag, selectedScreenId, screens, resIndex, hzIndex, colorIndex, allMonitorSetting, showMultistationSettings, showMouseButtonMapSettings, selectedMonitors, selectedMonitorArray, scale,
+       },
+     } = this;
+ 
+@@ -836,8 +801,14 @@ export default class MonitorCard extends React.Component {
+                 oriAppOverrides={oriAppOverrides}
+                 editingId={editingId}
+                 terminalMainTree={terminalMainTree}
+-                appMultiTree={appMultiTree}
+                 terminal={terminal.data}
++                rdss={rdss}
++                rdsGroups={rdsGroups}
++                rdsMainTree={rdsMainTree}
++                vncs={vncs}
++                vncGroups={vncGroups}
++                vncMainTree={vncMainTree}
++                currentTAb={currentTab}
+                 adUsers={adUsers}
+                 verifyAuthUserResult={verifyAuthUserResult}
+                 dispatch={dispatch}
+diff --git a/webui/src/components/ObjectCommon/AddObjectToGroup.js b/webui/src/components/ObjectCommon/AddObjectToGroup.js
+index bed90203..1953f4af 100644
+--- a/webui/src/components/ObjectCommon/AddObjectToGroup.js
++++ b/webui/src/components/ObjectCommon/AddObjectToGroup.js
+@@ -85,6 +85,9 @@ export default class AddObjectToGroup extends React.Component {
+         wsItems,
+         disabled,
+         mainTree,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
+         pickerTitle,
+         selectGroupName,
+         selectTerminalName,
+@@ -120,6 +123,9 @@ export default class AddObjectToGroup extends React.Component {
+             editingId={editingId}
+             treeType={treeType}
+             mainTree={mainTree.data}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab={currentTab}
+             wsItems={wsItems}
+             pickerTitle={pickerTitle}
+             onCancel={this.closeAddGroupModal}
+diff --git a/webui/src/components/ObjectCommon/ObjectDashboard.js b/webui/src/components/ObjectCommon/ObjectDashboard.js
+index 034e26ca..72d27095 100644
+--- a/webui/src/components/ObjectCommon/ObjectDashboard.js
++++ b/webui/src/components/ObjectCommon/ObjectDashboard.js
+@@ -108,7 +108,7 @@ export default class ObjectDashboard extends React.Component {
+ 
+   getData() {
+     let {
+-      props: { object, selectedId, filterDefault, currentTab },
++      props: { object, applications, objects, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, selectedId, filterDefault, currentTab },
+       state: {
+         sortByName,
+         searchText,
+@@ -119,11 +119,17 @@ export default class ObjectDashboard extends React.Component {
+       },
+     } = this;
+ 
+-    let data = getObjectProperty(this.props.data, `${object}s.data`);
+-    if (data !== null && data !== undefined) {
+-      if (currentTab == "RDS" || currentTab == "VNC") {
+-        data = data.filter((item) => item.GroupType === currentTab);
++    let data;
++    if (object == "application") {
++      if (currentTab == "RDS") {
++        data = rdss.data;
++      } else {
++        data = vncs.data;
+       }
++    } else {
++      data = getObjectProperty(this.props.data, `${object}s.data`);
++    }
++    if (data !== null && data !== undefined) {
+       data = data.filter((item) => {
+         if (!stringValid(searchText)) return true;
+         return item.Name.toLowerCase().includes(searchText.toLowerCase());
+@@ -184,31 +190,12 @@ export default class ObjectDashboard extends React.Component {
+     );
+     let {
+       props: {
+-        dispatch,
+-        editingId,
+-        mainTree,
+-        terminals,
+-        servers,
+-        applications,
+-        inEditor = true,
+-        hasItems = true,
+-        showRightClick = false,
+-        isGroup = false,
+-        isRestart = false,
+-        hideFavorite = false,
+-        hideNew = false,
+-        hideGroup = false,
+-        searchContainerWrapper,
+-        groupContainerWrapper,
+-        original,
+-        object,
+-        selectedId,
+-        insideEditor,
+-        filterDefault,
+-        wizardOpened,
+-        editorOpened,
+-        objects,
+-        objectGroups,
++        data, dispatch, editingId,
++        terminals, servers, applications,
++        objects, objectGroups, mainTree,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        inEditor = true, hasItems = true, showRightClick = false, isGroup = false, isRestart = false, hideFavorite = false, hideNew = false, hideGroup = false, searchContainerWrapper, groupContainerWrapper, original, object, selectedId, insideEditor, filterDefault, wizardOpened, editorOpened,
+         currentTab,
+       },
+       state: {
+@@ -222,7 +209,9 @@ export default class ObjectDashboard extends React.Component {
+         filterError,
+       },
+     } = this;
+-    let data = this.getData();
++
++	let dataOrg = data;
++    data = this.getData();
+     let all =
+       !stringValid(searchText) &&
+       filterActive === null &&
+@@ -525,9 +514,15 @@ export default class ObjectDashboard extends React.Component {
+           terminals={terminals}
+           servers={servers}
+           applications={applications}
+-          mainTree={mainTree}
+           objects={objects}
+           objectGroups={objectGroups}
++          mainTree={mainTree}
++          rdss={rdss}
++          rdsGroups={rdsGroups}
++          rdsMainTree={rdsMainTree}
++          vncs={vncs}
++          vncGroups={vncGroups}
++          vncMainTree={vncMainTree}
+           original={original}
+           isGroup={isGroup}
+           hasItems={hasItems}
+diff --git a/webui/src/components/ObjectCommon/ObjectPicker.js b/webui/src/components/ObjectCommon/ObjectPicker.js
+index 6776d811..fdb3d559 100644
+--- a/webui/src/components/ObjectCommon/ObjectPicker.js
++++ b/webui/src/components/ObjectCommon/ObjectPicker.js
+@@ -44,6 +44,9 @@ export default class ObjectPicker extends React.Component {
+         editingId = 0,
+         treeType,
+         mainTree,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
+         wsItems = {},
+         pickerTitle = "",
+         onCancel,
+@@ -61,8 +64,15 @@ export default class ObjectPicker extends React.Component {
+               defaultFilter={isGroup}
+               editingId={editingId}
+               tree={mainTree}
+-              showAllTree={showAllTree}
+               treeType={treeType}
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
++            currentTab={currentTab}
++              showAllTree={showAllTree}
+               wsItems={wsItems}
+               selectedId={selectedId}
+               toggleAllTree={this.toggleAllTree}
+diff --git a/webui/src/components/ObjectCommon/ObjectTitles.js b/webui/src/components/ObjectCommon/ObjectTitles.js
+index cd78149f..770d8a89 100644
+--- a/webui/src/components/ObjectCommon/ObjectTitles.js
++++ b/webui/src/components/ObjectCommon/ObjectTitles.js
+@@ -180,6 +180,7 @@ export default class ObjectTitles extends React.Component {
+     };
+     switch (object) {
+       case "terminal":
++        // TODO: 怎麼updateTerminal() 的參數跟定義不同？
+         dispatch(updateTerminal(objectId, data, false));
+         break;
+       case "server":
+@@ -235,7 +236,7 @@ export default class ObjectTitles extends React.Component {
+ 
+   terminalExpand(idx) {
+     let {
+-      props: { data, applications, servers },
++      props: { data, currentTab, applications, servers },
+     } = this;
+     const screenOfAppIds = data[idx]?.ScreenOfAppIds?.split(";");
+     const expandData = screenOfAppIds?.map((appIds) => {
+@@ -274,7 +275,7 @@ export default class ObjectTitles extends React.Component {
+         </div>
+         <ul className="expand-list-card-content">
+           {expandData[screenIdx].map((detail, appIdx) => (
+-            <li key={detail.app.id}>
++            <li key={detail.app?.id+"-"+detail.app?.name}>
+               {detail.app?.name != null && (
+                 <div className="card-content-left">
+                   <div
+@@ -296,7 +297,7 @@ export default class ObjectTitles extends React.Component {
+                   ></div>
+                   <div className="card-contend-right" style={{ top: "-6px" }}>
+                     <ul className="single-item">
+-                      <li>
++                      <li key={detail.rdsServers[0]?.id}>
+                         <div
+                           className={`${getRdsServerStatus(
+                             "item",
+@@ -310,7 +311,7 @@ export default class ObjectTitles extends React.Component {
+                     </ul>
+                     <ul className="multi-item">
+                       {detail.rdsServers.map((item) => (
+-                        <li key={item.id}>
++                        <li key={item.id+"-"+item.name}>
+                           <div
+                             className={`${getRdsServerStatus(
+                               "item",
+@@ -332,7 +333,7 @@ export default class ObjectTitles extends React.Component {
+   }
+   rdsServerExpand(idx) {
+     let {
+-      props: { data, terminals, applications },
++      props: { data, terminals, objects, applications, vncs},
+     } = this;
+     const expandData = terminals?.data
+       ?.filter((terminal) =>
+@@ -347,7 +348,7 @@ export default class ObjectTitles extends React.Component {
+         terminal: { id: filterTerminal.Id, name: filterTerminal.Name },
+         apps: filterTerminal.ScreenOfAppIds?.split(";")
+           .filter((appId) =>
+-            applications.data.find(
++            applications.data?.find(
+               (app) =>
+                 app.Id === parseInt(appId) &&
+                 app.RdsServerIds.split(",").includes(data[idx].Id.toString())
+@@ -387,7 +388,7 @@ export default class ObjectTitles extends React.Component {
+               </div>
+               <ul className="expand-list-card-content">
+                 {rdsServerDetail?.apps?.map((app) => (
+-                  <li key={app.id}>
++                  <li key={app.id+"-"+app.name}>
+                     <div
+                       className={`${getAppStatus(
+                         "item",
+@@ -445,7 +446,7 @@ export default class ObjectTitles extends React.Component {
+           </div>
+           <ul className="expand-list-card-content">
+             {appDetail?.terminals?.map((item) => (
+-              <li key={item.id}>
++              <li key={item.id+"-"+item.name}>
+                 <div
+                   className={`${getTerminalStatus(
+                     "item",
+@@ -478,40 +479,47 @@ export default class ObjectTitles extends React.Component {
+   render() {
+     let {
+       props: {
+-        state,
+-        data,
+-        inEditor,
+-        objects,
+-        objectGroups,
+-        mainTree,
+-        original,
+-        isGroup,
+-        showExpand,
+-        hasItems,
+-        selected,
+-        object,
+-        showRightClick,
++        state, data, inEditor,
++        applications, objects, objectGroups, mainTree,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
+         currentTab,
++        original, isGroup, showExpand, hasItems, selected, object, showRightClick,
+       },
+       state: {
+-        showCopyAlert,
+-        showDeleteAlert,
+-        showActionList,
+-        actionListIdx,
+-        objectType,
+-        objectId,
+-        treeType,
+-        parentId,
++        showCopyAlert, showDeleteAlert, showActionList, actionListIdx, objectType, objectId, treeType, parentId,
+       },
+     } = this;
+-    const groupOriginal =
+-      objectGroups.data == null ||
++    let groupOriginal;
++
++    if (treeType == "appGroup") {
++      if (currentTab == "RDS") {
++        groupOriginal = rdsGroups.data == null ||
++          (Array.isArray(rdsGroups.data) && rdsGroups.data.length === 0)
++          ? {}
++          : rdsGroups.data.reduce((map, object) => {
++            map[object.Id] = object;
++            return map;
++          }, {});
++      } else {
++        groupOriginal = vncGroups.data == null ||
++          (Array.isArray(vncGroups.data) && vncGroups.data.length === 0)
++          ? {}
++          : vncGroups.data.reduce((map, object) => {
++            map[object.Id] = object;
++            return map;
++          }, {});
++  	  }
++    } else {
++      groupOriginal = objectGroups.data == null ||
+         (Array.isArray(objectGroups.data) && objectGroups.data.length === 0)
+         ? {}
+         : objectGroups.data.reduce((map, object) => {
+           map[object.Id] = object;
+           return map;
+         }, {});
++    }
++
+     return (
+       <ul className="main-page-content">
+         {showCopyAlert && (
+@@ -520,6 +528,9 @@ export default class ObjectTitles extends React.Component {
+             objects={objects}
+             objectGroups={objectGroups}
+             mainTree={mainTree}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab={currentTab}
+             objectType={objectType}
+             treeType={treeType}
+             isGroup={isGroup}
+@@ -537,14 +548,10 @@ export default class ObjectTitles extends React.Component {
+             no={this.closeDeleteAlert}
+           />
+         )}
+-        {state !== undefined &&
+-          (data === "null" ||
+-            data == null ||
++        {state !== undefined && (data === "null" || data == null ||
+             (data != null && data.length === 0)) ? (
+           <div className="no-list-item">
+-            {state === "LOADING" ? (
+-              <p>Loading...</p>
+-            ) : (
++            {state === "LOADING" ? ( <p>Loading...</p>) : (
+               <div>
+                 <div className="list-action-add-disable"></div>
+                 <p>
+@@ -627,10 +634,9 @@ export default class ObjectTitles extends React.Component {
+   const isNolicDisabledNtr = isNolic && isDisabled && isNtr;
+   const isNolicBusy = isNolic && (isBusy || isBooting);
+ 
+-            //  console.log("Title '"+status+"' ("+editingId+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isDisabled+","+isNtr+","+isBusy+")");
+ 
+             return (
+-              <li key={Id} className="main-page-list" data-expand={showExpand}>
++              <li key={Id+"-"+Name} className="main-page-list" data-expand={showExpand}>
+                 <Fragment>
+                   <div className="main-page-list-header">
+                     <div
+diff --git a/webui/src/components/Servers/Wizard/index.js b/webui/src/components/Servers/Wizard/index.js
+index e893a15a..07c0c287 100644
+--- a/webui/src/components/Servers/Wizard/index.js
++++ b/webui/src/components/Servers/Wizard/index.js
+@@ -252,7 +252,7 @@ export default class Wizard extends React.Component {
+ 
+   render() {
+     let {
+-      props: { dispatch, data },
++      props: { dispatch, data, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree },
+       state: {
+         selectedTabIndex,
+         tabs,
+diff --git a/webui/src/components/Servers/index.js b/webui/src/components/Servers/index.js
+index 9aade9d7..d320a204 100644
+--- a/webui/src/components/Servers/index.js
++++ b/webui/src/components/Servers/index.js
+@@ -85,7 +85,7 @@ class Servers extends React.Component {
+ 
+   render() {
+     let {
+-      props: { data, terminals, applications, dispatch, showServerReminder },
++      props: { data, terminals, applications, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, dispatch, showServerReminder },
+       state: { selectedId, showAllTree, filterFavorite },
+     } = this;
+     const state = getObjectProperty(data, "servers.state");
+@@ -112,6 +112,8 @@ class Servers extends React.Component {
+           <Wizard
+             data={data}
+             parentId={selectedId != null ? selectedId : 0}
++          rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++          vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+             dispatch={dispatch}
+           />
+         )}
+@@ -151,9 +153,15 @@ class Servers extends React.Component {
+             outerClass=" main-page-tree"
+             expandClass=" ml-20"
+             tree={data.serverMainTree.data}
++            treeType="appServerTree"
++          rdss={rdss}
++          rdsGroups={rdsGroups}
++          rdsMainTree={rdsMainTree}
++          vncs={vncs}
++          vncGroups={vncGroups}
++          vncMainTree={vncMainTree}
+             filterFavorite={filterFavorite}
+             showAllTree={showAllTree}
+-            treeType="appServerTree"
+             wsItems={serversById}
+             selectedId={selectedId}
+             toggleAllTree={this.toggleAllTree}
+@@ -164,7 +172,13 @@ class Servers extends React.Component {
+         <ObjectDashboard
+           data={data}
+           terminals={terminals?.terminals}
+-          applications={applications?.applications}
++          applications={applications?.data}
++          rdss={rdss}
++          rdsGroups={rdsGroups}
++          rdsMainTree={rdsMainTree}
++          vncs={vncs}
++          vncGroups={vncGroups}
++          vncMainTree={vncMainTree}
+           original={serversById}
+           objects={data.servers}
+           objectGroups={data.serverGroups}
+diff --git a/webui/src/components/Terminals/Editor/Configuration/ApplicationCard.js b/webui/src/components/Terminals/Editor/Configuration/ApplicationCard.js
+index 7eddca1b..5cc208f6 100644
+--- a/webui/src/components/Terminals/Editor/Configuration/ApplicationCard.js
++++ b/webui/src/components/Terminals/Editor/Configuration/ApplicationCard.js
+@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
+ import { ApplyAll } from "components/Card";
+ import { MultiTree } from "components/Tree";
+ import AppOverride from "components/AppOverride";
++import VncOverride from "components/VncOverride";
+ 
+ import { stringValid } from "lib/Util";
+ import { getApplication, openSubAppEditor } from "actions/ApplicationActions";
+@@ -26,8 +27,8 @@ export default class ApplicationCard extends React.Component {
+       this.state = {
+         isInherited: isInherited,
+         appOverrides:
+-          this.props.appOverrides.data !== "null"
+-            ? this.props.appOverrides.data
++          this.props.appOverrides.appData !== "null"
++            ? this.props.appOverrides.appData
+             : {},
+         selectedMapFromId: {},
+         returnedMapFromId: {},
+@@ -36,6 +37,7 @@ export default class ApplicationCard extends React.Component {
+         terminal: terminal,
+         data: data, // {SelectedScreen: 'ScreenA', Applications: []}
+         showApplicationDeleteAlert: false,
++        groupType : "RDS",
+         showOverride: false,
+         screenOptions: screenOptions,
+         currentOverrideIdx: undefined,
+@@ -100,7 +102,7 @@ export default class ApplicationCard extends React.Component {
+     const terminal = { ...this.props.terminal };
+     const appOverrides = JSON.parse(
+       JSON.stringify(
+-        isReset ? this.props.oriAppOverrides.data : this.props.appOverrides.data
++        isReset ? this.props.oriAppOverrides.appData : this.props.appOverrides.appData
+       )
+     );
+     const screenOptions = getScreenOptions();
+@@ -353,7 +355,7 @@ export default class ApplicationCard extends React.Component {
+     if (!isWizard) {
+       const overrideEdited = checkEdit(
+         editData,
+-        oriAppOverrides.data[editData.AppId]
++        oriAppOverrides.appData[editData.AppId]
+       );
+       checkAppOverrideEdit(overrideEdited ? true : false);
+     }
+@@ -370,6 +372,7 @@ export default class ApplicationCard extends React.Component {
+     returnedMapFromId[openApp.AppId] = openApp;
+     this.setState({
+       returnedMapFromId,
++      groupType : openApp.GroupType,
+       showOverride: true,
+       currentOverrideIdx: overrideIdx,
+     });
+@@ -486,19 +489,24 @@ export default class ApplicationCard extends React.Component {
+         isLoaded,
+         isEditMode,
+         editingId = 0,
+-        appMultiTree,
+         adUsers,
+         verifyAuthUserResult,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
+         isGroup,
+         isInDisplay,
+         selectedScreen,
+         selectedScreenId,
+         dispatch,
++        oriAppOverrides,
++        appOverrides,
+       },
+       state: {
+         isInherited,
+         data,
+         terminal,
++        groupType,
+         showOverride,
+         showAllTree,
+         screenOptions,
+@@ -510,6 +518,7 @@ export default class ApplicationCard extends React.Component {
+       },
+     } = this;
+ 
++    console.log("TECA currentTab", currentTab, "oriAppOverrides", oriAppOverrides);
+     const hasSelectedApps = Object.keys(selectedMapFromId).length > 0;
+     const hasSelectedOverrides = Object.keys(returnedMapFromId).length > 0;
+     return (
+@@ -527,15 +536,6 @@ export default class ApplicationCard extends React.Component {
+               : { minWidth: "960px", height: "95%" }
+           }
+         >
+-          {/* {isGroup && isLoaded && (
+-            <ApplyAll
+-              name={ApplicationApplyAll}
+-              isEditMode={isEditMode}
+-              value={terminal[ApplicationApplyAll]}
+-              onChange={this.change}
+-              disabled={!isEditMode || isInherited}
+-            />
+-          )} */}
+           <div className="display-app-content">
+             <div className="display-available-content">
+               <div className="display-title">AVAILABLE</div>
+@@ -544,8 +544,14 @@ export default class ApplicationCard extends React.Component {
+                   isEditMode={isEditMode}
+                   showAllTree={showAllTree}
+                   editingId={editingId}
+-                  tree={appMultiTree}
++                  tree={tab === "RDS" ? rdsMainTree.data : vncMainTree.data}
+                   treeType="application"
++                  rdss={rdss}
++                  rdsGroups={rdsGroups}
++                  rdsMainTree={rdsMainTree}
++                  vncs={vncs}
++                  vncGroups={vncGroups}
++                  vncMainTree={vncMainTree}
+                   selectedMapFromId={selectedMapFromId}
+                   usedMapFromId={usedMapFromId}
+                   toggleAllTree={this.toggleAllTree}
+@@ -553,6 +559,7 @@ export default class ApplicationCard extends React.Component {
+                   onOpenSubEditor={this.openSubEditor}
+                   selectTab={this.selectTab}
+                   currentTab={tab}
++                  tab={tab}
+                 />
+               </div>
+             </div>
+@@ -629,6 +636,7 @@ export default class ApplicationCard extends React.Component {
+           </div>
+         </div>
+         {showOverride && (
++          groupType === "RDS" ?
+           <div style={{ overflow: "auto" }}>
+             <AppOverride
+               dispatch={dispatch}
+@@ -640,6 +648,18 @@ export default class ApplicationCard extends React.Component {
+               onCancel={this.cancelOverride}
+             />
+           </div>
++          :
++          <div style={{ overflow: "auto" }}>
++            <VncOverride
++              dispatch={dispatch}
++              isGroup={isGroup}
++              data={data[selectedScreen][currentOverrideIdx]}
++              adUsers={adUsers}
++              verifyAuthUserResult={verifyAuthUserResult}
++              onConfirm={this.closeOverride}
++              onCancel={this.cancelOverride}
++            />
++          </div>
+         )}
+       </Fragment>
+     );
+diff --git a/webui/src/components/Terminals/Editor/Configuration/DisplayAndMonitorCard.js b/webui/src/components/Terminals/Editor/Configuration/DisplayAndMonitorCard.js
+index 6eee6639..f3132d0a 100644
+--- a/webui/src/components/Terminals/Editor/Configuration/DisplayAndMonitorCard.js
++++ b/webui/src/components/Terminals/Editor/Configuration/DisplayAndMonitorCard.js
+@@ -75,25 +75,13 @@ export default class DisplayAndMonitorCard extends React.Component {
+   render() {
+     let {
+       props: {
+-        dispatch,
+-        isLoaded,
+-        isEditMode,
+-        isGroup,
+-        editingId = 0,
+-        terminalMainTree,
+-        appMultiTree,
+-        data,
+-        applications,
+-        appOverrides,
+-        oriAppOverrides,
+-        hardware,
+-        hardwareInfo,
+-        defaultMouseMapping,
+-        parentTerminal,
+-        onChangeEdit,
+-        adUsers,
+-        verifyAuthUserResult,
+-        setAppOverrides,
++        dispatch, isLoaded, isEditMode, isGroup, editingId = 0, terminalMainTree,
++        data, appOverrides, oriAppOverrides,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
++        hardware, hardwareInfo, defaultMouseMapping, parentTerminal,
++        onChangeEdit, adUsers, verifyAuthUserResult, setAppOverrides,
+       },
+       state: { isCancel },
+     } = this;
+@@ -116,12 +104,13 @@ export default class DisplayAndMonitorCard extends React.Component {
+             parentTerminal={parentTerminal}
+             hardware={hardware}
+             hardwareInfo={hardwareInfo}
+-            applications={applications}
+             oriAppOverrides={oriAppOverrides}
+             appOverrides={appOverrides}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++            currentTab={currentTab}
+             adUsers={adUsers}
+             verifyAuthUserResult={verifyAuthUserResult}
+-            appMultiTree={appMultiTree}
+             terminalMainTree={terminalMainTree}
+             defaultMouseMapping={defaultMouseMapping}
+             onChange={this.change}
+diff --git a/webui/src/components/Terminals/Editor/Configuration/index.js b/webui/src/components/Terminals/Editor/Configuration/index.js
+index a8762e1c..2554a864 100644
+--- a/webui/src/components/Terminals/Editor/Configuration/index.js
++++ b/webui/src/components/Terminals/Editor/Configuration/index.js
+@@ -145,10 +145,10 @@ export default class Configuration extends React.Component {
+     }
+     if (
+       prevProps.data.editingTerminal.data !== undefined &&
+-      prevProps.applications.applications.data !== undefined &&
++      prevProps.applications !== undefined &&
+       !arrayEqual(
+-        prevProps.applications.applications.data,
+-        this.props.applications.applications.data
++        prevProps.applications,
++        this.props.applications
+       )
+     ) {
+       await this.setAppOverrideTree();
+@@ -219,10 +219,10 @@ export default class Configuration extends React.Component {
+         break;
+       case DISPLAY:
+         urlPath = "display";
+-        const overrides = findOverrideById(editData, appOverrides.data);
++        const overrides = findOverrideById(editData, appOverrides.appData);
+         const response = await apiUpdateAppOverride(overrides, editingId);
+         if (response.result === false) {
+-          dispatch(showInfoBar(response.data, "error"));
++          dispatch(showInfoBar(response.appData, "error"));
+           this.cancel();
+         } else {
+           // check monitor and screnn count data[key]
+@@ -273,7 +273,7 @@ export default class Configuration extends React.Component {
+   resetTab = (tab) => {
+     const oriData = this.getOriData(tab);
+     const appOverrides = {
+-      data: { ...this.state.oriAppOverrides.data },
++      appData: { ...this.state.oriAppOverrides.appData },
+     };
+     if (this.props.data.isGroup) {
+       const applyAllProperties = JSON.parse(
+@@ -386,7 +386,7 @@ export default class Configuration extends React.Component {
+     });
+   };
+   setAppOverrides = (appOverrides) => {
+-    const updateOverrides = { data: appOverrides };
++    const updateOverrides = { appData: appOverrides };
+     this.setState({ appOverrides: updateOverrides });
+   };
+   getAppOverrideTree = async () => {
+@@ -402,36 +402,18 @@ export default class Configuration extends React.Component {
+   render() {
+     let {
+       props: {
+-        dispatch,
+-        isLoading,
+-        isLoaded,
+-        isEditMode,
+-        isEdited,
+-        isUpdated,
+-        data,
+-        infobar,
+-        status,
+-        tab,
+-        selectConfigTab,
+-        appMultiTree,
+-        onChangeEdit,
++        dispatch, isLoading, isLoaded, isEditMode, isEdited, isUpdated,
++        data, infobar, status, tab, selectConfigTab, onChangeEdit,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
+       },
+       state: {
+-        canApply,
+-        editData,
+-        subTabs,
+-        info,
+-        hardware,
+-        properties,
+-        display,
+-        applications,
+-        authUser,
+-        controls,
+-        appOverrides,
+-        oriAppOverrides,
+-        applyAllProperties,
++        canApply, editData, subTabs, info, hardware, properties, display,
++        authUser, controls, appOverrides, oriAppOverrides, applyAllProperties,
+       },
+     } = this;
++
+     let {
+       editingTerminal,
+       parentTerminal,
+@@ -456,13 +438,12 @@ export default class Configuration extends React.Component {
+ 
+     return (
+       <Fragment>
+-        {/*isLoading && <p>Loading...</p>*/}
+-        {!configLoaded && ( /*{!isLoading && !configLoaded && (*/
++        {!configLoaded && (
+           <div className="wrap-960 wrap-bg-w modal-content-edit">
+             No data found...
+           </div>
+         )}
+-        {configLoaded && ( /*{!isLoading && configLoaded && (*/
++        {configLoaded && (
+           <Fragment>
+             <EditorSubTab
+               tabWidth={130}
+@@ -533,14 +514,15 @@ export default class Configuration extends React.Component {
+                   displayEdit={isEdited}
+                   hardware={hardware}
+                   hardwareInfo={hardwareInfo}
+-                  applications={applications}
+                   appOverrides={appOverrides}
+                   oriAppOverrides={oriAppOverrides}
++                  rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++                  vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++                  currentTab={currentTab}
+                   adUsers={adUsers}
+                   defaultMouseMapping={defaultMouseMapping}
+                   verifyAuthUserResult={verifyAuthUserResult}
+                   terminalMainTree={terminalMainTree}
+-                  appMultiTree={appMultiTree}
+                   parentTerminal={parentTerminal}
+                   setAppOverrides={this.setAppOverrides}
+                   setAppOverrideTree={this.setAppOverrideTree}
+@@ -548,26 +530,6 @@ export default class Configuration extends React.Component {
+                   onChangeEdit={onChangeEdit}
+                 />
+               )}
+-              {/* {tab === APPLICATION &&isUpdated&& (
+-                <ApplicationCard
+-                  dispatch={dispatch}
+-                  isLoaded={isLoaded}
+-                  isEditMode={isEditMode}
+-                  isInDisplay={false}
+-                  isWizard={false}
+-                  isGroup={isGroup}
+-                  terminal={applications}
+-                  editingId={editingId}
+-                  parentTerminal={parentTerminal}
+-                  oriAppOverrides={oriAppOverrides}
+-                  appOverrides={appOverrides}
+-                  treeType="application"
+-                  appMultiTree={appMultiTree}
+-                  adUsers={adUsers}
+-                  verifyAuthUserResult={verifyAuthUserResult}     
+-                  onChange={this.change}
+-                />
+-              )} */}
+               {tab === USER_ACCESS && isUpdated && (
+                 <UserAccessCard
+                   dispatch={dispatch}
+diff --git a/webui/src/components/Terminals/Editor/QuickSwitch.js b/webui/src/components/Terminals/Editor/QuickSwitch.js
+index f22bf52f..03d0425c 100644
+--- a/webui/src/components/Terminals/Editor/QuickSwitch.js
++++ b/webui/src/components/Terminals/Editor/QuickSwitch.js
+@@ -35,6 +35,7 @@ export default class QuickSwitch extends React.Component {
+                 data={data}
+                 servers={servers.servers}
+                 applications={applications.applications}
++                vncs={applications.vncs}
+                 objects={data.terminals}
+                 objectGroups={data.terminalGroups}
+                 mainTree={data.terminalMainTree}
+diff --git a/webui/src/components/Terminals/Editor/index.js b/webui/src/components/Terminals/Editor/index.js
+index dbe7a0b2..56f72105 100644
+--- a/webui/src/components/Terminals/Editor/index.js
++++ b/webui/src/components/Terminals/Editor/index.js
+@@ -249,6 +249,7 @@ export default class Editor extends React.Component {
+       props: { data, dispatch },
+     } = this;
+     const editingId = data.editingId;
++    // TODO: 怎麼updateTerminal() 的參數跟定義不同？
+     dispatch(
+       updateTerminal(editingId, {
+         ConfigLock: !data.editingTerminal.data.ConfigLock,
+@@ -264,6 +265,7 @@ export default class Editor extends React.Component {
+       Favorite: !data.editingTerminal.data.Favorite,
+     };
+     const isGroup = data.isGroup;
++    // TODO: 怎麼updateTerminal() 的參數跟定義不同？
+     dispatch(updateTerminal(id, updateData, isGroup));
+   };
+ 
+@@ -323,36 +325,17 @@ export default class Editor extends React.Component {
+ 
+   render() {
+     let {
+-      props: { dispatch, data, applications, servers, infobar },
++      props: { dispatch, data, applications, applicationGroups, applicationMainTree, vncs, vncGroups, vncMainTree, servers, infobar },
+       state: {
+-        isEditMode,
+-        isEdited,
+-        isUpdated,
+-        showTabSwitchAlert,
+-        showConfigTabSwitchAlert,
+-        about,
+-        tabs,
+-        configTab,
+-        nextConfigTab,
+-        nextTabIndex,
+-        selectedTabIndex,
+-        showCopyAlert,
+-        showExitAlert,
++        isEditMode, isEdited, isUpdated, showTabSwitchAlert, showConfigTabSwitchAlert,
++        about, tabs, configTab, nextConfigTab, nextTabIndex, selectedTabIndex,
++        showCopyAlert, showExitAlert,
+       },
+     } = this;
+     let {
+-      editingTerminal,
+-      isGroup,
+-      editingId,
+-      terminalMainTree,
+-      terminals,
+-      terminalGroups,
+-      schedules,
+-      modules,
+-      msIdWrappers,
+-      moduleSettings,
+-      parentTerminal,
+-      possibleModuleSettings,
++      editingTerminal, isGroup, editingId, terminalMainTree,
++      terminals, terminalGroups, schedules, modules,
++      msIdWrappers, moduleSettings, parentTerminal, possibleModuleSettings,
+     } = data;
+ 
+     const selectedTab = tabs[selectedTabIndex].label;
+@@ -500,8 +483,8 @@ export default class Editor extends React.Component {
+                   data={data}
+                   infobar={infobar}
+                   tab={configTab}
+-                  applications={applications}
+-                  appMultiTree={applications.applicationMainTree.data}
++                  rdss={applications} rdsGroups={applicationGroups} rdsMainTree={applicationMainTree}
++                  vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+                   status={status}
+                   onEdit={this.onEdit}
+                   onCancel={this.onCancel}
+diff --git a/webui/src/components/Terminals/Wizard/ApplicationCard.js b/webui/src/components/Terminals/Wizard/ApplicationCard.js
+index 2e119620..988dde7d 100644
+--- a/webui/src/components/Terminals/Wizard/ApplicationCard.js
++++ b/webui/src/components/Terminals/Wizard/ApplicationCard.js
+@@ -27,8 +27,8 @@ export default class ApplicationCard extends React.Component {
+         terminal: terminal,
+         screenOptions: screenOptions,
+         appOverrides:
+-          this.props.appOverrides.data !== "null"
+-            ? this.props.appOverrides.data
++          this.props.appOverrides.appData !== "null"
++            ? this.props.appOverrides.appData
+             : {},
+         selectedMapFromId: {},
+         returnedMapFromId: {},
+@@ -54,7 +54,7 @@ export default class ApplicationCard extends React.Component {
+       this.setState({ terminal });
+     }
+     // check app update
+-    if (prevProps.appOverrides.data !== this.props.appOverrides.data) {
++    if (prevProps.appOverrides.appData !== this.props.appOverrides.appData) {
+       const [data, usedMapFromId, screenOptions] = this.updateAppsFromProps();
+       this.setState({
+         data,
+@@ -68,7 +68,7 @@ export default class ApplicationCard extends React.Component {
+     let usedMapFromId = {};
+     let data = this.state?.data ?? {};
+     const terminal = this.props.terminal.data;
+-    const appOverrides = this.props.appOverrides.data;
++    const appOverrides = this.props.appOverrides.appData;
+     const screenOptions = getScreenOptions();
+     function getSelectedApplications(appOverrides, usedMapFromId) {
+       usedMapFromId = Object.values(appOverrides).reduce((acc, cur) => {
+@@ -371,9 +371,11 @@ export default class ApplicationCard extends React.Component {
+       props: {
+         isLoaded,
+         editingId = 0,
+-        appMultiTree,
+         adUsers,
+         verifyAuthUserResult,
++        currentTab,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
+         isGroup,
+         selectedScreen,
+         selectedScreenId,
+@@ -419,8 +421,16 @@ export default class ApplicationCard extends React.Component {
+                   isEditMode={true}
+                   showAllTree={showAllTree}
+                   editingId={editingId}
+-                  tree={appMultiTree}
++                  tree={currentTab === "RDS" ? rdsMainTree.data : vncMainTree.data}
+                   treeType="application"
++                  tab={configTab}
++                  currentTab={currentTab}
++                  rdss={rdss}
++                  rdsGroups={rdsGroups}
++                  rdsMainTree={rdsMainTree}
++                  vncs={vncs}
++                  vncGroups={vncGroups}
++                  vncMultiTree={vncMainTree}
+                   selectedMapFromId={selectedMapFromId}
+                   usedMapFromId={usedMapFromId}
+                   toggleAllTree={this.toggleAllTree}
+diff --git a/webui/src/components/Terminals/Wizard/DisplayCard.js b/webui/src/components/Terminals/Wizard/DisplayCard.js
+index e2b55ab6..35e87ffc 100644
+--- a/webui/src/components/Terminals/Wizard/DisplayCard.js
++++ b/webui/src/components/Terminals/Wizard/DisplayCard.js
+@@ -13,8 +13,10 @@ export default class DisplayCard extends React.Component {
+         isGroup,
+         data,
+         editingId = 0,
+-        appMultiTree,
+         applications,
++        rdss, rdsGroups, rdsMainTree,
++        vncs, vncGroups, vncMainTree,
++        currentTab,
+         hardware,
+         hardwareInfo,
+         defaultMouseMapping,
+@@ -41,13 +43,15 @@ export default class DisplayCard extends React.Component {
+           terminal={{ data: data }}
+           parentTerminal={parentTerminal}
+           applications={applications.data}
++          rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++          vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++          currentTab={currentTab}
+           hardwareInfo={hardwareInfo}
+           defaultMouseMapping={defaultMouseMapping}
+           style={{ marginTop: "20px" }}
+           className="wrap01 mb-26 flex"
+           onChange={onChange}
+           editingId={editingId}
+-          appMultiTree={appMultiTree}
+           dispatch={dispatch}
+           appOverrides={appOverrides}
+           oriAppOverrides={oriAppOverrides}
+diff --git a/webui/src/components/Terminals/Wizard/index.js b/webui/src/components/Terminals/Wizard/index.js
+index d6d3c34e..8b50127d 100644
+--- a/webui/src/components/Terminals/Wizard/index.js
++++ b/webui/src/components/Terminals/Wizard/index.js
+@@ -760,7 +760,7 @@ export default class Wizard extends React.Component {
+       terminal[MAC] = macDeformatter(terminal[MAC]);
+     }
+     // remove not override app
+-    const terminalApps = findOverrideById(terminal, appOverrides.data);
++    const terminalApps = findOverrideById(terminal, appOverrides.appData);
+     const isGroup = data.isGroup;
+     // terminal group has properties apply all
+     if (isGroup === true) {
+@@ -909,32 +909,14 @@ export default class Wizard extends React.Component {
+   };
+   setAppOverrides = (appOverrides) => {
+     const updateOverrides = JSON.parse(JSON.stringify(this.state.appOverrides));
+-    updateOverrides.data = appOverrides;
++    updateOverrides.appData = appOverrides;
+     this.setState({ appOverrides: updateOverrides });
+   };
+ 
+   render() {
+     let {
+-      props: { dispatch, data },
+-      state: {
+-        errorFields,
+-        tabs,
+-        selectedTabIndex,
+-        showExitAlert,
+-        appOverrides,
+-        oriAppOverrides,
+-        authUser,
+-        controls,
+-        hardware,
+-        monitors,
+-        modules,
+-        terminalInfo,
+-        terminalProperties,
+-        schedules,
+-        selectedScreenId,
+-        otherApplyAll,
+-        applyAllProperties,
+-        defaultClose,
++      props: { dispatch, data, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree,currentTab },
++      state: { errorFields, tabs, selectedTabIndex, showExitAlert, appOverrides, oriAppOverrides, authUser, controls, hardware, monitors, modules, terminalInfo, terminalProperties, schedules, selectedScreenId, otherApplyAll, applyAllProperties, defaultClose,
+       },
+     } = this;
+     let {
+@@ -953,6 +935,7 @@ export default class Wizard extends React.Component {
+       terminalGroups,
+       verifyAuthUserResult,
+     } = data;
++
+ 	//hardware.Model = data.defaultTerminal?.Model;
+     const selectedTab = tabs[selectedTabIndex].label;
+     const applications = getDataForBaseCard(extractApplications(monitors));
+@@ -995,6 +978,12 @@ export default class Wizard extends React.Component {
+                           data={terminalInfo}
+                           errorFields={errorFields}
+                           terminalMainTree={terminalMainTree}
++                          rdss={rdss}
++                          rdsGroups={rdsGroups}
++                          rdsMainTree={rdsMainTree}
++                          vncs={vncs}
++                          vncGroups={vncGroups}
++                          vncMainTree={vncMainTree}
+                           objects={terminals}
+                           objectGroups={terminalGroups}
+                           onChange={this.onChange}
+@@ -1035,9 +1024,12 @@ export default class Wizard extends React.Component {
+                         applications={applications}
+                         hardware={hardware}
+                         defaultMouseMapping={defaultMouseMapping}
+-                        appMultiTree={
+-                          this.props.applications.applicationMainTree.data
+-                        }
++                        rdss={rdss}
++                        rdsGroups={rdsGroups}
++                        rdsMainTree={rdsMainTree}
++                        vncs={vncs}
++                        vncGroups={vncGroups}
++                        vncMainTree={vncMainTree}
+                         hardwareInfo={hardwareInfo}
+                         appOverrides={appOverrides}
+                         oriAppOverrides={oriAppOverrides}
+@@ -1055,14 +1047,14 @@ export default class Wizard extends React.Component {
+                         appOverrides={appOverrides}
+                         oriAppOverrides={oriAppOverrides}
+                         terminal={applications}
++                        rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++                        vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
++                        currentTab={currentTab}
+                         parentTerminal={parentTerminal}
+                         adUsers={adUsers}
+                         verifyAuthUserResult={verifyAuthUserResult}
+                         treeType="application"
+                         terminalMainTree={terminalMainTree}
+-                        appMultiTree={
+-                          this.props.applications.applicationMainTree.data
+-                        }
+                         onChange={this.onChange}
+                         onSelect={this.onSelectScreen}
+                         selectedScreenId={selectedScreenId}
+diff --git a/webui/src/components/Terminals/index.js b/webui/src/components/Terminals/index.js
+index 97dd1130..1e2d820c 100644
+--- a/webui/src/components/Terminals/index.js
++++ b/webui/src/components/Terminals/index.js
+@@ -166,16 +166,16 @@ class Terminals extends React.Component {
+ 
+   render() {
+     let {
+-      props: { dispatch, data, servers, applications, infobar },
++      props: { dispatch, data, servers, applications, applicationGroups, applicationMainTree, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, currentTab, infobar },
+       state: { selectedId, showAllTree, filterDefault, filterFavorite },
+     } = this;
+ 
+     const state = getObjectProperty(data, "terminals.state");
+-	//console.log("components/Terminals/index.js() " + JSON.stringify(this.state, null, 4));
+     const terminalsById = data.terminals?.data?.reduce((acc, cur) => {
+       acc[cur.Id] = cur;
+       return acc;
+     }, {});
++
+     return (
+       <Fragment>
+         {/* {(this.isEditorLoading() ||
+@@ -187,6 +187,10 @@ class Terminals extends React.Component {
+           <Editor
+             data={data}
+             applications={applications}
++            applicationGroups={applicationGroups}
++            applicationMainTree={applicationMainTree}
++            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
++            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+             servers={servers}
+             infobar={infobar}
+             dispatch={dispatch}
+@@ -195,6 +199,13 @@ class Terminals extends React.Component {
+         {applications?.subEditorOpened && (
+           <AppEditor
+             data={applications}
++            applications={applications}
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
+             servers={servers}
+             dispatch={dispatch}
+           />
+@@ -203,6 +214,12 @@ class Terminals extends React.Component {
+           <Wizard
+             data={data}
+             applications={applications}
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
+             dispatch={dispatch}
+             parentId={selectedId != null ? selectedId : 0}
+           />
+@@ -248,9 +265,15 @@ class Terminals extends React.Component {
+             outerClass=" main-page-tree"
+             expandClass=" ml-20"
+             tree={data.terminalMainTree.data}
++            treeType="terminalTree"
++            rdss={rdss}
++            rdsGroups={rdsGroups}
++            rdsMainTree={rdsMainTree}
++            vncs={vncs}
++            vncGroups={vncGroups}
++            vncMainTree={vncMainTree}
+             filterFavorite={filterFavorite}
+             showAllTree={showAllTree}
+-            treeType="terminalTree"
+             wsItems={terminalsById}
+             selectedId={selectedId}
+             toggleAllTree={this.toggleAllTree}
+@@ -261,11 +284,18 @@ class Terminals extends React.Component {
+         <ObjectDashboard
+           data={data}
+           servers={servers?.servers}
+-          applications={applications?.applications}
++          applications={applications?.data}
++          vncs={vncs?.data}
+           original={terminalsById}
+           objects={data.terminals}
+           objectGroups={data.terminalGroups}
+           mainTree={data.terminalMainTree}
++          rdss={rdss}
++          rdsGroups={rdsGroups}
++          rdsMainTree={rdsMainTree}
++          vncs={vncs}
++          vncGroups={vncGroups}
++          vncMainTree={vncMainTree}
+           dispatch={dispatch}
+           isGroup={false}
+           object={TerminalObject}
+diff --git a/webui/src/components/Tree/index.js b/webui/src/components/Tree/index.js
+index fcb6fb0a..2182615a 100644
+--- a/webui/src/components/Tree/index.js
++++ b/webui/src/components/Tree/index.js
+@@ -10,24 +10,17 @@ export function Tree({
+   tree,
+   outerClass = "",
+   expandClass = "",
++  rdss,
++  rdsGroups,
++  rdsMainTree,
++  vncs,
++  vncGroups,
++  vncMainTree,
+   selectTab,
+   currentTab,
+   ...others
+ }) {
+-  let treeData
+-  let filterChildren
+-  if (tree !== null && tree !== undefined) {
+-    treeData = tree
+-    if (currentTab === 'RDS' || currentTab === 'VNC') {
+-      treeData = tree.filter((item) => item.GroupType === currentTab || item.Id === 0);
+-      treeData.map((item) => {
+-        if (item.Children.length > 0) {
+-          filterChildren = item.Children.filter((item) => item.GroupType === currentTab);
+-          treeData[0].filterChildren = filterChildren
+-        }
+-      })
+-    }
+-  }
++
+   return (
+     <article className="tree">
+       <ExpandAndCollapse
+@@ -43,7 +36,7 @@ export function Tree({
+         )}
+         {tree != null &&
+           Array.isArray(tree) === true &&
+-          treeData.map((item) => (
++          tree.map((item) => (
+             <TreeItem
+               {...others}
+               key={`0_${item.Name}_${item.IsGroup ? 1 : 0}`}
+@@ -63,26 +56,19 @@ export function MultiTree({
+   showAllTree,
+   toggleAllTree,
+   tree,
++  rdss,
++  rdsGroups,
++  rdsMainTree,
++  vncs,
++  vncGroups,
++  vncMainTree,
+   outerClass = "",
+   expandClass = "",
+   selectTab,
+   currentTab,
+   ...others
+ }) {
+-  let treeData
+-  let filterChildren
+-  if (tree !== null && tree !== undefined) {
+-    treeData = tree
+-    if (currentTab === 'RDS' || currentTab === 'VNC') {
+-      treeData = tree.filter((item) => item.GroupType === currentTab || item.Id === 0);
+-      treeData.map((item) => {
+-        if (item.Children.length > 0) {
+-          filterChildren = item.Children.filter((item) => item.GroupType === currentTab);
+-          treeData[0].filterChildren = filterChildren
+-        }
+-      })
+-    }
+-  }
++
+   return (
+     <article className="tree">
+       <ExpandAndCollapse
+@@ -90,8 +76,13 @@ export function MultiTree({
+         showAllTree={showAllTree}
+         toggleAllTree={toggleAllTree}
+       />
+-      {console.log('others',others)}
+-      {others.treeType === 'application' && <TreeTab tabWidth={160} tabZIndex={6} tabClass="sub-tab-form-button" selectTab={selectTab} currentTab={currentTab} subTabs={["RDS", "VNC"]} />}
++      {(others.treeType === 'application' || others.treeType === 'appTree') &&
++       <TreeTab tabWidth={160}
++                tabZIndex={6}
++                tabClass="sub-tab-form-button"
++                selectTab={selectTab}
++                currentTab={currentTab}
++                subTabs={["RDS", "VNC"]} />}
+       <section className={"tree-content" + outerClass}>
+         {tree == null && <p>No data found...</p>}
+         {tree != null && typeof tree === "string" && (
+@@ -99,7 +90,7 @@ export function MultiTree({
+         )}
+         {tree != null &&
+           Array.isArray(tree) === true &&
+-          treeData.map((item) => (
++          tree.map((item) => (
+             <MultiTreeItem
+               {...others}
+               key={`0_${item.Name}_${item.IsGroup ? 1 : 0}`}
+diff --git a/webui/src/components/VncOverride/OverrideItem.js b/webui/src/components/VncOverride/OverrideItem.js
+new file mode 100644
+index 00000000..2fb19b01
+--- /dev/null
++++ b/webui/src/components/VncOverride/OverrideItem.js
+@@ -0,0 +1,11 @@
++import React from "react";
++import Checkbox from "components/Form/Checkbox";
++
++export function OverrideCheckbox({ name, data, onChange }) {
++  return (
++    <div>
++      <Checkbox name={name} value={data[name]} onChange={onChange} />
++      <label>Override</label>
++    </div>
++  );
++}
+diff --git a/webui/src/components/VncOverride/index.js b/webui/src/components/VncOverride/index.js
+new file mode 100644
+index 00000000..6b5a79c5
+--- /dev/null
++++ b/webui/src/components/VncOverride/index.js
+@@ -0,0 +1,278 @@
++import React, { Fragment } from "react";
++import { Modal } from "react-bootstrap";
++import { EditorField } from "components/Card";
++import Input from "components/Form/Input";
++import Select from "components/Form/Select";
++import { OverrideCheckbox } from "./OverrideItem";
++import { CancelAndConfirm } from "components/Form/Button";
++import SearchUser from "components/Other/SearchUser";
++
++import { verifyAuthAdUser } from "actions/OtherActions";
++import { clearAuthVerify } from "actions/TerminalActions";
++
++import { positiveNumberValidator } from "lib/Util";
++
++import { LOADING, LOADED, FAILURE } from "const/DataLoaderState";
++import {
++  ColorDepth,
++  ColorDepthOptions,
++  DisplayName,
++  LinkedAppCommandOptions,
++  Resolution,
++  ResolutionOptions,
++  SessionWidth,
++  SessionHeight,
++} from "const/Applications/ApplicationFieldNames";
++import { Domain, Username, Password } from "const/Servers/ServerFieldNames";
++import {
++  DisplayNameOverride,
++  UserAccessOverride,
++  AppCommandOverride,
++  VideoSettingOverride,
++} from "const/Applications/OverrideNames";
++
++export default class AppOverride extends React.Component {
++  constructor(props) {
++    super(props);
++    const data = this.preProccess();
++    this.state = {
++      data: data,
++      showAdUserModal: false,
++    };
++  }
++
++  preProccess = () => {
++    this.props.dispatch(clearAuthVerify());
++    let data = Object.assign({}, this.props.data);
++    if (data[Resolution] === undefined || data[Resolution] === "") {
++      data[Resolution] = "1920 x 1080";
++    }
++    if (data[ColorDepth] === undefined || data[ColorDepth] === "") {
++      data[ColorDepth] = "16M";
++    }
++    for (const resolution of ResolutionOptions) {
++      if (data[Resolution] === resolution) {
++        data[Resolution] = resolution;
++      }
++    }
++    if (data[Resolution] !== "Custom") {
++      let resolution = data[Resolution].split(" x ");
++      data[SessionWidth] = parseInt(resolution[0]);
++      data[SessionHeight] = parseInt(resolution[1]);
++    }
++    return data;
++  };
++
++  change = (e) => {
++    let data = this.state.data;
++    if (e.target.name == Resolution && e.target.value !== "Custom") {
++      let width = e.target.value.split(" x ")[0];
++      let height = e.target.value.split(" x ")[1];
++      data[SessionWidth] = parseInt(width);
++      data[SessionHeight] = parseInt(height);
++    }
++    data[e.target.name] = e.target.value;
++    this.setState({ data });
++  };
++  cancel = () => {
++    let {
++      props: { onCancel },
++    } = this;
++    this.setState({ showAdUserModal: false }, () => {
++      onCancel();
++    });
++  };
++  confirm = () => {
++    let {
++      props: { onConfirm },
++      state: { data },
++    } = this;
++    onConfirm(data);
++  };
++
++  onConfirm = (username, domain) => {
++    const auth = {
++      Username: username,
++      Password: "",
++      Domain: domain,
++    };
++    this.setState({
++      data: { ...this.state.data, ...auth },
++      showAdUserModal: false,
++    });
++  };
++
++  openAdUserModal = () => {
++    this.setState({
++      showAdUserModal: true,
++    });
++  };
++  closeAdUserModal = () => {
++    this.setState({
++      showAdUserModal: false,
++    });
++  };
++
++  getWrapperField(title, name, options, isEditMode, Tag = Input) {
++    return (
++      <EditorField
++        title={title}
++        name={name}
++        options={{ className: "w100percent", ...options }}
++        Tag={Tag}
++        isEditMode={isEditMode}
++        onChange={this.change}
++      />
++    );
++  }
++
++  verify = () => {
++    let {
++      props: { dispatch },
++      state: { data },
++    } = this;
++    if (!!dispatch) {
++      dispatch(verifyAuthAdUser("terminals.verifyAuthUserResult", data));
++    }
++  };
++
++  render() {
++    let {
++      props: { dispatch, adUsers, verifyAuthUserResult, currentTab },
++      state: { data, showAdUserModal },
++    } = this;
++
++    const canDisplayNameOverride =
++      !data[DisplayNameOverride] ||
++      (data[DisplayNameOverride] && data[DisplayName] !== "")
++        ? true
++        : false;
++    const canUserAccessOverride =
++      !data[UserAccessOverride] ||
++      (data[UserAccessOverride] &&
++        data[Username] !== "" &&
++        data[Password] !== "")
++        ? true
++        : false;
++    const canAppCommandOverride =
++      !data[AppCommandOverride] ||
++      (data[AppCommandOverride] && data[LinkedAppCommandOptions] !== "")
++        ? true
++        : false;
++
++    return (
++      <Modal id="override-modal" show={true}>
++        <Modal.Body>
++          <div
++            className="pop-up-window "
++            style={{
++              height: "fit-content",
++              maxHeight: "880px",
++              padding: "0px 0px 20px 0px",
++            }}
++          >
++            <div className="override-title">{`Override settings for '${data.Name}' Application`}</div>
++            <article className="override-content">
++              <section>
++                <h4>APPLICATION NAME</h4>
++                <p>{data.Name}</p>
++              </section>
++              <section>
++                <h4>
++                  DISPLAY NAME
++                  <OverrideCheckbox
++                    name={DisplayNameOverride}
++                    data={data}
++                    onChange={this.change}
++                  />
++                </h4>
++                <ul className="editor-content">
++                  {this.getWrapperField(
++                    "DISPLAY NAME",
++                    DisplayName,
++                    {
++                      type: "text",
++                      value: data[DisplayName],
++                    },
++                    data[DisplayNameOverride]
++                  )}
++                </ul>
++              </section>
++              <section>
++                <h4>
++                  VIDEO SETTING
++                  <OverrideCheckbox
++                    name={VideoSettingOverride}
++                    data={data}
++                    onChange={this.change}
++                  />
++                </h4>
++                <ul className="editor-content">
++                  {this.getWrapperField(
++                    "RESOLUTION",
++                    Resolution,
++                    {
++                      type: "select",
++                      value:
++                        data[Resolution] !== undefined
++                          ? data[Resolution]
++                          : data[SessionWidth] !== "" &&
++                            data[SessionHeight] !== ""
++                          ? `${data[SessionWidth]} x ${data[SessionHeight]}`
++                          : "Custom",
++                      options: ResolutionOptions,
++                    },
++                    data[VideoSettingOverride],
++                    Select
++                  )}
++                  {data[Resolution] === "Custom" &&
++                    this.getWrapperField(
++                      "WIDTH",
++                      SessionWidth,
++                      {
++                        type: "number",
++                        value: data[SessionWidth],
++                        validator: (e) => positiveNumberValidator(e),
++                        minNumber: 1,
++                      },
++                      data[VideoSettingOverride]
++                    )}
++                  {data[Resolution] === "Custom" &&
++                    this.getWrapperField(
++                      "HEIGHT",
++                      SessionHeight,
++                      {
++                        type: "number",
++                        value: data[SessionHeight],
++                        validator: (e) => positiveNumberValidator(e),
++                        minNumber: 1,
++                      },
++                      data[VideoSettingOverride]
++                    )}
++                  {this.getWrapperField(
++                    "COLOR DEPTH",
++                    ColorDepth,
++                    {
++                      type: "select",
++                      value: data[ColorDepth],
++                      options: ColorDepthOptions,
++                    },
++                    data[VideoSettingOverride],
++                    Select
++                  )}
++                </ul>
++              </section>
++            </article>
++            <CancelAndConfirm
++              canConfirm={
++                canDisplayNameOverride
++              }
++              onConfirm={this.confirm}
++              onCancel={this.cancel}
++            />
++          </div>
++        </Modal.Body>
++      </Modal>
++    );
++  }
++}
+diff --git a/webui/src/components/WsNotification/index.js b/webui/src/components/WsNotification/index.js
+index e230af63..1250b111 100644
+--- a/webui/src/components/WsNotification/index.js
++++ b/webui/src/components/WsNotification/index.js
+@@ -18,7 +18,7 @@ const CLOSED = 3;
+ class WS {
+   constructor(url, props = {}) {
+     let defaultProps = {
+-      reconnect: 2000, //reconnect if failed or disconnected
++      reconnect: 3000, //reconnect if failed or disconnected
+       onMessage: null,
+     };
+     this.props = { ...defaultProps, ...props, url };
+@@ -27,7 +27,7 @@ class WS {
+   connect() {
+     this.reconnect = true;
+     if (this.timer) clearTimeout(this.timer);
+-    let ws = new WebSocket(this.props.url);
++    const ws = new WebSocket(this.props.url);
+ 
+     ws.onopen = (event) => {
+       this.state = event.target.readyState;
+@@ -117,9 +117,9 @@ class WsNotification extends React.Component {
+               case "DELETE":
+               case "POST":
+               case "PUT":
+-                this.props.dispatch(
+-                  updateServerGroupList(this.props.servers.servers.data)
+-                );
++                this.props.dispatch(updateServerGroupList(
++                  this.props.servers.servers.data
++                ));
+                 break;
+               default:
+                 break;
+@@ -130,9 +130,10 @@ class WsNotification extends React.Component {
+               case "DELETE":
+               case "POST":
+               case "PUT":
+-                this.props.dispatch(
+-                  updateAppList(this.props.applications.applications.data)
+-                );
++                this.props.dispatch( updateAppList(
++                    this.props.applications.applicationGroups.data,
++                    this.props.applications.vncGroups.data
++                ));
+                 break;
+               default:
+                 break;
+@@ -143,11 +144,10 @@ class WsNotification extends React.Component {
+               case "DELETE":
+               case "POST":
+               case "PUT":
+-                this.props.dispatch(
+-                  updateAppGroupList(
+-                    this.props.applications.applicationGroups.data
+-                  )
+-                );
++                this.props.dispatch( updateAppGroupList(
++                  this.props.applications.applications.data,
++                  this.props.applications.vncs.data
++                ));
+                 break;
+               default:
+                 break;
+diff --git a/webui/src/const/Terminals/Override.js b/webui/src/const/Terminals/Override.js
+index 9d1dc50d..6e42d840 100644
+--- a/webui/src/const/Terminals/Override.js
++++ b/webui/src/const/Terminals/Override.js
+@@ -3,6 +3,7 @@ export const DefaultOverride = {
+   Username: "",
+   Password: "",
+   Domain: "",
++  GroupType: "",
+   LinkedAppCommandOptions: "",
+   Resolution: "1920 x 1080",
+   SessionWidth: 1920,
+@@ -15,24 +16,43 @@ export const DefaultOverride = {
+ };
+ 
+ export const DefaultAppOverride = {
+-  Name: "",
+-  Favorite: false,
+-  ModifiedTS: 0,
+   Id: 0,
+-  ParentId: 0,
++  Name: "",
+   AppId: 0,
+   Tid: 0,
++  GroupType: "RDS",
++
++  DisplayNameOverride: false,
+   DisplayName: "",
++
++  UserAccessOverride: false,
+   Username: "",
+   Password: "",
+   Domain: "",
++
++  AppCommandOverride: false,
+   LinkedAppCommandOptions: "",
++
++  VideoSettingOverride: false,
+   Resolution: "1920 x 1080",
+   SessionHeight: 1080,
+   SessionWidth: 1920,
+   ColorDepth: "16M",
++};
++
++export const DefaultVncOverride = {
++  Id: 0,
++  Name: "",
++  AppId: 0,
++  Tid: 0,
++  GroupType: "VNC",
++
+   DisplayNameOverride: false,
+-  UserAccessOverride: false,
+-  AppCommandOverride: false,
++  DisplayName: "",
++
+   VideoSettingOverride: false,
++  Resolution: "1920 x 1080",
++  SessionHeight: 1080,
++  SessionWidth: 1920,
++  ColorDepth: "16M",
+ };
+diff --git a/webui/src/middleware/ApplicationDataLoader.js b/webui/src/middleware/ApplicationDataLoader.js
+index 0a09df11..a1a357f7 100644
+--- a/webui/src/middleware/ApplicationDataLoader.js
++++ b/webui/src/middleware/ApplicationDataLoader.js
+@@ -59,30 +59,48 @@ export default (store) => (next) => (action) => {
+                 if (value.result === false) {
+                   throw Error(value.data);
+                 }
+-                const appList = value.data;
++                const apps = value.data.RDS;
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.applications",
++                    data: apps,
++                  },
++                });
++                const vncs = value.data.VNC;
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.vncs",
++                    data: vncs,
++                  },
++                });
+                 groupLoader()
+                   .then(async (value) => {
+                     if (value.result === false) {
+                       throw Error(value.data);
+                     }
+-                    const appGroupList = value.data;
++                    const appGroups = value.data.RDS;
+                     dispatch({
+                       type: LOAD_SUCCESS,
+                       payload: {
+                         path: "applications.applicationGroups",
+-                        data: appGroupList,
++                        data: appGroups,
+                       },
+                     });
++
++                    const vncGroups = value.data.VNC;
+                     dispatch({
+                       type: LOAD_SUCCESS,
+                       payload: {
+-                        path: "applications.applications",
+-                        data: appList,
++                        path: "applications.vncGroups",
++                        data: vncGroups,
+                       },
+                     });
++
+                     const applicationMainTree = await convertListToTree(
+-                      appList,
+-                      appGroupList
++                      apps,
++                      appGroups
+                     );
+                     dispatch({
+                       type: LOAD_SUCCESS,
+@@ -91,6 +109,18 @@ export default (store) => (next) => (action) => {
+                         data: applicationMainTree,
+                       },
+                     });
++
++                    const vncMainTree = await convertListToTree(
++                      vncs,
++                      vncGroups
++                    );
++                    dispatch({
++                      type: LOAD_SUCCESS,
++                      payload: {
++                        path: "applications.vncMainTree",
++                        data: vncMainTree,
++                      },
++                    });
+                   })
+                   .catch((err) => {
+                     throw Error(err);
+@@ -117,11 +147,29 @@ export default (store) => (next) => (action) => {
+                 if (value.result === false) {
+                   throw Error(value.data);
+                 }
+-                const appList = value.data;
+-                const appGroupList = state.applications.applicationGroups.data;
++                const apps = value.data.RDS;
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.applications",
++                    data: apps,
++                  },
++                });
++
++                const vncs = value.data.VNC;
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.vncs",
++                    data: vncs,
++                  },
++                });
++
++                // 從 state 取出資料, 重建樹
++                const appGroups = state.applications.applicationGroups.data;
+                 const applicationMainTree = await convertListToTree(
+-                  appList,
+-                  appGroupList
++                  apps,
++                  appGroups,
+                 );
+                 dispatch({
+                   type: LOAD_SUCCESS,
+@@ -130,11 +178,17 @@ export default (store) => (next) => (action) => {
+                     data: applicationMainTree,
+                   },
+                 });
++
++                const vncGroups = state.applications.vncGroups.data;
++                const vncMainTree = await convertListToTree(
++                  vncs,
++                  vncGroups
++                );
+                 dispatch({
+                   type: LOAD_SUCCESS,
+                   payload: {
+-                    path: path,
+-                    data: appList,
++                    path: "applications.vncMainTree",
++                    data: vncMainTree,
+                   },
+                 });
+               })
+@@ -159,11 +213,11 @@ export default (store) => (next) => (action) => {
+                 if (value.result === false) {
+                   throw Error(value.data);
+                 }
+-                const appGroupList = value.data;
+-                const appList = state.applications.applications.data;
++                const appGroups = value.data.RDS;
++                const apps = state.applications.applications.data;
+                 const applicationMainTree = await convertListToTree(
+-                  appList,
+-                  appGroupList
++                  apps,
++                  appGroups
+                 );
+                 dispatch({
+                   type: LOAD_SUCCESS,
+@@ -175,8 +229,29 @@ export default (store) => (next) => (action) => {
+                 dispatch({
+                   type: LOAD_SUCCESS,
+                   payload: {
+-                    path: path,
+-                    data: appGroupList,
++                    path: "applications.applicationGroups",
++                    data: appGroups,
++                  },
++                });
++
++                const vncGroups = value.data.VNC;
++                const vncs = state.applications.vncs.data;
++                const vncMainTree = await convertListToTree(
++                  vncs,
++                  vncGroups,
++                );
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.vncMainTree",
++                    data: vncMainTree,
++                  },
++                });
++                dispatch({
++                  type: LOAD_SUCCESS,
++                  payload: {
++                    path: "applications.vncGroups",
++                    data: vncGroups,
+                   },
+                 });
+               })
+diff --git a/webui/src/pages/layout/index.js b/webui/src/pages/layout/index.js
+index df568f74..216fe79b 100644
+--- a/webui/src/pages/layout/index.js
++++ b/webui/src/pages/layout/index.js
+@@ -78,6 +78,8 @@ class Page extends React.Component {
+ 
+   componentDidUpdate(prevProps, prevState) {
+     // check data is Loaded or not
++    // TODO 到這邊，this.props.data.applications 有時 含 applications +vncs 有時又只有 applications
++    // console.log("this.props.data.applications", this.props.data.applications, "this.props.data.vncs", this.props.data.vncs);
+     if (!this.state.isLoaded && this.state.tab === "") {
+       if (
+         this.props.data.terminals.terminals.state === "LOADED" &&
+@@ -86,9 +88,7 @@ class Page extends React.Component {
+       ) {
+         if (!this.hasServer()) {
+           this.setState({ isLoaded: true, tab: SERVERS });
+-        } else if (
+-          this.props.data.applications.applications.data?.length === 0
+-        ) {
++        } else if ( this.props.data.applications.applications.data?.length === 0) {
+           this.setState({
+             isLoaded: true,
+             tab: APPLICATIONS,
+@@ -165,6 +165,7 @@ class Page extends React.Component {
+       props: { data },
+       state: { tab, x, y },
+     } = this;
++
+     const token = data.auths.token;
+     const productInfo = data.auths.productInfo;
+     // During api get product info, show not show login page.
+@@ -177,6 +178,8 @@ class Page extends React.Component {
+     const showHomepage = token.data != null && token.state == LOADED;
+ 
+     const showServerReminder = !this.hasServer();
++    // 到這邊 data.applications 含 applications + vncs
++    // console.log("data.applications", data.applications);
+     const showAppReminder =
+       this.hasServer() &&
+       Array.isArray(data.applications.applications.data) &&
+@@ -298,13 +301,27 @@ class Page extends React.Component {
+                 {tab === TERMINALS && (
+                   <Terminals
+                     servers={data.servers}
+-                    applications={data.applications}
++                    applications={data.applications.applications}
++                    applicationGroups={data.applications.applicationGroups}
++                    applicationMainTree={data.applications.applicationMainTree}
++                    rdss={data.applications.applications}
++                    rdsGroups={data.applications.applicationGroups}
++                    rdsMainTree={data.applications.applicationMainTree}
++                    vncs={data.applications.vncs}
++                    vncGroups={data.applications.vncGroups}
++                    vncMainTree={data.applications.vncMainTree}
+                   />
+                 )}
+                 {tab === SERVERS && (
+                   <Servers
+                     terminals={data.terminals}
+-                    applications={data.applications}
++                    applications={data.applications.applications}
++                    rdss={data.applications.applications}
++                    rdsGroups={data.applications.applicationGroups}
++                    rdsMainTree={data.applications.applicationMainTree}
++                    vncs={data.applications.vncs}
++                    vncGroups={data.applications.vncGroups}
++                    vncMainTree={data.applications.vncMainTree}
+                     showServerReminder={showServerReminder}
+                   />
+                 )}
+@@ -312,6 +329,12 @@ class Page extends React.Component {
+                   <Applications
+                     terminals={data.terminals}
+                     servers={data.servers}
++                    rdss={data.applications.applications}
++                    rdsGroups={data.applications.applicationGroups}
++                    rdsMainTree={data.applications.applicationMainTree}
++                    vncs={data.applications.vncs}
++                    vncGroups={data.applications.vncGroups}
++                    vncMainTree={data.applications.vncMainTree}
+                     showAppReminder={showAppReminder}
+                   />
+                 )}
+@@ -337,16 +360,17 @@ class Page extends React.Component {
+   }
+ }
+ 
++export const onDispatch = (action) => {
++  return mapToDispatch(action);
++};
++
++// TODO 這邊會產生一大串的警告訊息
+ const ConnectedPage = connect((state) => {
+   return {
+     data: state,
+   };
+ })(Page);
+ 
+-export const onDispatch = (action) => {
+-  return mapToDispatch(action);
+-};
+-
+ ReactDOM.render(
+   <Provider store={store}>
+     <ConnectedPage />
+diff --git a/webui/src/reducers/ApplicationReducer.js b/webui/src/reducers/ApplicationReducer.js
+index 551da5eb..e9a2554b 100644
+--- a/webui/src/reducers/ApplicationReducer.js
++++ b/webui/src/reducers/ApplicationReducer.js
+@@ -88,14 +88,18 @@ export default (
+     }
+     case UPDATE_APP_LIST: {
+       return update(state, {
+-        applications: { data: { $set: payload.list } },
+-        applicationMainTree: { data: { $set: payload.tree } },
++        applications: { data: { $set: payload.appList } },
++        applicationMainTree: { data: { $set: payload.appTree } },
++        vncs: { data: { $set: payload.vncList } },
++        vncMainTree: { data: { $set: payload.vncTree } },
+       });
+     }
+     case UPDATE_APP_GROUP_LIST: {
+       return update(state, {
+-        applicationGroups: { data: { $set: payload.list } },
+-        applicationMainTree: { data: { $set: payload.tree } },
++        applicationGroups: { data: { $set: payload.appList } },
++        applicationMainTree: { data: { $set: payload.appTree } },
++        vncGroups: { data: { $set: payload.vncList } },
++        vncMainTree: { data: { $set: payload.vncTree } },
+       });
+     }
+     default:
+diff --git a/webui/src/utils/Check.js b/webui/src/utils/Check.js
+index b2cf5420..9e318039 100644
+--- a/webui/src/utils/Check.js
++++ b/webui/src/utils/Check.js
+@@ -25,6 +25,9 @@ export function checkListEdit(list, oriList) {
+ export function checkDuplicateName(name, parentId, list) {
+   if (!stringValid(name)) return false;
+   let noDuplicate;
++  if (!list.data) {
++    return true;
++  }
+   if (parentId != null) {
+     noDuplicate = list.data
+       .filter((item) => item[ParentId] === parentId)
+diff --git a/webui/src/utils/Override.js b/webui/src/utils/Override.js
+index 531c8b9c..e26bf172 100644
+--- a/webui/src/utils/Override.js
++++ b/webui/src/utils/Override.js
+@@ -1,16 +1,18 @@
+-import { DefaultAppOverride, DefaultOverride } from "const/Terminals/Override";
++import { DefaultAppOverride, DefaultVncOverride, DefaultOverride } from "const/Terminals/Override";
+ 
+ import { apiGetAppList, apiGetAppOverride } from "api";
+ 
+ export async function getAppOverride(editingId = 0) {
+   const res = await apiGetAppList();
+-  const appList = res.data;
++  const appList = res.data.RDS.concat(res.data.VNC);
++ 
+   let mappingData = appList.reduce((acc, cur) => {
+     acc[cur.Id] = {};
+     acc[cur.Id] = convertAppToOverride(cur);
+     acc[cur.Id].Id = 0;
+     return acc;
+   }, {});
++
+   if (editingId !== 0) {
+     const response = await apiGetAppOverride(editingId);
+     if (Array.isArray(response.data) && response.data.length > 0) {
+@@ -21,22 +23,37 @@ export async function getAppOverride(editingId = 0) {
+     }
+   }
+   const appData = {
+-    data: mappingData,
++    appData: mappingData,
+   };
+   return appData;
+ }
+ 
+ function convertAppToOverride(app) {
+-  return Object.keys(DefaultAppOverride).reduce((acc, key) => {
+-    if (key === "AppId") {
+-      acc[key] = app.Id;
+-    } else if (app[key] != null) {
+-      acc[key] = app[key];
+-    } else {
+-      acc[key] = DefaultAppOverride[key];
+-    }
+-    return acc;
+-  }, {});
++  if (app.GroupType === "RDS") {
++    const res = Object.keys(DefaultAppOverride).reduce((acc, key) => {
++      if (key === "AppId") {
++        acc[key] = app.Id;
++      } else if (app[key] != null) {
++        acc[key] = app[key];
++      } else {
++        acc[key] = DefaultAppOverride[key];
++      }
++      return acc;
++    }, {});
++    return res;
++  } else {
++    const res = Object.keys(DefaultVncOverride).reduce((acc, key) => {
++      if (key === "AppId") {
++        acc[key] = app.Id;
++      } else if (app[key] != null) {
++        acc[key] = app[key];
++      } else {
++        acc[key] = DefaultVncOverride[key];
++      }
++      return acc;
++    }, {});
++    return res;
++  }
+ }
+ 
+ export function findOverrideById(terminal, applications) {
+@@ -55,9 +72,11 @@ export function findOverrideById(terminal, applications) {
+ }
+ 
+ export async function checkAppOverride(appOverrides) {
++  return appOverrides;
++/*
+   let updateData = JSON.parse(JSON.stringify(appOverrides));
+   let idx = 0;
+-  // check default
++  
+   for await (const item of appOverrides) {
+     Object.keys(DefaultOverride).forEach((key) => {
+       if (item[key] === undefined) {
+@@ -73,4 +92,5 @@ export async function checkAppOverride(appOverrides) {
+     idx++;
+   }
+   return updateData;
++*/
+ }
+diff --git a/webui/src/utils/Status.js b/webui/src/utils/Status.js
+index c6a1d16a..3d7be755 100644
+--- a/webui/src/utils/Status.js
++++ b/webui/src/utils/Status.js
+@@ -67,10 +67,10 @@ export function getTerminalStatus(type, data) {
+   else if (isBootingDisabled) c = `${type}-terminal-booting-disabled`;
+   else if (isBooting) c = `${type}-terminal-booting`;
+ 
+-  console.clear();
++//  console.clear();
+   let now = new Date();
+   let nowStr = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+-  console.log("status("+nowStr+") '"+status+"' for "+type+" ("+mac+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isDisabled+","+isNtr+","+isBusy+") "+c);
++//  console.log("status("+nowStr+") '"+status+"' for "+type+" ("+mac+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isDisabled+","+isNtr+","+isBusy+") "+c);
+   return c;
+ }
+ 
+diff --git a/webui/webpack.config.js b/webui/webpack.config.js
+index 8f1cb2da..8667e609 100644
+--- a/webui/webpack.config.js
++++ b/webui/webpack.config.js
+@@ -20,8 +20,8 @@ module.exports = (env) => {
+ 
+   let plugins = [
+     new webpack.DefinePlugin({
+-      API_ENDPOINT: JSON.stringify(getEnv("api", "http://localhost:8085/api")),
+-      WS_ENDPOINT: JSON.stringify(getEnv("ws", "ws://localhost:8085")),
++      API_ENDPOINT: JSON.stringify(getEnv("api", "http://localhost:8088/api")),
++      WS_ENDPOINT: JSON.stringify(getEnv("ws", "ws://localhost:8088")),
+       VISTA_Q8_VERSION: {
+         //build info
+         time: new Date().getTime(),

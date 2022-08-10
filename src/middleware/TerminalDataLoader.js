@@ -696,10 +696,8 @@ export default (store) => (next) => (action) => {
     }
     case GET_TERMINAL: {
       let { path, loader, isGroup, id } = payload;
-      console.log("GET_TERMINAL "+id);
       if (path && loader && id) {
         let loadingState = getObjectProperty(state, `${path}.state`);
-        console.log("GET_TERMINAL loadingState = "+loadingState);
         if (loadingState !== LOADING)
           store.dispatch((dispatch) => {
             dispatch({ type: LOAD_REQUEST, payload: { path } });
@@ -731,7 +729,6 @@ export default (store) => (next) => (action) => {
     }
     case OPERATE_TERMINAL: {
       let { path, loader, upadteLoader, getLoader, action, editingId, } = payload;
-      console.log("OPERATE_TERMINAL "+editingId+","+action);
       if (path && loader && upadteLoader && getLoader && action && editingId) {
         let loadingState = getObjectProperty(state, `${path}.state`);
         if (loadingState !== LOADING)
@@ -739,6 +736,7 @@ export default (store) => (next) => (action) => {
             let updateData = {};
             dispatch({ type: LOAD_REQUEST, payload: { path: path }, });
 			// TODO: 看不出有更新東西？
+/*
             if (action === "enable" || action === "disable") {
               updateData = { Disabled: action === "disable" ? true : false };
               // 這邊相當於執行 PUT
@@ -748,6 +746,7 @@ export default (store) => (next) => (action) => {
                 }
               });
             }
+*/
             // 相當於執行 op
             loader(editingId, action)
               .then((value) => {

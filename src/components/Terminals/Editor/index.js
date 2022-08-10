@@ -68,11 +68,9 @@ import { apiGetTerminalAbout } from "api";
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
-    const tabs =
-      props.data.isGroup === false ? [...EditorTabs] : [...EditorGroupTabs];
+    const tabs = props.data.isGroup === false ? [...EditorTabs] : [...EditorGroupTabs];
     const updatedTabs = tabs.map((tab) => new Tab(tab));
-    const initConfigTab =
-      props.data.isGroup === false ? TERMINAL_INFO : TERMINAL_GROUP_INFO;
+    const initConfigTab = props.data.isGroup === false ? TERMINAL_INFO : TERMINAL_GROUP_INFO;
     this.state = {
       isEditMode: false,
       isEdited: false,
@@ -249,6 +247,7 @@ export default class Editor extends React.Component {
       props: { data, dispatch },
     } = this;
     const editingId = data.editingId;
+    // TODO: 怎麼updateTerminal() 的參數跟定義不同？
     dispatch(
       updateTerminal(editingId, {
         ConfigLock: !data.editingTerminal.data.ConfigLock,
@@ -264,6 +263,7 @@ export default class Editor extends React.Component {
       Favorite: !data.editingTerminal.data.Favorite,
     };
     const isGroup = data.isGroup;
+    // TODO: 怎麼updateTerminal() 的參數跟定義不同？
     dispatch(updateTerminal(id, updateData, isGroup));
   };
 
@@ -323,36 +323,17 @@ export default class Editor extends React.Component {
 
   render() {
     let {
-      props: { dispatch, data, applications, servers, infobar },
+      props: { dispatch, data, applications, applicationGroups, applicationMainTree, vncs, vncGroups, vncMainTree, servers, infobar },
       state: {
-        isEditMode,
-        isEdited,
-        isUpdated,
-        showTabSwitchAlert,
-        showConfigTabSwitchAlert,
-        about,
-        tabs,
-        configTab,
-        nextConfigTab,
-        nextTabIndex,
-        selectedTabIndex,
-        showCopyAlert,
-        showExitAlert,
+        isEditMode, isEdited, isUpdated, showTabSwitchAlert, showConfigTabSwitchAlert,
+        about, tabs, configTab, nextConfigTab, nextTabIndex, selectedTabIndex,
+        showCopyAlert, showExitAlert,
       },
     } = this;
     let {
-      editingTerminal,
-      isGroup,
-      editingId,
-      terminalMainTree,
-      terminals,
-      terminalGroups,
-      schedules,
-      modules,
-      msIdWrappers,
-      moduleSettings,
-      parentTerminal,
-      possibleModuleSettings,
+      editingTerminal, isGroup, editingId, terminalMainTree,
+      terminals, terminalGroups, schedules, modules,
+      msIdWrappers, moduleSettings, parentTerminal, possibleModuleSettings,
     } = data;
 
     const selectedTab = tabs[selectedTabIndex].label;
@@ -363,31 +344,47 @@ export default class Editor extends React.Component {
       isGroup ? terminalGroups : terminals
     );
     let status = terminal?.Status ?? "";
-	status = status === "OFF" ? "F" : status;
+    status = status === "OFF" ? "F" : status;
     const disabled = terminal?.Disabled ?? "";
     const ip = terminal?.IpAddress ?? "";
     const mac = terminal?.MAC ?? "";
     const power = ip != "";
 
     const isNtr = editingId > 0 && status.indexOf("N") >= 0;
-    const isNolic = editingId > 0 && status.indexOf("I") >= 0;
-    const isBusy = editingId > 0 && status.indexOf("B") >= 0;
     const isDisabled = status.indexOf("D") >= 0;
+    const isBusy = editingId > 0 && (status.indexOf("U") >= 0 ||
+      status.indexOf("C") >= 0 || status.indexOf("R") >= 0 ||
+      status.indexOf("T") >= 0 || status.indexOf("W") >= 0 ||
+      status.indexOf("O") >= 0 || status.indexOf("P") >= 0);
+
     const isOff = status == "" || status.indexOf("F") >= 0;
+
+    const isOffBusy = status.indexOf("W") >= 0;
     const isOffDisabled = isOff && isDisabled;
-    const isActive = editingId > 0 && (status.indexOf("A") >= 0 || status.indexOf("L") >= 0);
+
+    const isBooting = status.indexOf("B") >= 0;
+    const isBootingDisabled = isBooting && isDisabled;
+
+    const isActive = editingId > 0 &&
+      (status.indexOf("A") >= 0 || status.indexOf("E") < 0 && status.indexOf("L") >= 0);
     const isActiveDisabled = (isActive || isNolic) && isDisabled;
     const isActiveNtr = isActive && isNtr;
     const isActiveDisabledNtr = isActive && isDisabled && isNtr;
     const isActiveBusy = isBusy;
-    const isBooting = status.indexOf("B") >= 0;
-    const isBootingDisabled = isBooting && isDisabled;
+
     const isError = editingId > 0 && status.indexOf("E") >= 0;
     const isErrorDisabled = isError && isDisabled;
     const isErrorNtr = isError && isNtr;
     const isErrorDisabledNtr = isError && isDisabled && isNtr;
+    const isErrorBusy = isError && isBusy;
 
-//    console.log("Editor '"+status+"'("+mac+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isNtr+","+isBusy+")");
+    const isNolic = editingId > 0 && status.indexOf("I") >= 0;
+    const isNolicDisabled = isNolic && isDisabled;
+    const isNolicNtr = isNolic && isNtr;
+    const isNolicDisabledNtr = isNolic && isDisabled && isNtr;
+    const isNolicBusy = isNolic && isBusy;
+
+    //    console.log("Editor '"+status+"'("+mac+","+isOff+","+isBooting+","+isError+","+isActive+","+isNolic+","+isNtr+","+isBusy+")");
     this.title = terminal?.Name ?? "";
 
     const isLoading = editingTerminal.state == LOADING;
@@ -438,7 +435,7 @@ export default class Editor extends React.Component {
               trash={this.trash}
               favorite={this.favorite}
               lock={this.lock}
-              showTrash={ isGroup || (editingId != 0 && isOff) }
+              showTrash={isGroup || (editingId != 0 && isOff)}
               showOp={editingId > 0 && !isBooting}
               status={status}
               disabled={disabled}
@@ -474,6 +471,21 @@ export default class Editor extends React.Component {
                   no={this.closeExitAlert}
                 />
               )}
+              {showCopyAlert && (
+                <CopyObjectAlert
+                  isGroup={isGroup}
+                  objectType="Terminal"
+                  treeType="terminalGroup"
+                  objectName={this.title}
+                  objects={terminals}
+                  objectGroups={terminalGroups}
+                  mainTree={terminalMainTree}
+                  pickerTitle="CHOOSE EXISTING GROUP"
+                  parentId={parseInt(editingTerminal.data.ParentId)}
+                  confirm={this.copy}
+                  cancel={this.closeCopyAlert}
+                />
+              )}
               {selectedTab === CONFIGURATION && (
                 <Configuration
                   dispatch={dispatch}
@@ -485,8 +497,8 @@ export default class Editor extends React.Component {
                   data={data}
                   infobar={infobar}
                   tab={configTab}
-                  applications={applications}
-                  appMultiTree={applications.applicationMainTree.data}
+                  rdss={applications} rdsGroups={applicationGroups} rdsMainTree={applicationMainTree}
+                  vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
                   status={status}
                   onEdit={this.onEdit}
                   onCancel={this.onCancel}
@@ -563,21 +575,6 @@ export default class Editor extends React.Component {
               )}
               {selectedTab === LOG && (
                 <Log type="terminal" terminalId={editingId} />
-              )}
-              {showCopyAlert && (
-                <CopyObjectAlert
-                  isGroup={isGroup}
-                  objectType="Terminal"
-                  treeType="terminalGroup"
-                  objectName={this.title}
-                  objects={terminals}
-                  objectGroups={terminalGroups}
-                  mainTree={terminalMainTree}
-                  pickerTitle="CHOOSE EXISTING GROUP"
-                  parentId={parseInt(editingTerminal.data.ParentId)}
-                  confirm={this.copy}
-                  cancel={this.closeCopyAlert}
-                />
               )}
             </Modal.Body>
           </div>

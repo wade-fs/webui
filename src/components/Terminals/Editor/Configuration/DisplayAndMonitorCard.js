@@ -75,25 +75,13 @@ export default class DisplayAndMonitorCard extends React.Component {
   render() {
     let {
       props: {
-        dispatch,
-        isLoaded,
-        isEditMode,
-        isGroup,
-        editingId = 0,
-        terminalMainTree,
-        appMultiTree,
-        data,
-        applications,
-        appOverrides,
-        oriAppOverrides,
-        hardware,
-        hardwareInfo,
-        defaultMouseMapping,
-        parentTerminal,
-        onChangeEdit,
-        adUsers,
-        verifyAuthUserResult,
-        setAppOverrides,
+        dispatch, isLoaded, isEditMode, isGroup, editingId = 0, terminalMainTree,
+        data, appOverrides, oriAppOverrides,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
+        hardware, hardwareInfo, defaultMouseMapping, parentTerminal,
+        onChangeEdit, adUsers, verifyAuthUserResult, setAppOverrides,
       },
       state: { isCancel },
     } = this;
@@ -116,12 +104,13 @@ export default class DisplayAndMonitorCard extends React.Component {
             parentTerminal={parentTerminal}
             hardware={hardware}
             hardwareInfo={hardwareInfo}
-            applications={applications}
             oriAppOverrides={oriAppOverrides}
             appOverrides={appOverrides}
+            rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+            vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+            currentTab={currentTab}
             adUsers={adUsers}
             verifyAuthUserResult={verifyAuthUserResult}
-            appMultiTree={appMultiTree}
             terminalMainTree={terminalMainTree}
             defaultMouseMapping={defaultMouseMapping}
             onChange={this.change}

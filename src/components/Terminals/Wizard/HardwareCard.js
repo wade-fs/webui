@@ -37,7 +37,7 @@ export default class HardwareCard extends React.Component {
         handleErrorFields,
       },
     } = this;
-    if (data.Manufacturer === undefined) {
+    if (data.Manufacturer === undefined || data.Manufacturer === "") {
       data[Manufacturer] = [...manufacturerModelMap.data.keys()][0];
       // use data[Manufacturer] to get other options
       let {

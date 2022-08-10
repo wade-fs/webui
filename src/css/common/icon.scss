@@ -285,21 +285,27 @@
   @include operate-icons;
 }
 
-.item-terminal,
+.item-terminal-off,
+.item-terminal-off-busy,
+.item-terminal-off-disabled,
+.item-terminal-booting,
+.item-terminal-booting-busy,
+.item-terminal-booting-disabled,
 .item-terminal-active,
 .item-terminal-active-busy,
 .item-terminal-active-disabled,
-.item-terminal-active-disabled-restart,
 .item-terminal-active-restart,
-.item-terminal-booting,
-.item-terminal-booting-disabled,
-.item-terminal-booting-nolic,
+.item-terminal-active-disabled-restart,
 .item-terminal-error,
+.item-terminal-error-busy,
 .item-terminal-error-disabled,
-.item-terminal-error-disabled-restart,
 .item-terminal-error-restart,
-.item-terminal-off,
-.item-terminal-off-disabled,
+.item-terminal-error-disabled-restart,
+.item-terminal-nolic,
+.item-terminal-nolic-busy,
+.item-terminal-nolic-disabled,
+.item-terminal-nolic-restart,
+.item-terminal-nolic-disabled-restart,
 .item-rds-server,
 .item-rds-server-error,
 .item-rds-server-disabled,
@@ -758,48 +764,44 @@
   right: 0px;
 }
 
-.item-terminal-active {
-  background-image: url(../../../assets/images/item-terminal-active.svg);
-}
-.item-terminal-active-busy {
-  background-image: url(../../../assets/images/item-terminal-active-busy.svg);
-}
-.item-terminal-active-disabled {
-  background-image: url(../../../assets/images/item-terminal-active-disabled.svg);
-}
-.item-terminal-active-disabled-restart {
-  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg);
-}
-.item-terminal-active-restart {
-  background-image: url(../../../assets/images/item-terminal-active-restart.svg);
-}
-.item-terminal-booting {
-  background-image: url(../../../assets/images/item-terminal-booting.svg);
-}
-.item-terminal-booting-disabled {
-  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg);
-}
-.item-terminal-booting-nolic {
-  background-image: url(../../../assets/images/item-terminal-booting-nolic.svg);
-}
-.item-terminal-error {
-  background-image: url(../../../assets/images/item-terminal-error.svg);
-}
-.item-terminal-error-disabled {
-  background-image: url(../../../assets/images/item-terminal-error-disabled.svg);
-}
-.item-terminal-error-disabled-restart {
-  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg);
-}
-.item-terminal-error-restart {
-  background-image: url(../../../assets/images/item-terminal-error-restart.svg);
-}
-.item-terminal-off {
-  background-image: url(../../../assets/images/item-terminal-off.svg);
-}
+.item-terminal-off { background-image: url(../../../assets/images/item-terminal-off.svg); }
+.item-terminal-off-busy { background-image: url(../../../assets/images/item-terminal-off-busy.svg); }
 .item-terminal-off-disabled {
-  background-image: url(../../../assets/images/item-terminal-off-disabled.svg);
-}
+  background-image: url(../../../assets/images/item-terminal-off-disabled.svg); }
+.item-terminal-booting { background-image: url(../../../assets/images/item-terminal-booting.svg); }
+.item-terminal-booting-busy { background-image: url(../../../assets/images/item-terminal-booting-busy.svg); }
+.item-terminal-booting-disabled {
+  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg); }
+.item-terminal-active {
+  background-image: url(../../../assets/images/item-terminal-active.svg); }
+.item-terminal-active-busy {
+  background-image: url(../../../assets/images/item-terminal-active-busy.svg); }
+.item-terminal-active-disabled {
+  background-image: url(../../../assets/images/item-terminal-active-disabled.svg); }
+.item-terminal-active-restart {
+  background-image: url(../../../assets/images/item-terminal-active-restart.svg); }
+.item-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg); }
+.item-terminal-error {
+  background-image: url(../../../assets/images/item-terminal-error.svg); }
+.item-terminal-error-busy {
+  background-image: url(../../../assets/images/item-terminal-error-busy.svg); }
+.item-terminal-error-disabled {
+  background-image: url(../../../assets/images/item-terminal-error-disabled.svg); }
+.item-terminal-error-restart {
+  background-image: url(../../../assets/images/item-terminal-error-restart.svg); }
+.item-terminal-error-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg); }
+.item-terminal-nolic {
+  background-image: url(../../../assets/images/item-terminal-nolic.svg); }
+.item-terminal-nolic-busy {
+  background-image: url(../../../assets/images/item-terminal-nolic-busy.svg); }
+.item-terminal-nolic-disabled {
+  background-image: url(../../../assets/images/item-terminal-nolic-disabled.svg); }
+.item-terminal-nolic-restart {
+  background-image: url(../../../assets/images/item-terminal-nolic-restart.svg); }
+.item-terminal-nolic-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-nolic-disabled-restart.svg); }
 
 .item-rds-server {
   background-image: url(../../../assets/images/item-rds-server.svg);
@@ -818,48 +820,45 @@
   background-image: url(../../../assets/images/item-app-error.svg);
 }
 
-.header-terminal-active {
-  background-image: url(../../../assets/images/item-terminal-active.svg);
-}
-.header-terminal-active-busy {
-  background-image: url(../../../assets/images/item-terminal-active-busy.svg);
-}
-.header-terminal-active-disabled {
-  background-image: url(../../../assets/images/item-terminal-active-disabled.svg);
-}
-.header-terminal-active-disabled-restart {
-  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg);
-}
-.header-terminal-active-restart {
-  background-image: url(../../../assets/images/item-terminal-active-restart.svg);
-}
-.header-terminal-booting {
-  background-image: url(../../../assets/images/item-terminal-booting.svg);
-}
-.header-terminal-booting-disabled {
-  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg);
-}
-.header-terminal-booting-nolic {
-  background-image: url(../../../assets/images/item-terminal-booting-nolic.svg);
-}
-.header-terminal-error {
-  background-image: url(../../../assets/images/item-terminal-error.svg);
-}
-.header-terminal-error-disabled {
-  background-image: url(../../../assets/images/item-terminal-error-disabled.svg);
-}
-.header-terminal-error-disabled-restart {
-  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg);
-}
-.header-terminal-error-restart {
-  background-image: url(../../../assets/images/item-terminal-error-restart.svg);
-}
-.header-terminal-off {
-  background-image: url(../../../assets/images/item-terminal-off.svg);
-}
+.header-terminal-off { background-image: url(../../../assets/images/item-terminal-off.svg); }
+.header-terminal-off-busy { background-image: url(../../../assets/images/item-terminal-off-busy.svg); }
 .header-terminal-off-disabled {
-  background-image: url(../../../assets/images/item-terminal-off-disabled.svg);
-}
+  background-image: url(../../../assets/images/item-terminal-off-disabled.svg); }
+.header-terminal-booting { background-image: url(../../../assets/images/item-terminal-booting.svg); }
+.header-terminal-booting-busy { background-image: url(../../../assets/images/item-terminal-booting-busy.svg); }
+.header-terminal-booting-disabled {
+  background-image: url(../../../assets/images/item-terminal-booting-disabled.svg); }
+
+.header-terminal-active {
+  background-image: url(../../../assets/images/item-terminal-active.svg); }
+.header-terminal-active-busy {
+  background-image: url(../../../assets/images/item-terminal-active-busy.svg); }
+.header-terminal-active-disabled {
+  background-image: url(../../../assets/images/item-terminal-active-disabled.svg); }
+.header-terminal-active-restart {
+  background-image: url(../../../assets/images/item-terminal-active-restart.svg); }
+.header-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-active-disabled-restart.svg); }
+.header-terminal-error {
+  background-image: url(../../../assets/images/item-terminal-error.svg); }
+.header-terminal-error-busy {
+  background-image: url(../../../assets/images/item-terminal-error-busy.svg); }
+.header-terminal-error-disabled {
+  background-image: url(../../../assets/images/item-terminal-error-disabled.svg); }
+.header-terminal-error-restart {
+  background-image: url(../../../assets/images/item-terminal-error-restart.svg); }
+.header-terminal-error-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-error-disabled-restart.svg); }
+.header-terminal-nolic {
+  background-image: url(../../../assets/images/item-terminal-nolic.svg); }
+.header-terminal-nolic-busy {
+  background-image: url(../../../assets/images/item-terminal-nolic-busy.svg); }
+.header-terminal-nolic-disabled {
+  background-image: url(../../../assets/images/item-terminal-nolic-disabled.svg); }
+.header-terminal-nolic-restart {
+  background-image: url(../../../assets/images/item-terminal-nolic-restart.svg); }
+.header-terminal-nolic-disabled-restart {
+  background-image: url(../../../assets/images/item-terminal-nolic-disabled-restart.svg); }
 
 .header-app {
   background-image: url(../../../assets/images/item-app-light.svg);
@@ -1130,21 +1129,27 @@
 }
 
 // main-page list-icon
-.list-terminal,
+.list-terminal-off,
+.list-terminal-off-busy,
+.list-terminal-off-disabled,
+.list-terminal-booting,
+.list-terminal-booting-busy,
+.list-terminal-booting-disabled,
 .list-terminal-active,
 .list-terminal-active-busy,
 .list-terminal-active-disabled,
-.list-terminal-active-disabled-restart,
 .list-terminal-active-restart,
-.list-terminal-booting,
-.list-terminal-booting-disabled,
-.list-terminal-booting-nolic,
+.list-terminal-active-disabled-restart,
 .list-terminal-error,
+.list-terminal-error-busy,
 .list-terminal-error-disabled,
-.list-terminal-error-disabled-restart,
 .list-terminal-error-restart,
-.list-terminal-off,
-.list-terminal-off-disabled,
+.list-terminal-error-disabled-restart,
+.list-terminal-nolic,
+.list-terminal-nolic-busy,
+.list-terminal-nolic-disabled,
+.list-terminal-nolic-restart,
+.list-terminal-nolic-disabled-restart,
 .list-rds-server,
 .list-rds-server-disabled,
 .list-rds-server-error,
@@ -1153,46 +1158,43 @@
   @include main-list-item;
 }
 // main-page terminal
-.list-terminal,
-.list-terminal-off {
-  background-image: url(../../../assets/images/list-terminal-off.svg);
-}
-.list-terminal-off-disabled {
-  background-image: url(../../../assets/images/list-terminal-off-disabled.svg);
-}
-.list-terminal-active {
-  background-image: url(../../../assets/images/list-terminal-active.svg);
-}
-.list-terminal-active-busy {
-  background-image: url(../../../assets/images/list-terminal-active-busy.svg);
-}
-.list-terminal-active-disabled {
-  background-image: url(../../../assets/images/list-terminal-active-disabled.svg);
-}
-.list-terminal-active-disabled-restart {
-  background-image: url(../../../assets/images/list-terminal-active-disabled-restart.svg);
-}
-.list-terminal-active-restart {
-  background-image: url(../../../assets/images/list-terminal-active-restart.svg);
-}
-.list-terminal-booting {
-  background-image: url(../../../assets/images/list-terminal-booting.svg);
-}
+.list-terminal-off { background-image: url(../../../assets/images/list-terminal-off.svg); }
+.list-terminal-off-busy { background-image: url(../../../assets/images/list-terminal-off-busy.svg); }
+.list-terminal-off-disabled { background-image: url(../../../assets/images/list-terminal-off-disabled.svg); }
+.list-terminal-booting { background-image: url(../../../assets/images/list-terminal-booting.svg); }
+.list-terminal-booting-busy { background-image: url(../../../assets/images/list-terminal-booting-busy.svg); }
 .list-terminal-booting-disabled {
-  background-image: url(../../../assets/images/list-terminal-booting-disabled.svg);
-}
-.list-terminal-booting-nolic {
-  background-image: url(../../../assets/images/list-terminal-booting-nolic.svg);
-}
+  background-image: url(../../../assets/images/list-terminal-booting-disabled.svg); }
+.list-terminal-active {
+  background-image: url(../../../assets/images/list-terminal-active.svg); }
+.list-terminal-active-busy {
+  background-image: url(../../../assets/images/list-terminal-active-busy.svg); }
+.list-terminal-active-disabled {
+  background-image: url(../../../assets/images/list-terminal-active-disabled.svg); }
+.list-terminal-active-restart {
+  background-image: url(../../../assets/images/list-terminal-active-restart.svg); }
+.list-terminal-active-disabled-restart {
+  background-image: url(../../../assets/images/list-terminal-active-disabled-restart.svg); }
 .list-terminal-error {
-  background-image: url(../../../assets/images/list-terminal-error.svg);
-}
+  background-image: url(../../../assets/images/list-terminal-error.svg); }
+.list-terminal-error-busy {
+  background-image: url(../../../assets/images/list-terminal-error-busy.svg); }
 .list-terminal-error-disabled {
-  background-image: url(../../../assets/images/list-terminal-error-disabled.svg);
-}
+  background-image: url(../../../assets/images/list-terminal-error-disabled.svg); }
+.list-terminal-error-restart {
+  background-image: url(../../../assets/images/list-terminal-error-restart.svg); }
 .list-terminal-error-disabled-restart {
-  background-image: url(../../../assets/images/list-terminal-error-disabled-restart.svg);
-}
+  background-image: url(../../../assets/images/list-terminal-error-disabled-restart.svg); }
+.list-terminal-nolic {
+  background-image: url(../../../assets/images/list-terminal-nolic.svg); }
+.list-terminal-nolic-busy {
+  background-image: url(../../../assets/images/list-terminal-nolic-busy.svg); }
+.list-terminal-nolic-disabled {
+  background-image: url(../../../assets/images/list-terminal-nolic-disabled.svg); }
+.list-terminal-nolic-restart {
+  background-image: url(../../../assets/images/list-terminal-nolic-restart.svg); }
+.list-terminal-nolic-disabled-restart {
+  background-image: url(../../../assets/images/list-terminal-nolic-disabled-restart.svg); }
 
 // main-page rds-server
 .list-rds-server {

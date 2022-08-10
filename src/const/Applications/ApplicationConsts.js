@@ -27,13 +27,15 @@ export const AppTabs = [
   APPLICATION_INFO,
   APPLICATION_PROPERTIES,
   // CONNECTION_OPTIONS,
-  SESSION_OPTIONS,
+  // SESSION_OPTIONS,
   // LOAD_BALANCE,
   RDS_SERVER,
 ];
 
 export const APPLICATION_GROUP_NAME = "APPLICATION GROUP NAME";
 export const APPLICATION_NAME = "APPLICATION NAME";
+export const VNC_GROUP_NAME = "VNC GROUP NAME";
+export const VNC_NAME = "VNC NAME";
 
 export const VncGroupTabs = [VNC_GROUP_INFO];
 export const VncTabs = [

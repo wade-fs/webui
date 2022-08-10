@@ -11,6 +11,7 @@ import ModuleCard from "./ModuleCard";
 import InfoCard from "./InfoCard";
 import PropertiesCard from "./PropertiesCard";
 import UserAccessCard from "./UserAccessCard";
+import TouchCard from "./TouchCard";
 
 import { loadSchedules } from "actions/ScheduleActions";
 
@@ -34,6 +35,7 @@ import {
   TerminalGroupTabs,
   TERMINAL_INFO,
   TERMINAL_GROUP_INFO,
+  TOUCH,
   APPLICATION,
   CONTROL,
   DISPLAY,
@@ -95,6 +97,7 @@ import {
   DefaultTerminaProperties,
   DefaultAuthUser,
   DefaultOtherApplyAll,
+  DefaultTouch,
 } from "const/Terminals/Default";
 
 import { stringValid, isDefaultObject, isNotEmptyObject } from "lib/Util";
@@ -138,6 +141,7 @@ export default class Wizard extends React.Component {
       selectedScreenId: 1,
       applyAllProperties: {},
       defaultClose: JSON.stringify(DefaultTerminalInfo),
+      touch: { ...DefaultTouch }
     };
     this.prefetchData(props.dispatch);
   }
@@ -200,9 +204,9 @@ export default class Wizard extends React.Component {
         this.props.data.isGroup === true
           ? { ...DefaultMonitor }
           : generateDefaultDisplay(
-              this.props.data.hardwareInfo,
-              DefaultMonitor
-            );
+            this.props.data.hardwareInfo,
+            DefaultMonitor
+          );
       this.setState({ monitors: monitors });
     }
   }
@@ -260,8 +264,8 @@ export default class Wizard extends React.Component {
             tabs,
             selectedTabIndex,
             isHardwareCompleted(updated, false) &&
-              data.hardwareInfo.data !== undefined &&
-              data.hardwareInfo.data.length !== 0
+            data.hardwareInfo.data !== undefined &&
+            data.hardwareInfo.data.length !== 0
           ),
         });
         break;
@@ -276,6 +280,12 @@ export default class Wizard extends React.Component {
           });
         }
         this.setState({
+          tabs: this.setTabClickable(tabs, selectedTabIndex, true),
+        });
+        break;
+      case TOUCH:
+        this.setState({
+          controls: { ...controls, ...updated },
           tabs: this.setTabClickable(tabs, selectedTabIndex, true),
         });
         break;
@@ -760,7 +770,7 @@ export default class Wizard extends React.Component {
       terminal[MAC] = macDeformatter(terminal[MAC]);
     }
     // remove not override app
-    const terminalApps = findOverrideById(terminal, appOverrides.data);
+    const terminalApps = findOverrideById(terminal, appOverrides.appData);
     const isGroup = data.isGroup;
     // terminal group has properties apply all
     if (isGroup === true) {
@@ -794,8 +804,8 @@ export default class Wizard extends React.Component {
           isDefaultObject(errorFields) &&
           (hardware.hasOwnProperty(MAC) && hardware.MAC != null
             ? hardware.MAC.length == 27 ||
-              hardware.MAC.length == 12 ||
-              hardware.MAC.length == 0
+            hardware.MAC.length == 12 ||
+            hardware.MAC.length == 0
             : true)
         );
       default:
@@ -814,11 +824,24 @@ export default class Wizard extends React.Component {
         hardware,
         monitors,
         authUser,
+        touch
       },
     } = this;
     if (selectedTabIndex > tabs.length - 2) return false;
     const tab = tabs[selectedTabIndex].label;
     const isGroup = data.isGroup;
+    const isTouchCanNext = (data) => {
+      const { TouchCom1, TouchCom2, TouchCom3, TouchCom4, TouchCom5, TouchCom6, TouchCom7, TouchCom8, TouchUsb } = data
+      if (data.TouchEnabled) {
+        const TouchComArr = [TouchCom1, TouchCom2, TouchCom3, TouchCom4, TouchCom5, TouchCom6, TouchCom7, TouchCom8];
+        if (TouchComArr.includes(true) || TouchUsb !== 0) {
+          return true
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
     switch (tab) {
       case TERMINAL_INFO:
       case TERMINAL_GROUP_INFO:
@@ -833,8 +856,8 @@ export default class Wizard extends React.Component {
           isDefaultObject(errorFields) &&
           (hardware.hasOwnProperty(MAC) && hardware.MAC != null
             ? hardware.MAC.length == 27 ||
-              hardware.MAC.length == 12 ||
-              hardware.MAC.length == 0
+            hardware.MAC.length == 12 ||
+            hardware.MAC.length == 0
             : true)
         );
       case TERMINAL_PROPERTIES:
@@ -846,6 +869,10 @@ export default class Wizard extends React.Component {
         return (
           isAuthUserCompleted(authUser, isGroup) || authUser.UserType == "None"
         );
+      case TOUCH:
+        return (
+          isTouchCanNext(touch)
+        )
       default:
         return true;
     }
@@ -860,9 +887,22 @@ export default class Wizard extends React.Component {
         hardware,
         monitors,
         authUser,
+        touch,
       },
     } = this;
     const isGroup = data.isGroup;
+    const isTouchCanNext = (data) => {
+      const { TouchCom1, TouchCom2, TouchCom3, TouchCom4, TouchCom5, TouchCom6, TouchCom7, TouchCom8, TouchUsb } = data
+      if (data.TouchEnabled) {
+        const TouchComArr = [TouchCom1, TouchCom2, TouchCom3, TouchCom4, TouchCom5, TouchCom6, TouchCom7, TouchCom8];
+        if (TouchComArr.includes(true) || TouchUsb !== 0) {
+          return true
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
     if (isGroup === true)
       return (
         isDefaultObject(errorFields) &&
@@ -877,12 +917,13 @@ export default class Wizard extends React.Component {
       data.hardwareInfo.data.length !== 0 &&
       (hardware.hasOwnProperty(MAC) && hardware[MAC] != null
         ? hardware[MAC].length === 27 ||
-          hardware[MAC].length === 12 ||
-          hardware[MAC].length === 0
+        hardware[MAC].length === 12 ||
+        hardware[MAC].length === 0
         : true) &&
       isTerminalOptionsCompleted(terminalProperties) &&
       isMonitorCompleted(monitors) &&
-      (isAuthUserCompleted(authUser, isGroup) || authUser.UserType == "None")
+      (isAuthUserCompleted(authUser, isGroup) || authUser.UserType == "None") &&
+      isTouchCanNext(touch)
     );
   };
 
@@ -909,32 +950,14 @@ export default class Wizard extends React.Component {
   };
   setAppOverrides = (appOverrides) => {
     const updateOverrides = JSON.parse(JSON.stringify(this.state.appOverrides));
-    updateOverrides.data = appOverrides;
+    updateOverrides.appData = appOverrides;
     this.setState({ appOverrides: updateOverrides });
   };
 
   render() {
     let {
-      props: { dispatch, data },
-      state: {
-        errorFields,
-        tabs,
-        selectedTabIndex,
-        showExitAlert,
-        appOverrides,
-        oriAppOverrides,
-        authUser,
-        controls,
-        hardware,
-        monitors,
-        modules,
-        terminalInfo,
-        terminalProperties,
-        schedules,
-        selectedScreenId,
-        otherApplyAll,
-        applyAllProperties,
-        defaultClose,
+      props: { dispatch, data, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree, currentTab },
+      state: { errorFields, tabs, selectedTabIndex, showExitAlert, appOverrides, oriAppOverrides, authUser, controls, hardware, monitors, modules, terminalInfo, terminalProperties, touch, schedules, selectedScreenId, otherApplyAll, applyAllProperties, defaultClose,
       },
     } = this;
     let {
@@ -953,7 +976,8 @@ export default class Wizard extends React.Component {
       terminalGroups,
       verifyAuthUserResult,
     } = data;
-	//hardware.Model = data.defaultTerminal?.Model;
+
+    //hardware.Model = data.defaultTerminal?.Model;
     const selectedTab = tabs[selectedTabIndex].label;
     const applications = getDataForBaseCard(extractApplications(monitors));
     const autoClose = JSON.stringify(terminalInfo);
@@ -995,6 +1019,12 @@ export default class Wizard extends React.Component {
                           data={terminalInfo}
                           errorFields={errorFields}
                           terminalMainTree={terminalMainTree}
+                          rdss={rdss}
+                          rdsGroups={rdsGroups}
+                          rdsMainTree={rdsMainTree}
+                          vncs={vncs}
+                          vncGroups={vncGroups}
+                          vncMainTree={vncMainTree}
                           objects={terminals}
                           objectGroups={terminalGroups}
                           onChange={this.onChange}
@@ -1012,12 +1042,24 @@ export default class Wizard extends React.Component {
                         handleErrorFields={this.handleErrorFields}
                       />
                     )}
-
                     {selectedTab == TERMINAL_PROPERTIES && (
                       <PropertiesCard
                         dispatch={dispatch}
                         isGroup={isGroup}
                         data={terminalProperties}
+                        parentTerminal={parentTerminal}
+                        applyAllProperties={applyAllProperties}
+                        otherApplyAll={otherApplyAll}
+                        schedules={schedules}
+                        onChange={this.onChange}
+                        updateApplyAllProperties={this.updateApplyAllProperties}
+                      />
+                    )}
+                    {selectedTab == TOUCH && (
+                      <TouchCard
+                        dispatch={dispatch}
+                        isGroup={isGroup}
+                        data={touch}
                         parentTerminal={parentTerminal}
                         applyAllProperties={applyAllProperties}
                         otherApplyAll={otherApplyAll}
@@ -1035,9 +1077,12 @@ export default class Wizard extends React.Component {
                         applications={applications}
                         hardware={hardware}
                         defaultMouseMapping={defaultMouseMapping}
-                        appMultiTree={
-                          this.props.applications.applicationMainTree.data
-                        }
+                        rdss={rdss}
+                        rdsGroups={rdsGroups}
+                        rdsMainTree={rdsMainTree}
+                        vncs={vncs}
+                        vncGroups={vncGroups}
+                        vncMainTree={vncMainTree}
                         hardwareInfo={hardwareInfo}
                         appOverrides={appOverrides}
                         oriAppOverrides={oriAppOverrides}
@@ -1055,14 +1100,14 @@ export default class Wizard extends React.Component {
                         appOverrides={appOverrides}
                         oriAppOverrides={oriAppOverrides}
                         terminal={applications}
+                        rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+                        vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+                        currentTab={currentTab}
                         parentTerminal={parentTerminal}
                         adUsers={adUsers}
                         verifyAuthUserResult={verifyAuthUserResult}
                         treeType="application"
                         terminalMainTree={terminalMainTree}
-                        appMultiTree={
-                          this.props.applications.applicationMainTree.data
-                        }
                         onChange={this.onChange}
                         onSelect={this.onSelectScreen}
                         selectedScreenId={selectedScreenId}

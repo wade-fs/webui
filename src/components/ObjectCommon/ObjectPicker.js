@@ -44,6 +44,9 @@ export default class ObjectPicker extends React.Component {
         editingId = 0,
         treeType,
         mainTree,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab,
         wsItems = {},
         pickerTitle = "",
         onCancel,
@@ -61,8 +64,15 @@ export default class ObjectPicker extends React.Component {
               defaultFilter={isGroup}
               editingId={editingId}
               tree={mainTree}
-              showAllTree={showAllTree}
               treeType={treeType}
+            rdss={rdss}
+            rdsGroups={rdsGroups}
+            rdsMainTree={rdsMainTree}
+            vncs={vncs}
+            vncGroups={vncGroups}
+            vncMainTree={vncMainTree}
+            currentTab={currentTab}
+              showAllTree={showAllTree}
               wsItems={wsItems}
               selectedId={selectedId}
               toggleAllTree={this.toggleAllTree}

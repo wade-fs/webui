@@ -54,7 +54,7 @@ export function CancelAndConfirm({
   );
 }
 
-export function Tab({
+export function TreeTab({
   tabWidth,
   tabZIndex,
   tabClass,

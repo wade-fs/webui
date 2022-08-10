@@ -252,7 +252,7 @@ export default class Wizard extends React.Component {
 
   render() {
     let {
-      props: { dispatch, data },
+      props: { dispatch, data, rdss, rdsGroups, rdsMainTree, vncs, vncGroups, vncMainTree },
       state: {
         selectedTabIndex,
         tabs,

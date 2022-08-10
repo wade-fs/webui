@@ -7,9 +7,10 @@ import DisplayAndMonitorCard from "./DisplayAndMonitorCard";
 import ApplicationCard from "./ApplicationCard";
 import UserAccessCard from "./UserAccessCard";
 import ControlCard from "./ControlCard";
+import TouchCard from "./TouchCard";
 
 import { showInfoBar } from "actions/InfobarActions";
-import { updateTerminal } from "actions/TerminalActions";
+import { updateTerminal, operateTerminal } from "actions/TerminalActions";
 
 import { arrayEqual, objectEqual } from "../../../../lib/Util";
 
@@ -24,6 +25,7 @@ import {
   APPLICATION,
   USER_ACCESS,
   CONTROL,
+  TOUCH,
 } from "const/Terminals/TerminalConsts";
 
 import {
@@ -40,6 +42,7 @@ import {
   extractMonitors,
   extractTerminalInfo,
   extractTerminalOptions,
+  extractTouch,
 } from "const/Terminals/TerminalFieldNames";
 import {
   EnforceBootPriorityApplyAll,
@@ -53,6 +56,7 @@ import {
 import { checkEdit } from "utils/Check";
 import { findOverrideById, getAppOverride } from "utils/Override";
 import { getDataForBaseCard } from "utils/Object";
+import TouchEnablesAlert from "components/Alert/TouchEnablesAlert"
 
 import { apiUpdateAppOverride } from "api";
 
@@ -67,6 +71,7 @@ export default class Configuration extends React.Component {
       applications,
       authUser,
       controls,
+      touch,
     ] = this.extractData();
     const applyAllProperties = getApplyAllProperties(properties);
     const oriApplyAllProperties = JSON.parse(
@@ -84,11 +89,13 @@ export default class Configuration extends React.Component {
       applications: applications,
       authUser: authUser,
       controls: controls,
+      touch: touch,
       canApply: true,
       applyAllProperties: applyAllProperties ?? {},
       oriApplyAllProperties: oriApplyAllProperties ?? {},
       appOverrides: {},
       oriAppOverrides: {},
+      showTouchEnablesAlert: false,
     };
   }
 
@@ -116,6 +123,7 @@ export default class Configuration extends React.Component {
         applications,
         authUser,
         controls,
+        touch,
       ] = this.extractData();
       const applyAllProperties = getApplyAllProperties(properties);
       const oriApplyAllProperties = JSON.parse(
@@ -130,6 +138,7 @@ export default class Configuration extends React.Component {
           applications: applications,
           authUser: authUser,
           controls: controls,
+          touch: touch,
           applyAllProperties: applyAllProperties ?? {},
           oriApplyAllProperties: oriApplyAllProperties ?? {},
         },
@@ -145,10 +154,10 @@ export default class Configuration extends React.Component {
     }
     if (
       prevProps.data.editingTerminal.data !== undefined &&
-      prevProps.applications.applications.data !== undefined &&
+      prevProps.applications !== undefined &&
       !arrayEqual(
-        prevProps.applications.applications.data,
-        this.props.applications.applications.data
+        prevProps.applications,
+        this.props.applications
       )
     ) {
       await this.setAppOverrideTree();
@@ -161,34 +170,44 @@ export default class Configuration extends React.Component {
       state: { applyAllProperties, oriApplyAllProperties },
     } = this;
     const oriData = this.getOriData(tab);
-    let edtied = checkEdit(data, oriData);
-    if (otherEdited.length > 0 && edtied === false) {
-      edtied = otherEdited.some((value) => value === true);
+    let edited = checkEdit(data, oriData);
+    if (otherEdited.length > 0 && edited === false) {
+      edited = otherEdited.some((value) => value === true);
     }
     if (
       tab === PROPERTIES &&
       !objectEqual(applyAllProperties, oriApplyAllProperties)
     ) {
-      edtied = true;
+      edited = true;
     }
-    canApply = canApply && edtied;
+    canApply = canApply && edited;
     this.setState(
       { editData: data, canApply: canApply },
-      this.props.onChangeEdit(edtied)
+      this.props.onChangeEdit(edited)
     );
   };
+
+  openTouchEnablesAlert = () => {
+    this.setState({ showTouchEnablesAlert: true })
+  }
+
+  closeTouchEnablesAlert = () => {
+    this.setState({ showTouchEnablesAlert: false })
+  }
+
   edit = () => {
     let {
       props: { onEdit },
     } = this;
-
     onEdit();
   };
+
   cancel = () => {
     const { tab, onCancel } = this.props;
     this.resetTab(tab);
     onCancel();
   };
+
   apply = async () => {
     let {
       props: {
@@ -196,6 +215,7 @@ export default class Configuration extends React.Component {
         data: { editingId, isGroup },
         tab,
         onCancel,
+        isEdited,
       },
       state: { editData, appOverrides, applyAllProperties },
     } = this;
@@ -219,10 +239,10 @@ export default class Configuration extends React.Component {
         break;
       case DISPLAY:
         urlPath = "display";
-        const overrides = findOverrideById(editData, appOverrides.data);
+        const overrides = findOverrideById(editData, appOverrides.appData);
         const response = await apiUpdateAppOverride(overrides, editingId);
         if (response.result === false) {
-          dispatch(showInfoBar(response.data, "error"));
+          dispatch(showInfoBar(response.appData, "error"));
           this.cancel();
         } else {
           // check monitor and screnn count data[key]
@@ -266,14 +286,18 @@ export default class Configuration extends React.Component {
       default:
         break;
     }
-    dispatch(updateTerminal(editingId, editData, isGroup, urlPath));
-    onCancel();
+    if (tab === TOUCH && isEdited) {
+      this.openTouchEnablesAlert()
+    } else {
+      dispatch(updateTerminal(editingId, editData, isGroup, urlPath));
+      onCancel();
+    }
   };
 
   resetTab = (tab) => {
     const oriData = this.getOriData(tab);
     const appOverrides = {
-      data: { ...this.state.oriAppOverrides.data },
+      appData: { ...this.state.oriAppOverrides.appData },
     };
     if (this.props.data.isGroup) {
       const applyAllProperties = JSON.parse(
@@ -301,6 +325,7 @@ export default class Configuration extends React.Component {
         display,
         authUser,
         controls,
+        touch,
         oriApplyAllProperties,
         oriAppOverrides,
       },
@@ -326,6 +351,9 @@ export default class Configuration extends React.Component {
       case CONTROL:
         oriData = { ...controls };
         break;
+      case TOUCH:
+        oriData = { ...touch };
+        break;
       default:
         break;
     }
@@ -349,6 +377,7 @@ export default class Configuration extends React.Component {
     );
     let authUser = getDataForBaseCard(extractAuthUser(editingTerminal.data));
     let controls = getDataForBaseCard(extractControls(editingTerminal.data));
+    let touch = getDataForBaseCard(extractTouch(editingTerminal.data));
     if (isGroup === false) {
       delete properties[ApplyAllProperties];
       delete applications[ApplicationApplyAll];
@@ -363,8 +392,10 @@ export default class Configuration extends React.Component {
       applications.data,
       authUser.data,
       controls.data,
+      touch.data,
     ];
   };
+
   setPropertyApplyAll = (e, key) => {
     let {
       state: { editData, applyAllProperties },
@@ -386,7 +417,7 @@ export default class Configuration extends React.Component {
     });
   };
   setAppOverrides = (appOverrides) => {
-    const updateOverrides = { data: appOverrides };
+    const updateOverrides = { appData: appOverrides };
     this.setState({ appOverrides: updateOverrides });
   };
   getAppOverrideTree = async () => {
@@ -398,40 +429,28 @@ export default class Configuration extends React.Component {
     const oriAppOverrides = JSON.parse(JSON.stringify(appData));
     this.setState({ appOverrides: appData, oriAppOverrides: oriAppOverrides });
   };
+  operateAction = (editingId, operateType) => {
+    let {
+      props: { dispatch },
+    } = this;
+    dispatch(operateTerminal(editingId, operateType));
+  };
 
   render() {
     let {
       props: {
-        dispatch,
-        isLoading,
-        isLoaded,
-        isEditMode,
-        isEdited,
-        isUpdated,
-        data,
-        infobar,
-        status,
-        tab,
-        selectConfigTab,
-        appMultiTree,
-        onChangeEdit,
+        dispatch, isLoading, isLoaded, isEditMode, isEdited, isUpdated,
+        data, infobar, status, tab, selectConfigTab, onChangeEdit,
+        rdss, rdsGroups, rdsMainTree,
+        vncs, vncGroups, vncMainTree,
+        currentTab
       },
       state: {
-        canApply,
-        editData,
-        subTabs,
-        info,
-        hardware,
-        properties,
-        display,
-        applications,
-        authUser,
-        controls,
-        appOverrides,
-        oriAppOverrides,
-        applyAllProperties,
+        canApply, editData, subTabs, info, hardware, properties, display,
+        authUser, controls, appOverrides, oriAppOverrides, applyAllProperties, showTouchEnablesAlert
       },
     } = this;
+
     let {
       editingTerminal,
       parentTerminal,
@@ -450,19 +469,29 @@ export default class Configuration extends React.Component {
     } = data;
     let configLoaded = false;
 
-	if (typeof editingTerminal.data !== "undefined") {
-		configLoaded = Object.keys(editingTerminal.data).length > 0;
-	}
+    if (typeof editingTerminal.data !== "undefined") {
+      configLoaded = Object.keys(editingTerminal.data).length > 0;
+    }
 
     return (
       <Fragment>
-        {/*isLoading && <p>Loading...</p>*/}
-        {!configLoaded && ( /*{!isLoading && !configLoaded && (*/
+        {!configLoaded && (
           <div className="wrap-960 wrap-bg-w modal-content-edit">
             No data found...
           </div>
         )}
-        {configLoaded && ( /*{!isLoading && configLoaded && (*/
+        {showTouchEnablesAlert && (
+          <TouchEnablesAlert
+            yes={() => {
+              this.operateAction(editingId,"reboot")
+              dispatch(updateTerminal(editingId, editData, isGroup));
+              this.closeTouchEnablesAlert();
+              this.props.onCancel();
+            }}
+            no={this.closeTouchEnablesAlert}
+          />
+        )}
+        {configLoaded && (
           <Fragment>
             <EditorSubTab
               tabWidth={130}
@@ -476,7 +505,7 @@ export default class Configuration extends React.Component {
               isEditMode={isEditMode}
               title={tab}
               edited={isEdited}
-              canApply={true}
+              canApply={canApply}
               onEdit={this.edit}
               onCancel={this.cancel}
               onApply={this.apply}
@@ -533,14 +562,15 @@ export default class Configuration extends React.Component {
                   displayEdit={isEdited}
                   hardware={hardware}
                   hardwareInfo={hardwareInfo}
-                  applications={applications}
                   appOverrides={appOverrides}
                   oriAppOverrides={oriAppOverrides}
+                  rdss={rdss} rdsGroups={rdsGroups} rdsMainTree={rdsMainTree}
+                  vncs={vncs} vncGroups={vncGroups} vncMainTree={vncMainTree}
+                  currentTab={currentTab}
                   adUsers={adUsers}
                   defaultMouseMapping={defaultMouseMapping}
                   verifyAuthUserResult={verifyAuthUserResult}
                   terminalMainTree={terminalMainTree}
-                  appMultiTree={appMultiTree}
                   parentTerminal={parentTerminal}
                   setAppOverrides={this.setAppOverrides}
                   setAppOverrideTree={this.setAppOverrideTree}
@@ -548,26 +578,6 @@ export default class Configuration extends React.Component {
                   onChangeEdit={onChangeEdit}
                 />
               )}
-              {/* {tab === APPLICATION &&isUpdated&& (
-                <ApplicationCard
-                  dispatch={dispatch}
-                  isLoaded={isLoaded}
-                  isEditMode={isEditMode}
-                  isInDisplay={false}
-                  isWizard={false}
-                  isGroup={isGroup}
-                  terminal={applications}
-                  editingId={editingId}
-                  parentTerminal={parentTerminal}
-                  oriAppOverrides={oriAppOverrides}
-                  appOverrides={appOverrides}
-                  treeType="application"
-                  appMultiTree={appMultiTree}
-                  adUsers={adUsers}
-                  verifyAuthUserResult={verifyAuthUserResult}     
-                  onChange={this.change}
-                />
-              )} */}
               {tab === USER_ACCESS && isUpdated && (
                 <UserAccessCard
                   dispatch={dispatch}
@@ -591,6 +601,19 @@ export default class Configuration extends React.Component {
                   parentTerminal={parentTerminal}
                   defaultMouseMapping={defaultMouseMapping}
                   defaultKeyboardMapping={defaultKeyboardMapping}
+                  onChange={this.change}
+                />
+              )}
+              {tab === TOUCH && isUpdated && (
+                <TouchCard
+                  dispatch={dispatch}
+                  isLoaded={configLoaded}
+                  isEditMode={isEditMode}
+                  isGroup={isGroup}
+                  data={editData}
+                  parentTerminal={parentTerminal}
+                  applyAllProperties={applyAllProperties}
+                  setApplyAll={this.setPropertyApplyAll}
                   onChange={this.change}
                 />
               )}

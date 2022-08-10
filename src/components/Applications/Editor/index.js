@@ -20,6 +20,8 @@ import { CONFIGURATION } from "const/Consts";
 import {
   APPLICATION_INFO,
   APPLICATION_GROUP_INFO,
+  VNC_INFO,
+  VNC_GROUP_INFO
 } from "const/Applications/ApplicationConsts";
 import { Name, ParentId } from "const/Applications/ApplicationFieldNames";
 import {
@@ -32,11 +34,10 @@ import { getObjectById } from "utils/Object";
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
-    const tabs =
-      props.data.isGroup === false ? [...EditorTabs] : [...EditorGroupTabs];
+    const tabs = props.data.isGroup === false ? [...EditorTabs] : [...EditorGroupTabs];
     const updatedTabs = tabs.map((tab) => new Tab(tab));
-    const initConfigTab =
-      props.data.isGroup === false ? APPLICATION_INFO : APPLICATION_GROUP_INFO;
+    const initConfigTab = props.treeTab === 'RDS' ?
+      (props.data.isGroup === false ? APPLICATION_INFO : APPLICATION_GROUP_INFO) : (props.data.isGroup === false ? VNC_INFO : VNC_GROUP_INFO)
     this.state = {
       isEditMode: false,
       isEdited: false,
@@ -165,7 +166,7 @@ export default class Editor extends React.Component {
 
   render() {
     let {
-      props: { data, servers, dispatch },
+      props: { data, servers, dispatch, treeTab, currentTab, terminalsData },
       state: {
         isEditMode,
         isEdited,
@@ -187,7 +188,6 @@ export default class Editor extends React.Component {
       applications,
       applicationGroups,
     } = data;
-
     const isLoading = editingApplication.state == LOADING;
     const isLoaded =
       editingApplication.data != null && editingApplication.data.Id != null
@@ -269,6 +269,9 @@ export default class Editor extends React.Component {
                   onCancel={this.onCancel}
                   onChangeEdit={this.onChangeEdit}
                   selectConfigTab={this.selectConfigTab}
+                  treeTab={treeTab}
+                  currentTab={currentTab}
+                  terminalsData={terminalsData}
                 />
               )}
               {showCopyAlert && (
